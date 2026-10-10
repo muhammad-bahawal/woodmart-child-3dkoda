@@ -330,37 +330,49 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	width: min(100% - 40px, var(--w)) !important;
 	max-width: var(--w) !important;
 	margin-inline: auto !important;
-	padding-top: 20px !important;
-	padding-bottom: 4px !important;
+	padding-top: 18px !important;
+	padding-bottom: 6px !important;
 	box-sizing: border-box !important;
 }
 
-.landing-page-root .product-breadcrumb {
+.landing-page-root .product-breadcrumb,
+.product-breadcrumb {
 	display: flex !important;
+	flex-wrap: wrap !important;
 	align-items: center !important;
-	gap: 8px !important;
+	gap: 6px 8px !important;
 	font-size: 13px !important;
 	font-weight: 500 !important;
 	color: #6b7280 !important;
+	line-height: 1.4 !important;
 }
 
-.landing-page-root .product-breadcrumb a {
+.landing-page-root .product-breadcrumb a,
+.product-breadcrumb a {
 	color: #6b7280 !important;
+	text-decoration: none !important;
+	white-space: nowrap !important;
 	transition: color 0.15s ease !important;
 }
 
-.landing-page-root .product-breadcrumb a:hover {
+.landing-page-root .product-breadcrumb a:hover,
+.product-breadcrumb a:hover {
 	color: #111827 !important;
 }
 
-.landing-page-root .product-breadcrumb .sep {
+.landing-page-root .product-breadcrumb .sep,
+.product-breadcrumb .sep {
 	color: #9ca3af !important;
 	font-size: 12px !important;
+	line-height: 1 !important;
+	user-select: none !important;
 }
 
-.landing-page-root .product-breadcrumb .current {
+.landing-page-root .product-breadcrumb .current,
+.product-breadcrumb .current {
 	color: #111827 !important;
 	font-weight: 600 !important;
+	line-height: 1.4 !important;
 }
 
 /* 2-Column Hero Grid - Aligned to top matching Figma */
@@ -775,8 +787,13 @@ button.gallery-nav-btn svg {
 .landing-page-root .product-price-main {
 	display: flex !important;
 	align-items: baseline !important;
-	gap: 8px !important;
 	flex-wrap: nowrap !important;
+}
+
+.landing-page-root .product-price-meta {
+	display: flex !important;
+	align-items: baseline !important;
+	gap: 16px !important;
 }
 
 /* Compact Black Price (28px) matching Figma */
@@ -997,9 +1014,21 @@ div.product.landing-page-root .summary .price * {
 /* 5 (part 2). Add to Cart Row */
 .landing-page-root .product-add-to-cart {
 	display: flex !important;
+	flex-wrap: wrap !important;
 	gap: 12px !important;
 	align-items: center !important;
 	margin-bottom: 14px !important;
+}
+
+.landing-page-root .product-add-to-cart a.added_to_cart {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	font-size: 13.5px !important;
+	font-weight: 600 !important;
+	color: #ff5e1a !important;
+	text-decoration: underline !important;
+	margin-left: 4px !important;
 }
 
 .landing-page-root .product-quantity {
@@ -2892,13 +2921,98 @@ div.product.landing-page-root .summary .price * {
 		grid-template-columns: 1fr !important;
 	}
 
-	.landing-page-root .product-gallery {
+	/* Disable sticky scroll on mobile and tablet for product main image gallery */
+	.landing-page-root .product-hero>.product-gallery,
+	.landing-page-root .product-gallery,
+	body.admin-bar .landing-page-root .product-hero>.product-gallery,
+	body.admin-bar .landing-page-root .product-gallery {
+		position: static !important;
+		top: auto !important;
+		align-self: auto !important;
 		max-width: 580px !important;
 		margin-inline: auto !important;
 	}
 }
 
 @media (max-width: 767px) {
+	.landing-page-root .product-breadcrumb-wrap,
+	.product-breadcrumb-wrap {
+		width: 100% !important;
+		padding-inline: 16px !important;
+		padding-top: 14px !important;
+	}
+
+	.landing-page-root .product-breadcrumb,
+	.product-breadcrumb {
+		font-size: 12px !important;
+		gap: 4px 6px !important;
+	}
+
+	.landing-page-root .product-breadcrumb .current,
+	.product-breadcrumb .current {
+		max-width: 100% !important;
+		overflow: hidden !important;
+		text-overflow: ellipsis !important;
+		white-space: nowrap !important;
+		display: inline-block !important;
+		vertical-align: middle !important;
+	}
+
+	/* Fix empty space below gallery on mobile/tablet: auto height and horizontal thumbs */
+	.landing-page-root .product-hero>.product-gallery,
+	.landing-page-root .product-gallery {
+		flex-direction: column !important;
+		gap: 12px !important;
+		height: auto !important;
+	}
+
+	.landing-page-root .product-gallery__main {
+		order: 1 !important;
+		width: 100% !important;
+		height: auto !important;
+		min-height: 280px !important;
+		max-height: 380px !important;
+	}
+
+	.landing-page-root .product-gallery__thumbs-wrap {
+		width: 100% !important;
+		height: auto !important;
+		min-height: 0 !important;
+		max-height: none !important;
+		order: 2 !important;
+		flex-direction: row !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	.landing-page-root .product-gallery__thumbs-wrap .gallery-nav-btn {
+		display: none !important;
+	}
+
+	.landing-page-root .product-gallery__thumbs {
+		display: flex !important;
+		flex-direction: row !important;
+		overflow-x: auto !important;
+		overflow-y: hidden !important;
+		height: auto !important;
+		max-height: none !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		order: 2 !important;
+		gap: 8px !important;
+		padding: 4px 0 !important;
+		scrollbar-width: none !important;
+	}
+
+	.landing-page-root .product-gallery__thumbs::-webkit-scrollbar {
+		display: none !important;
+	}
+
+	.landing-page-root .product-gallery__thumbs li {
+		flex: 0 0 54px !important;
+		width: 54px !important;
+		height: 54px !important;
+	}
 
 	.landing-page-root .grid--2,
 	.landing-page-root .product-comparison__grid,
@@ -2923,7 +3037,19 @@ div.product.landing-page-root .summary .price * {
 	}
 
 	.landing-page-root .product-section-navigation ul {
-		justify-content: flex-start;
+		justify-content: flex-start !important;
+		padding: 12px 16px !important;
+		gap: 20px !important;
+		scroll-padding: 0 16px !important;
+		scroll-behavior: smooth !important;
+	}
+
+	.landing-page-root .product-section-navigation li {
+		flex-shrink: 0 !important;
+	}
+
+	.landing-page-root .product-section-navigation a {
+		white-space: nowrap !important;
 	}
 
 	.landing-page-root .btn {
@@ -2931,61 +3057,104 @@ div.product.landing-page-root .summary .price * {
 	}
 }
 
-@media (max-width: 540px) {
-
-	.landing-page-root .grid--4,
-	.landing-page-root .product-configuration__options {
-		grid-template-columns: 1fr;
-	}
-
-	.landing-page-root .product-hero>.product-gallery,
-	.landing-page-root .product-gallery {
-		flex-direction: column !important;
-		gap: 12px !important;
-	}
-
-	.landing-page-root .product-gallery__thumbs-wrap {
-		width: 100% !important;
-		order: 2 !important;
-	}
-
-	.landing-page-root .product-gallery__thumbs-wrap .gallery-nav-btn {
-		display: none !important;
-	}
-
-	.landing-page-root .product-gallery__thumbs {
+@media (max-width: 640px) {
+	/* 4. Price Row Mobile: Row 1 = Price only; Row 2 = VAT note on left + Show ex. VAT on right */
+	.landing-page-root .product-price-row {
 		display: flex !important;
-		flex-direction: row !important;
-		overflow-x: auto !important;
-		overflow-y: hidden !important;
-		max-height: none !important;
+		flex-direction: column !important;
+		align-items: flex-start !important;
+		gap: 6px !important;
+		padding-bottom: 14px !important;
+		margin-bottom: 16px !important;
+	}
+
+	.landing-page-root .product-price-main {
 		width: 100% !important;
-		max-width: 100% !important;
-		order: 2 !important;
+		display: block !important;
+	}
+
+	.landing-page-root .product-price,
+	.landing-page-root .product-price *,
+	.landing-page-root .product-price-row .product-price {
+		font-size: clamp(20px, 6vw, 24px) !important;
+		font-weight: 800 !important;
+		color: #111827 !important;
+		white-space: nowrap !important;
+		line-height: 1.2 !important;
+		display: inline-block !important;
+	}
+
+	.landing-page-root .product-price-meta {
+		display: flex !important;
+		align-items: center !important;
+		justify-content: space-between !important;
+		width: 100% !important;
 		gap: 8px !important;
-		padding-bottom: 4px !important;
-		scrollbar-width: none !important;
 	}
 
-	.landing-page-root .product-gallery__thumbs::-webkit-scrollbar {
-		display: none;
+	.landing-page-root .product-price-note {
+		font-size: 11.5px !important;
+		color: #6b7280 !important;
+		padding: 0 !important;
+		margin: 0 !important;
+		white-space: nowrap !important;
+		line-height: 1.2 !important;
 	}
 
-	.landing-page-root .product-gallery__thumbs li {
-		flex: 0 0 54px !important;
-		width: 54px !important;
-		height: 54px !important;
-	}
-
-	.landing-page-root .product-gallery__main {
-		order: 1 !important;
+	.landing-page-root .product-vat-toggle .vat-link {
+		font-size: 11.5px !important;
+		color: #6b7280 !important;
+		white-space: nowrap !important;
+		line-height: 1.2 !important;
 	}
 
 	.landing-page-root .product-add-to-cart {
-		flex-wrap: wrap;
+		display: flex !important;
+		flex-wrap: wrap !important;
+		gap: 10px !important;
+	}
+
+	.landing-page-root .product-quantity {
+		flex: 0 0 auto !important;
+	}
+
+	.landing-page-root .btn-add-to-cart {
+		flex: 1 1 0% !important;
+		min-width: 0 !important;
+		white-space: nowrap !important;
+		font-size: 14px !important;
+		padding: 0 16px !important;
+	}
+
+	/* Move "View cart" into dedicated new row on mobile */
+	.landing-page-root .product-add-to-cart a.added_to_cart {
+		width: 100% !important;
+		flex: 0 0 100% !important;
+		order: 10 !important;
+		text-align: center !important;
+		padding: 10px 16px !important;
+		background: #f8fafc !important;
+		border: 1px solid #e2e8f0 !important;
+		border-radius: 8px !important;
+		margin-top: 4px !important;
+		color: #111827 !important;
+		font-size: 13.5px !important;
+		font-weight: 600 !important;
+		text-decoration: none !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		box-sizing: border-box !important;
 	}
 
 	.landing-page-root .sticky-purchase-bar small {
 		display: none;
+	}
+}
+
+@media (max-width: 540px) {
+	.landing-page-root .grid--4,
+	.landing-page-root .product-configuration__options {
+		grid-template-columns: 1fr;
 	}
 }

@@ -172,10 +172,11 @@
 	}
 
 	/* ==========================================================================
-	   4. SMOOTH SCROLL & IN-PAGE NAV SPY
+	   4. SMOOTH SCROLL & IN-PAGE NAV SPY (WITH MOBILE AUTO-CENTER ACTIVE TAB)
 	   ========================================================================== */
 	function initSmoothScrollAndSpy() {
 		const sectionNav = document.querySelector('.product-section-navigation');
+		const navUl = sectionNav ? sectionNav.querySelector('ul') : null;
 		const navLinks = sectionNav ? sectionNav.querySelectorAll('a[href^="#"]') : [];
 		const header = document.querySelector('.whb-header') || document.querySelector('.site-header') || document.querySelector('header');
 
@@ -183,6 +184,19 @@
 			const headerHeight = header ? header.offsetHeight : 64;
 			const navHeight = sectionNav ? sectionNav.offsetHeight : 48;
 			return headerHeight + navHeight + 10;
+		}
+
+		function centerActiveTab(activeLink) {
+			if (!activeLink || !navUl) return;
+			// Automatically center active tab if navUl has horizontal overflow
+			if (navUl.scrollWidth > navUl.clientWidth) {
+				const targetItem = activeLink.closest('li') || activeLink;
+				const scrollLeftTarget = targetItem.offsetLeft - (navUl.clientWidth / 2) + (targetItem.offsetWidth / 2);
+				navUl.scrollTo({
+					left: Math.max(0, scrollLeftTarget),
+					behavior: 'smooth'
+				});
+			}
 		}
 
 		// Smooth scroll on anchor click
@@ -205,6 +219,13 @@
 						top: offsetPosition,
 						behavior: 'smooth'
 					});
+
+					// If anchor is in tab navigation, activate and center it immediately
+					if (sectionNav && sectionNav.contains(this)) {
+						navLinks.forEach(l => l.classList.remove('is-active'));
+						this.classList.add('is-active');
+						centerActiveTab(this);
+					}
 				}
 			});
 		});
@@ -217,6 +238,8 @@
 				if (target) sections.push({ link, target });
 			});
 
+			let currentActiveLink = null;
+
 			window.addEventListener('scroll', function () {
 				const scrollPos = window.pageYOffset + getOffset() + 20;
 
@@ -225,8 +248,12 @@
 					const height = target.offsetHeight;
 
 					if (scrollPos >= top && scrollPos < top + height) {
-						navLinks.forEach(l => l.classList.remove('is-active'));
-						link.classList.add('is-active');
+						if (currentActiveLink !== link) {
+							currentActiveLink = link;
+							navLinks.forEach(l => l.classList.remove('is-active'));
+							link.classList.add('is-active');
+							centerActiveTab(link);
+						}
 					}
 				});
 			}, { passive: true });

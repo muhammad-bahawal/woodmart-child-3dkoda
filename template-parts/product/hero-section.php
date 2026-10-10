@@ -144,10 +144,12 @@ $default_var = array();
 		<div class="product-price-row" data-price-raw="<?php echo esc_attr( $core['price'] ?? 0 ); ?>">
 			<div class="product-price-main">
 				<span class="product-price" style="color: #111827 !important;" data-price-raw="<?php echo esc_attr( $core['price'] ?? 0 ); ?>" data-price-html="<?php echo esc_attr( $core['price_html'] ); ?>"><?php echo wp_kses_post( $core['price_html'] ); ?></span>
-				<span class="product-price-note"><?php esc_html_e( 'incl. 24% VAT · sample price', 'woodmart-child' ); ?></span>
 			</div>
-			<div class="product-vat-toggle">
-				<a href="#packages" class="vat-link"><?php esc_html_e( 'Show ex. VAT', 'woodmart-child' ); ?></a>
+			<div class="product-price-meta">
+				<span class="product-price-note"><?php esc_html_e( 'incl. 24% VAT · sample price', 'woodmart-child' ); ?></span>
+				<div class="product-vat-toggle">
+					<a href="#packages" class="vat-link"><?php esc_html_e( 'Show ex. VAT', 'woodmart-child' ); ?></a>
+				</div>
 			</div>
 		</div>
 
