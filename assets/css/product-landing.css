@@ -2145,10 +2145,160 @@ div.product.landing-page-root .summary .price * {
 	}
 }
 
-.landing-page-root .product-brand .card p {
-	font-size: 12px;
-	color: var(--muted-dark);
-	margin-top: 6px;
+/* ==========================================================================
+   BRAND DIFFERENCE SECTION ("THE 3DKODA DIFFERENCE") - Figma Specification
+   ========================================================================== */
+.landing-page-root .product-brand,
+.landing-page-root section.product-brand,
+.product-brand.dark {
+	background: #090d16 !important;
+	color: #ffffff !important;
+	padding-top: 84px !important;
+	padding-bottom: 84px !important;
+}
+
+.landing-page-root .product-brand__wrap {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr) !important;
+	gap: 56px !important;
+	align-items: flex-start !important;
+}
+
+.landing-page-root .product-brand__content {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: flex-start !important;
+}
+
+.landing-page-root .product-brand .eyebrow {
+	display: inline-block !important;
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.12em !important;
+	text-transform: uppercase !important;
+	color: #ff5e1a !important;
+	margin-bottom: 14px !important;
+}
+
+.landing-page-root .product-brand__title,
+.landing-page-root .product-brand h2 {
+	font-size: clamp(28px, 3.4vw, 40px) !important;
+	font-weight: 800 !important;
+	line-height: 1.15 !important;
+	letter-spacing: -0.03em !important;
+	color: #ffffff !important;
+	margin: 0 0 16px 0 !important;
+}
+
+.landing-page-root .product-brand__desc,
+.landing-page-root .product-brand p {
+	font-size: 14px !important;
+	color: #8a99ad !important;
+	line-height: 1.6 !important;
+	margin: 0 0 28px 0 !important;
+	max-width: 480px !important;
+}
+
+.landing-page-root .product-brand__link {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 6px !important;
+	font-size: 13.5px !important;
+	font-weight: 600 !important;
+	color: #ffffff !important;
+	text-decoration: none !important;
+	transition: color 0.15s ease, transform 0.15s ease !important;
+}
+
+.landing-page-root .product-brand__link .arrow {
+	transition: transform 0.2s ease !important;
+}
+
+.landing-page-root .product-brand__link:hover {
+	color: #ff5e1a !important;
+}
+
+.landing-page-root .product-brand__link:hover .arrow {
+	transform: translateX(4px) !important;
+}
+
+.landing-page-root .product-brand__grid {
+	display: grid !important;
+	grid-template-columns: repeat(2, 1fr) !important;
+	gap: 36px 32px !important;
+}
+
+.landing-page-root .brand-feature {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: flex-start !important;
+	background: transparent !important;
+	border: none !important;
+	padding: 0 !important;
+}
+
+.landing-page-root .brand-feature__header {
+	display: flex !important;
+	align-items: center !important;
+	gap: 10px !important;
+	margin-bottom: 8px !important;
+}
+
+.landing-page-root .brand-feature__icon {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	flex-shrink: 0 !important;
+	width: 20px !important;
+	height: 20px !important;
+}
+
+.landing-page-root .brand-feature__icon svg {
+	width: 18px !important;
+	height: 18px !important;
+	stroke: #ff5e1a !important;
+	display: block !important;
+}
+
+.landing-page-root .brand-feature__title,
+.landing-page-root .brand-feature h3 {
+	font-size: 15.5px !important;
+	font-weight: 700 !important;
+	color: #ffffff !important;
+	line-height: 1.3 !important;
+	letter-spacing: -0.01em !important;
+	margin: 0 !important;
+}
+
+.landing-page-root .brand-feature__desc,
+.landing-page-root .brand-feature p {
+	font-size: 13px !important;
+	color: #8a99ad !important;
+	line-height: 1.55 !important;
+	margin: 0 !important;
+}
+
+@media (max-width: 1024px) {
+	.landing-page-root .product-brand__wrap {
+		grid-template-columns: 1fr !important;
+		gap: 40px !important;
+	}
+
+	.landing-page-root .product-brand__grid {
+		grid-template-columns: repeat(2, 1fr) !important;
+		gap: 28px !important;
+	}
+}
+
+@media (max-width: 640px) {
+	.landing-page-root .product-brand {
+		padding-block: 56px !important;
+	}
+
+	.landing-page-root .product-brand__grid {
+		grid-template-columns: 1fr !important;
+		gap: 24px !important;
+	}
 }
 
 /* 10. SPECS & WHAT'S IN THE BOX */
@@ -2182,36 +2332,172 @@ div.product.landing-page-root .summary .price * {
 	margin-top: 14px;
 }
 
+/* ==========================================================================
+   SETUP GUIDE BANNER ("FROM THE BOX TO YOUR FIRST PRINT") - Figma Specification
+   ========================================================================== */
+.landing-page-root .product-setup-container {
+	padding-bottom: 48px !important;
+}
+
+.landing-page-root .product-setup,
 .landing-page-root .setup {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 32px;
-	align-items: center;
-	background: var(--bg-alt);
-	border-radius: var(--r);
-	padding: 36px;
+	display: grid !important;
+	grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) !important;
+	gap: 48px !important;
+	align-items: center !important;
+	background: #edf3f8 !important;
+	border: 1px solid rgba(220, 230, 242, 0.6) !important;
+	border-radius: 20px !important;
+	padding: 44px 56px !important;
+	margin-block: 20px 48px !important;
+	position: relative !important;
+	overflow: hidden !important;
 }
 
+.landing-page-root .setup__content {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: flex-start !important;
+}
+
+.landing-page-root .setup .eyebrow {
+	display: inline-block !important;
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.12em !important;
+	text-transform: uppercase !important;
+	color: #ff5e1a !important;
+	margin-bottom: 14px !important;
+}
+
+.landing-page-root .setup__title,
 .landing-page-root .setup h2 {
-	font-size: clamp(24px, 3vw, 34px);
-	margin-bottom: 12px;
+	font-size: clamp(26px, 2.8vw, 34px) !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	line-height: 1.2 !important;
+	letter-spacing: -0.025em !important;
+	margin: 0 0 14px 0 !important;
 }
 
+.landing-page-root .setup__desc,
 .landing-page-root .setup p {
-	margin-bottom: 16px;
-	color: var(--text-2);
+	font-size: 13.5px !important;
+	color: #64748b !important;
+	line-height: 1.6 !important;
+	margin: 0 0 24px 0 !important;
+	max-width: 520px !important;
 }
 
-.landing-page-root .setup .placeholder {
-	aspect-ratio: 16 / 9;
-	background: #fff;
+.landing-page-root .setup__link {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 6px !important;
+	font-size: 13px !important;
+	font-weight: 700 !important;
+	color: #0f172a !important;
+	text-decoration: none !important;
+	transition: color 0.15s ease, transform 0.15s ease !important;
 }
 
-.landing-page-root .setup img {
-	border-radius: 8px;
-	aspect-ratio: 16 / 9;
-	object-fit: cover;
-	width: 100%;
+.landing-page-root .setup__link svg {
+	width: 14px !important;
+	height: 14px !important;
+	transition: transform 0.2s ease !important;
+}
+
+.landing-page-root .setup__link:hover {
+	color: #ff5e1a !important;
+}
+
+.landing-page-root .setup__link:hover svg {
+	transform: translate(2px, -2px) !important;
+}
+
+.landing-page-root .setup__media {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: flex-end !important;
+	width: 100% !important;
+}
+
+.landing-page-root .setup-preview-card {
+	background: #ffffff !important;
+	border-radius: 18px !important;
+	box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.08) !important;
+	padding: 24px 24px 18px !important;
+	width: 100% !important;
+	max-width: 340px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+}
+
+.landing-page-root .setup-preview-card__img {
+	width: 100% !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	margin-bottom: 16px !important;
+	min-height: 160px !important;
+}
+
+.landing-page-root .setup-preview-card img,
+.landing-page-root .setup-guide-img {
+	max-height: 175px !important;
+	width: auto !important;
+	max-width: 100% !important;
+	object-fit: contain !important;
+	border-radius: 0 !important;
+	display: block !important;
+	margin: 0 auto !important;
+	filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.1)) !important;
+}
+
+.landing-page-root .setup-preview-card__btn {
+	background: #090d16 !important;
+	color: #ffffff !important;
+	border-radius: 8px !important;
+	width: 100% !important;
+	height: 40px !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 8px !important;
+	font-size: 12.5px !important;
+	font-weight: 600 !important;
+	text-decoration: none !important;
+	transition: background 0.15s ease, opacity 0.15s ease !important;
+}
+
+.landing-page-root .setup-preview-card__btn:hover {
+	background: #1e293b !important;
+	color: #ffffff !important;
+}
+
+@media (max-width: 1024px) {
+	.landing-page-root .product-setup,
+	.landing-page-root .setup {
+		grid-template-columns: 1fr !important;
+		gap: 32px !important;
+		padding: 36px 32px !important;
+	}
+
+	.landing-page-root .setup__media {
+		justify-content: center !important;
+	}
+}
+
+@media (max-width: 640px) {
+	.landing-page-root .product-setup,
+	.landing-page-root .setup {
+		padding: 28px 20px !important;
+		border-radius: 16px !important;
+	}
+
+	.landing-page-root .setup-preview-card {
+		max-width: 100% !important;
+	}
 }
 
 .landing-page-root .product-package-contents__grid {
