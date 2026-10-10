@@ -377,6 +377,12 @@
 				const isCardCombo = card.dataset.selectSetup === 'combo';
 				card.classList.toggle('is-active', isCardCombo === isCombo);
 			});
+
+			// Sync Comparison / Plan cards
+			document.querySelectorAll('.product-comparison .plan').forEach(card => {
+				const isPlanCombo = card.dataset.setup === 'combo';
+				card.classList.toggle('is-active', isPlanCombo === isCombo);
+			});
 		}
 
 		// When Hero radio changes
@@ -433,25 +439,33 @@
 			});
 		});
 
-		// When comparison package buttons are clicked (e.g. Choose Standalone / Choose Combo)
-		document.querySelectorAll('.plan [data-select-setup]').forEach(btn => {
-			btn.addEventListener('click', function (e) {
-				e.preventDefault();
-				const targetCombo = this.dataset.selectSetup === 'combo';
+		// When comparison package cards or buttons are clicked (e.g. Choose Standalone / Choose Combo)
+		document.querySelectorAll('.product-comparison .plan').forEach(planCard => {
+			planCard.addEventListener('click', function (e) {
+				const selectBtn = planCard.querySelector('[data-select-setup]');
+				const targetCombo = (planCard.dataset.setup === 'combo') || (selectBtn && selectBtn.dataset.selectSetup === 'combo');
 				const matchedRadio = document.querySelector(`input[name="setup"][data-combo="${targetCombo ? '1' : '0'}"]`);
 
 				if (matchedRadio) {
 					matchedRadio.checked = true;
 					matchedRadio.dispatchEvent(new Event('change', { bubbles: true }));
-
-					// Smooth scroll up to hero
-					const heroSection = document.querySelector('.product-hero');
-					if (heroSection) {
-						heroSection.scrollIntoView({ behavior: 'smooth' });
-					}
 				}
 			});
 		});
+
+		// Initial check on page load: only activate card if a variation radio is already selected
+		const initialChecked = document.querySelector('input[name="setup"]:checked');
+		if (initialChecked) {
+			const isInitialCombo = initialChecked.dataset.combo === '1';
+			document.querySelectorAll('.product-comparison .plan').forEach(card => {
+				const isPlanCombo = card.dataset.setup === 'combo';
+				card.classList.toggle('is-active', isPlanCombo === isInitialCombo);
+			});
+		} else {
+			document.querySelectorAll('.product-comparison .plan').forEach(card => {
+				card.classList.remove('is-active');
+			});
+		}
 	}
 
 	/* ==========================================================================

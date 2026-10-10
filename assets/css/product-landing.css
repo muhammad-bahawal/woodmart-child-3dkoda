@@ -1922,58 +1922,227 @@ div.product.landing-page-root .summary .price * {
 	}
 }
 
-/* 9. PACKAGES / COMPARISON & BRAND */
+/* ==========================================================================
+   PACKAGES / COMPARISON SECTION - Figma Specification
+   ========================================================================== */
+.landing-page-root .product-comparison,
+.landing-page-root section.product-comparison {
+	background: #ffffff !important;
+	padding-top: 84px !important;
+	padding-bottom: 84px !important;
+}
+
+.landing-page-root .product-comparison .section__head {
+	text-align: left !important;
+	margin-left: 0 !important;
+	margin-right: auto !important;
+	margin-bottom: 44px !important;
+	max-width: 680px !important;
+}
+
+.landing-page-root .product-comparison .eyebrow {
+	display: inline-block !important;
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.12em !important;
+	text-transform: uppercase !important;
+	color: #ff5e1a !important;
+	margin-bottom: 12px !important;
+	text-align: left !important;
+}
+
+.landing-page-root .product-comparison .section__head h2 {
+	font-size: clamp(32px, 3.8vw, 44px) !important;
+	font-weight: 800 !important;
+	line-height: 1.15 !important;
+	letter-spacing: -0.03em !important;
+	color: #111827 !important;
+	margin: 0 0 12px 0 !important;
+	text-align: left !important;
+}
+
+.landing-page-root .product-comparison .section__head p {
+	font-size: 14.5px !important;
+	color: #64748b !important;
+	line-height: 1.6 !important;
+	margin: 0 !important;
+	text-align: left !important;
+}
+
 .landing-page-root .product-comparison__grid {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 20px;
-	max-width: 880px;
-	margin-inline: auto;
+	display: grid !important;
+	grid-template-columns: repeat(2, 1fr) !important;
+	gap: 28px !important;
+	max-width: 100% !important;
+	width: 100% !important;
+	margin: 0 !important;
 }
 
 .landing-page-root .plan {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
+	position: relative !important;
+	display: flex !important;
+	flex-direction: column !important;
+	background: #ffffff !important;
+	border: 1.5px solid #e5e7eb !important;
+	border-radius: 20px !important;
+	padding: 40px 36px 36px !important;
+	box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03) !important;
+	transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease !important;
+	cursor: pointer !important;
 }
 
-.landing-page-root .plan--rec {
-	border-color: var(--accent);
-	border-width: 1.5px;
-	order: 2;
+.landing-page-root .plan:hover {
+	box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08) !important;
+}
+
+.landing-page-root .plan.is-active {
+	border-color: #ff5e1a !important;
+	box-shadow: 0 10px 30px -4px rgba(255, 94, 26, 0.15) !important;
 }
 
 .landing-page-root .badge-rec {
-	position: absolute;
-	top: -1px;
-	right: 16px;
-	background: var(--accent);
-	color: #fff;
-	font-size: 9px;
-	font-weight: 700;
-	padding: 3px 10px;
-	border-radius: 0 0 6px 6px;
+	position: absolute !important;
+	top: -1px !important;
+	right: 28px !important;
+	background: #ff5e1a !important;
+	color: #ffffff !important;
+	font-size: 9.5px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.08em !important;
+	text-transform: uppercase !important;
+	padding: 4px 12px !important;
+	border-radius: 0 0 6px 6px !important;
+	z-index: 2 !important;
 }
 
-.landing-page-root .plan .price {
-	font-size: 26px;
-	font-weight: 800;
-	letter-spacing: -0.03em;
+.landing-page-root .plan .plan__eyebrow {
+	display: block !important;
+	font-size: 10.5px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.1em !important;
+	text-transform: uppercase !important;
+	color: #ff5e1a !important;
+	margin-bottom: 12px !important;
+}
+
+.landing-page-root .plan .plan__title,
+.landing-page-root .plan h3 {
+	font-size: 22px !important;
+	font-weight: 800 !important;
+	color: #111827 !important;
+	letter-spacing: -0.02em !important;
+	margin: 0 0 14px 0 !important;
+}
+
+/* Force Price Color to Crisp Black matching Figma */
+.landing-page-root .plan .price,
+.landing-page-root .plan .price *,
+.landing-page-root .plan .price .amount,
+.landing-page-root .plan .price .woocommerce-Price-amount,
+.landing-page-root .plan .price .woocommerce-Price-currencySymbol,
+.landing-page-root .plan .price bdi {
+	color: #111827 !important;
+	font-size: clamp(28px, 3.2vw, 36px) !important;
+	font-weight: 800 !important;
+	letter-spacing: -0.03em !important;
+	line-height: 1.1 !important;
+	margin: 0 0 6px 0 !important;
+}
+
+.landing-page-root .plan .plan__price-note,
+.landing-page-root .plan small {
+	display: block !important;
+	font-size: 12px !important;
+	color: #94a3b8 !important;
+	margin-bottom: 18px !important;
+}
+
+.landing-page-root .plan .plan__desc,
+.landing-page-root .plan > p:not(.price) {
+	font-size: 13px !important;
+	color: #64748b !important;
+	line-height: 1.55 !important;
+	margin: 0 0 20px 0 !important;
+	padding-bottom: 20px !important;
+	border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.landing-page-root .plan ul,
+.landing-page-root .plan .plan__bullets {
+	margin: 0 0 32px 0 !important;
+	padding: 0 !important;
+	list-style: none !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 12px !important;
 }
 
 .landing-page-root .plan li {
-	font-size: 12px;
-	padding: 4px 0;
+	display: flex !important;
+	align-items: center !important;
+	gap: 8px !important;
+	font-size: 13px !important;
+	color: #334155 !important;
+	padding: 0 !important;
+	line-height: 1.4 !important;
 }
 
 .landing-page-root .plan li::before {
-	content: "✓ ";
-	color: var(--ok);
+	content: "✓" !important;
+	color: #10b981 !important;
+	font-weight: 700 !important;
+	font-size: 13px !important;
+	display: inline-block !important;
 }
 
-.landing-page-root .plan .btn {
-	margin-top: auto;
+.landing-page-root .plan .btn,
+.landing-page-root .plan .btn--plan {
+	width: 100% !important;
+	height: 48px !important;
+	border-radius: 10px !important;
+	font-size: 13.5px !important;
+	font-weight: 700 !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	margin-top: auto !important;
+	cursor: pointer !important;
+	transition: all 0.2s ease !important;
+	background: #ffffff !important;
+	border: 1.5px solid #111827 !important;
+	color: #111827 !important;
+	text-decoration: none !important;
+}
+
+.landing-page-root .plan .btn:hover,
+.landing-page-root .plan .btn--plan:hover {
+	background: #f8fafc !important;
+}
+
+.landing-page-root .plan.is-active .btn,
+.landing-page-root .plan.is-active .btn--plan {
+	background: #ff5e1a !important;
+	border: 1.5px solid #ff5e1a !important;
+	color: #ffffff !important;
+	box-shadow: 0 4px 14px rgba(255, 94, 26, 0.3) !important;
+}
+
+.landing-page-root .plan.is-active .btn:hover,
+.landing-page-root .plan.is-active .btn--plan:hover {
+	background: #ea580c !important;
+	border-color: #ea580c !important;
+}
+
+@media (max-width: 900px) {
+	.landing-page-root .product-comparison__grid {
+		grid-template-columns: 1fr !important;
+		gap: 24px !important;
+	}
+
+	.landing-page-root .plan {
+		padding: 32px 24px 28px !important;
+	}
 }
 
 .landing-page-root .product-brand .card p {

@@ -51,10 +51,10 @@ if ( ! empty( $data['combo']['bullets'] ) ) {
 }
 ?>
 
-<!-- Packages Comparison Grid -->
+<!-- Packages Comparison Grid - Figma Specification -->
 <section class="section product-comparison" id="packages">
 	<div class="container">
-		<div class="section__head center" style="text-align:center">
+		<div class="section__head">
 			<?php if ( ! empty( $data['eyebrow'] ) ) : ?>
 				<span class="eyebrow"><?php echo esc_html( $data['eyebrow'] ); ?></span>
 			<?php endif; ?>
@@ -70,66 +70,68 @@ if ( ! empty( $data['combo']['bullets'] ) ) {
 
 		<div class="product-comparison__grid">
 			<!-- Standalone Plan -->
-			<article class="card plan">
+			<article class="card plan" data-setup="standalone" data-variation-id="<?php echo esc_attr( $standalone_var['id'] ?? '' ); ?>">
 				<?php if ( ! empty( $data['standalone']['eyebrow'] ) ) : ?>
-					<span class="eyebrow"><?php echo esc_html( $data['standalone']['eyebrow'] ); ?></span>
+					<span class="plan__eyebrow"><?php echo esc_html( $data['standalone']['eyebrow'] ); ?></span>
 				<?php endif; ?>
 
-				<h3><?php echo esc_html( $data['standalone']['title'] ); ?></h3>
+				<h3 class="plan__title"><?php echo esc_html( $data['standalone']['title'] ); ?></h3>
 				<p class="price"><?php echo wp_kses_post( $standalone_price_html ); ?></p>
 
 				<?php if ( ! empty( $data['standalone']['price_note'] ) ) : ?>
-					<small class="muted"><?php echo esc_html( $data['standalone']['price_note'] ); ?></small>
+					<small class="plan__price-note"><?php echo esc_html( $data['standalone']['price_note'] ); ?></small>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $data['standalone']['description'] ) ) : ?>
-					<p class="muted" style="font-size:12px"><?php echo esc_html( $data['standalone']['description'] ); ?></p>
+					<p class="plan__desc"><?php echo esc_html( $data['standalone']['description'] ); ?></p>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $standalone_bullets ) ) : ?>
-					<ul>
+					<ul class="plan__bullets">
 						<?php foreach ( $standalone_bullets as $bullet ) : ?>
 							<li><?php echo esc_html( $bullet ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 				<?php endif; ?>
 
-				<button type="button" class="btn btn--ghost" data-select-setup="standalone">
-					<?php echo esc_html( $data['standalone']['btn_text'] ?: __( 'Choose Standalone', 'woodmart-child' ) ); ?>
+				<button type="button" class="btn btn--plan" data-select-setup="standalone">
+					<span><?php echo esc_html( $data['standalone']['btn_text'] ?: __( 'Choose Standalone', 'woodmart-child' ) ); ?></span>
+					<span class="btn-arrow" aria-hidden="true">→</span>
 				</button>
 			</article>
 
-			<!-- Combo Plan (Recommended) -->
-			<article class="card plan plan--rec">
+			<!-- Combo Plan -->
+			<article class="card plan plan--combo" data-setup="combo" data-variation-id="<?php echo esc_attr( $combo_var['id'] ?? '' ); ?>">
 				<?php if ( ! empty( $data['combo']['badge'] ) ) : ?>
 					<span class="badge-rec"><?php echo esc_html( $data['combo']['badge'] ); ?></span>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $data['combo']['eyebrow'] ) ) : ?>
-					<span class="eyebrow"><?php echo esc_html( $data['combo']['eyebrow'] ); ?></span>
+					<span class="plan__eyebrow"><?php echo esc_html( $data['combo']['eyebrow'] ); ?></span>
 				<?php endif; ?>
 
-				<h3><?php echo esc_html( $data['combo']['title'] ); ?></h3>
+				<h3 class="plan__title"><?php echo esc_html( $data['combo']['title'] ); ?></h3>
 				<p class="price"><?php echo wp_kses_post( $combo_price_html ); ?></p>
 
 				<?php if ( ! empty( $data['combo']['price_note'] ) ) : ?>
-					<small class="muted"><?php echo esc_html( $data['combo']['price_note'] ); ?></small>
+					<small class="plan__price-note"><?php echo esc_html( $data['combo']['price_note'] ); ?></small>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $data['combo']['description'] ) ) : ?>
-					<p class="muted" style="font-size:12px"><?php echo esc_html( $data['combo']['description'] ); ?></p>
+					<p class="plan__desc"><?php echo esc_html( $data['combo']['description'] ); ?></p>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $combo_bullets ) ) : ?>
-					<ul>
+					<ul class="plan__bullets">
 						<?php foreach ( $combo_bullets as $bullet ) : ?>
 							<li><?php echo esc_html( $bullet ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 				<?php endif; ?>
 
-				<button type="button" class="btn" data-select-setup="combo">
-					<?php echo esc_html( $data['combo']['btn_text'] ?: __( 'Choose Combo', 'woodmart-child' ) ); ?>
+				<button type="button" class="btn btn--plan" data-select-setup="combo">
+					<span><?php echo esc_html( $data['combo']['btn_text'] ?: __( 'Choose Combo', 'woodmart-child' ) ); ?></span>
+					<span class="btn-arrow" aria-hidden="true">→</span>
 				</button>
 			</article>
 		</div>
