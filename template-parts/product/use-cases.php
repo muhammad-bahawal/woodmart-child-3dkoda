@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Part: Product Use Cases Section (Dark)
+ * Template Part: Product Use Cases Section (Dark) - Figma Pixel-Perfect
  *
  * @package WoodmartChild
  */
@@ -15,7 +15,7 @@ if ( empty( $data ) || empty( $data['enabled'] ) ) {
 }
 ?>
 
-<section class="section dark product-use-cases">
+<section class="section dark product-use-cases" id="use-cases">
 	<div class="container">
 		<div class="section__head">
 			<?php if ( ! empty( $data['eyebrow'] ) ) : ?>
@@ -28,19 +28,19 @@ if ( empty( $data ) || empty( $data['enabled'] ) ) {
 		</div>
 
 		<?php if ( ! empty( $data['items'] ) ) : ?>
-			<div class="grid grid--4">
+			<div class="grid grid--4 product-use-cases__grid">
 				<?php foreach ( $data['items'] as $uc ) : ?>
-					<article class="card">
+					<div class="use-case-item">
 						<?php if ( ! empty( $uc['num'] ) ) : ?>
-							<span class="num"><?php echo esc_html( $uc['num'] ); ?></span>
+							<span class="use-case__num"><?php echo esc_html( $uc['num'] ); ?></span>
 						<?php endif; ?>
 
-						<h3><?php echo esc_html( $uc['title'] ); ?></h3>
+						<h3 class="use-case__title"><?php echo esc_html( $uc['title'] ); ?></h3>
 
 						<?php if ( ! empty( $uc['description'] ) ) : ?>
-							<p class="muted" style="font-size:12px;margin-top:6px"><?php echo esc_html( $uc['description'] ); ?></p>
+							<p class="use-case__desc"><?php echo esc_html( $uc['description'] ); ?></p>
 						<?php endif; ?>
-					</article>
+					</div>
 				<?php endforeach; ?>
 			</div>
 		<?php endif; ?>
