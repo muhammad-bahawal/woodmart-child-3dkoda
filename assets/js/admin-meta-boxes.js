@@ -1,58 +1,71 @@
 /**
  * Product Page Builder - Admin Scripts
  * Vanilla JS tab switching, dynamic repeaters, and wp.media uploader
+ * Fully compatible with multiple builder meta-boxes (3D Printer & Filament)
  *
  * @package WoodmartChild
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-	const wrap = document.querySelector('.wc-builder-wrap');
-	if (!wrap) return;
-
 	/* ==========================================================================
-	   1. TAB SWITCHING
+	   1. TAB SWITCHING (Delegated & Resilient)
 	   ========================================================================== */
-	const tabButtons = wrap.querySelectorAll('.wc-tab-btn');
-	const tabPanels = wrap.querySelectorAll('.wc-tab-panel');
-	const STORAGE_KEY = 'wc_builder_active_tab';
+	document.addEventListener('click', function (e) {
+		const tabBtn = e.target.closest('.wc-tab-btn');
+		if (!tabBtn) return;
 
-	function activateTab(tabId) {
-		tabButtons.forEach(btn => {
-			btn.classList.toggle('active', btn.dataset.tab === tabId);
+		e.preventDefault();
+		const wrap = tabBtn.closest('.wc-builder-wrap');
+		if (!wrap) return;
+
+		const targetTab = tabBtn.getAttribute('data-tab');
+		if (!targetTab) return;
+
+		// Toggle buttons in this wrap
+		wrap.querySelectorAll('.wc-tab-btn').forEach(btn => {
+			btn.classList.toggle('active', btn === tabBtn);
 		});
 
-		tabPanels.forEach(panel => {
-			panel.classList.toggle('active', panel.id === tabId);
+		// Toggle panels in this wrap
+		wrap.querySelectorAll('.wc-tab-panel').forEach(panel => {
+			panel.classList.toggle('active', panel.id === targetTab);
 		});
 
 		try {
-			sessionStorage.setItem(STORAGE_KEY, tabId);
-		} catch (e) {
-			// Ignore storage access errors
-		}
-	}
-
-	tabButtons.forEach(btn => {
-		btn.addEventListener('click', function () {
-			activateTab(this.dataset.tab);
-		});
+			const postbox = wrap.closest('.postbox');
+			const postboxId = postbox ? postbox.id : 'wc_builder';
+			sessionStorage.setItem('wc_builder_active_tab_' + postboxId, targetTab);
+		} catch (err) {}
 	});
 
-	// Restore previously active tab if available
-	try {
-		const savedTab = sessionStorage.getItem(STORAGE_KEY);
-		if (savedTab && wrap.querySelector('#' + savedTab)) {
-			activateTab(savedTab);
-		}
-	} catch (e) {}
+	// Restore previously active tabs on load for each builder wrap
+	document.querySelectorAll('.wc-builder-wrap').forEach(wrap => {
+		try {
+			const postbox = wrap.closest('.postbox');
+			const postboxId = postbox ? postbox.id : 'wc_builder';
+			const savedTab = sessionStorage.getItem('wc_builder_active_tab_' + postboxId);
+
+			if (savedTab && wrap.querySelector('#' + savedTab)) {
+				wrap.querySelectorAll('.wc-tab-btn').forEach(btn => {
+					btn.classList.toggle('active', btn.dataset.tab === savedTab);
+				});
+				wrap.querySelectorAll('.wc-tab-panel').forEach(panel => {
+					panel.classList.toggle('active', panel.id === savedTab);
+				});
+			}
+		} catch (err) {}
+	});
 
 	/* ==========================================================================
-	   2. DYNAMIC REPEATER ADD & REMOVE
+	   2. DYNAMIC REPEATER ADD & REMOVE (Delegated)
 	   ========================================================================== */
-	wrap.querySelectorAll('.wc-btn-add-row').forEach(addBtn => {
-		addBtn.addEventListener('click', function () {
-			const targetId = this.dataset.target;
-			const templateId = this.dataset.template;
+	document.addEventListener('click', function (e) {
+		// Add row
+		const addBtn = e.target.closest('.wc-btn-add-row');
+		if (addBtn) {
+			e.preventDefault();
+			const targetId = addBtn.dataset.target;
+			const templateId = addBtn.dataset.template;
 			const container = document.getElementById(targetId);
 			const tmpl = document.getElementById(templateId);
 
@@ -65,29 +78,28 @@ document.addEventListener('DOMContentLoaded', function () {
 			const newRow = clone.firstElementChild;
 			if (newRow) {
 				container.appendChild(newRow);
-				// Focus the first input of the newly added row
 				const firstInput = newRow.querySelector('input[type="text"], textarea');
 				if (firstInput) {
 					firstInput.focus();
 				}
 			}
-		});
-	});
+			return;
+		}
 
-	// Event delegation for row removal
-	wrap.addEventListener('click', function (e) {
+		// Remove row
 		const removeBtn = e.target.closest('.wc-btn-remove-row');
-		if (!removeBtn) return;
-
-		e.preventDefault();
-		const row = removeBtn.closest('.wc-repeater-row');
-		if (row) {
-			row.style.transition = 'all 0.2s ease';
-			row.style.opacity = '0';
-			row.style.transform = 'scale(0.95)';
-			setTimeout(() => {
-				row.remove();
-			}, 200);
+		if (removeBtn) {
+			e.preventDefault();
+			const row = removeBtn.closest('.wc-repeater-row');
+			if (row) {
+				row.style.transition = 'all 0.2s ease';
+				row.style.opacity = '0';
+				row.style.transform = 'scale(0.95)';
+				setTimeout(() => {
+					row.remove();
+				}, 200);
+			}
+			return;
 		}
 	});
 
@@ -97,75 +109,74 @@ document.addEventListener('DOMContentLoaded', function () {
 	let mediaFrame = null;
 	let activePicker = null;
 
-	wrap.addEventListener('click', function (e) {
+	document.addEventListener('click', function (e) {
 		const uploadBtn = e.target.closest('.wc-btn-upload-image');
-		if (!uploadBtn) return;
+		if (uploadBtn) {
+			e.preventDefault();
+			activePicker = uploadBtn.closest('.wc-image-picker');
+			if (!activePicker) return;
 
-		e.preventDefault();
-		activePicker = uploadBtn.closest('.wc-image-picker');
-		if (!activePicker) return;
+			if (typeof wp === 'undefined' || !wp.media) {
+				alert('WordPress Media Library is not available.');
+				return;
+			}
 
-		if (typeof wp === 'undefined' || !wp.media) {
-			alert('WordPress Media Library is not available.');
-			return;
-		}
+			if (mediaFrame) {
+				mediaFrame.open();
+				return;
+			}
 
-		if (mediaFrame) {
+			mediaFrame = wp.media({
+				title: 'Select or Upload Product Image',
+				button: {
+					text: 'Use this image'
+				},
+				multiple: false,
+				library: {
+					type: 'image'
+				}
+			});
+
+			mediaFrame.on('select', function () {
+				if (!activePicker) return;
+
+				const attachment = mediaFrame.state().get('selection').first().toJSON();
+				if (attachment && attachment.url) {
+					const urlInput = activePicker.querySelector('.wc-image-url');
+					const previewDiv = activePicker.querySelector('.wc-image-preview');
+					const removeBtn = activePicker.querySelector('.wc-btn-remove-image');
+
+					if (urlInput) urlInput.value = attachment.url;
+					if (previewDiv) previewDiv.innerHTML = `<img src="${attachment.url}" alt="">`;
+					if (removeBtn) removeBtn.classList.remove('hidden');
+				}
+			});
+
 			mediaFrame.open();
 			return;
 		}
 
-		// Create reusable wp.media frame
-		mediaFrame = wp.media({
-			title: 'Select or Upload Product Image',
-			button: {
-				text: 'Use this image'
-			},
-			multiple: false,
-			library: {
-				type: 'image'
-			}
-		});
+		// Remove image
+		const removeImgBtn = e.target.closest('.wc-btn-remove-image');
+		if (removeImgBtn) {
+			e.preventDefault();
+			const picker = removeImgBtn.closest('.wc-image-picker');
+			if (!picker) return;
 
-		mediaFrame.on('select', function () {
-			if (!activePicker) return;
+			const urlInput = picker.querySelector('.wc-image-url');
+			const previewDiv = picker.querySelector('.wc-image-preview');
 
-			const attachment = mediaFrame.state().get('selection').first().toJSON();
-			if (attachment && attachment.url) {
-				const urlInput = activePicker.querySelector('.wc-image-url');
-				const previewDiv = activePicker.querySelector('.wc-image-preview');
-				const removeBtn = activePicker.querySelector('.wc-btn-remove-image');
-
-				if (urlInput) urlInput.value = attachment.url;
-				if (previewDiv) previewDiv.innerHTML = `<img src="${attachment.url}" alt="">`;
-				if (removeBtn) removeBtn.classList.remove('hidden');
-			}
-		});
-
-		mediaFrame.open();
-	});
-
-	// Remove image
-	wrap.addEventListener('click', function (e) {
-		const removeBtn = e.target.closest('.wc-btn-remove-image');
-		if (!removeBtn) return;
-
-		e.preventDefault();
-		const picker = removeBtn.closest('.wc-image-picker');
-		if (!picker) return;
-
-		const urlInput = picker.querySelector('.wc-image-url');
-		const previewDiv = picker.querySelector('.wc-image-preview');
-
-		if (urlInput) urlInput.value = '';
-		if (previewDiv) previewDiv.innerHTML = '';
-		removeBtn.classList.add('hidden');
+			if (urlInput) urlInput.value = '';
+			if (previewDiv) previewDiv.innerHTML = '';
+			removeImgBtn.classList.add('hidden');
+			return;
+		}
 	});
 
 	/* ==========================================================================
 	   4. COLOR PICKER SYNC
 	   ========================================================================== */
-	wrap.addEventListener('input', function (e) {
+	document.addEventListener('input', function (e) {
 		if (e.target.classList.contains('wc-color-picker-input')) {
 			const textInput = e.target.closest('.wc-color-field-wrap')?.querySelector('input[type="text"]');
 			if (textInput) textInput.value = e.target.value;
@@ -177,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	   ========================================================================== */
 	let draggedRow = null;
 
-	wrap.addEventListener('dragstart', function (e) {
+	document.addEventListener('dragstart', function (e) {
 		const row = e.target.closest('.wc-repeater-row');
 		if (!row) return;
 
@@ -189,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	wrap.addEventListener('dragover', function (e) {
+	document.addEventListener('dragover', function (e) {
 		if (!draggedRow) return;
 		e.preventDefault();
 
@@ -200,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		const targetRow = e.target.closest('.wc-repeater-row');
 		if (!targetRow || targetRow === draggedRow) return;
 
-		// Only reorder within the same repeater container
 		if (targetRow.parentElement !== draggedRow.parentElement) return;
 
 		const container = targetRow.parentElement;
@@ -214,14 +224,14 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	wrap.addEventListener('dragend', function () {
+	document.addEventListener('dragend', function () {
 		if (draggedRow) {
 			draggedRow.classList.remove('is-dragging');
 			draggedRow = null;
 		}
 	});
 
-	wrap.addEventListener('mousedown', function (e) {
+	document.addEventListener('mousedown', function (e) {
 		const handle = e.target.closest('.wc-row-drag');
 		if (handle) {
 			const row = handle.closest('.wc-repeater-row');
@@ -229,8 +239,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	wrap.addEventListener('mouseup', function () {
-		wrap.querySelectorAll('.wc-repeater-row[draggable="true"]').forEach(row => {
+	document.addEventListener('mouseup', function () {
+		document.querySelectorAll('.wc-repeater-row[draggable="true"]').forEach(row => {
 			row.removeAttribute('draggable');
 		});
 	});

@@ -8,12 +8,12 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Check if the custom product landing page is enabled for a given product.
+ * Check if the Filament product landing page is enabled for a given product.
  *
  * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
- * @return bool True if custom landing page is enabled.
+ * @return bool True if filament landing page is enabled.
  */
-function woodmart_child_is_custom_landing( $product_or_id = null ) {
+function woodmart_child_is_filament_landing( $product_or_id = null ) {
 	$product_id = 0;
 
 	if ( $product_or_id instanceof WC_Product ) {
@@ -30,6 +30,48 @@ function woodmart_child_is_custom_landing( $product_or_id = null ) {
 		return false;
 	}
 
+	$enabled = get_post_meta( $product_id, '_woodmart_child_filament_landing_enabled', true );
+
+	if ( '' === $enabled ) {
+		$settings = get_post_meta( $product_id, '_woodmart_child_filament_builder', true );
+		if ( is_array( $settings ) && isset( $settings['general']['enable_landing'] ) ) {
+			$enabled = $settings['general']['enable_landing'];
+		} else {
+			$enabled = '0';
+		}
+	}
+
+	return ( '1' === (string) $enabled || 'yes' === (string) $enabled || true === $enabled );
+}
+
+/**
+ * Check if the 3D Printer product landing page is enabled for a given product.
+ *
+ * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
+ * @return bool True if 3D printer landing page is enabled.
+ */
+function woodmart_child_is_printer_landing( $product_or_id = null ) {
+	$product_id = 0;
+
+	if ( $product_or_id instanceof WC_Product ) {
+		$product_id = $product_or_id->get_id();
+	} elseif ( is_numeric( $product_or_id ) && $product_or_id > 0 ) {
+		$product_id = absint( $product_or_id );
+	} elseif ( is_singular( 'product' ) || ( function_exists( 'is_product' ) && is_product() ) ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	} elseif ( is_admin() && isset( $_GET['post'] ) && is_numeric( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_id = absint( $_GET['post'] );
+	}
+
+	if ( ! $product_id ) {
+		return false;
+	}
+
+	// If filament landing is explicitly enabled, don't run printer landing
+	if ( woodmart_child_is_filament_landing( $product_id ) ) {
+		return false;
+	}
+
 	$enabled = get_post_meta( $product_id, '_woodmart_child_custom_landing_enabled', true );
 
 	// If not explicitly set yet, check builder array or default to true ('1')
@@ -43,6 +85,16 @@ function woodmart_child_is_custom_landing( $product_or_id = null ) {
 	}
 
 	return ( '0' !== (string) $enabled && 'no' !== (string) $enabled && false !== $enabled );
+}
+
+/**
+ * Check if any custom product landing page is enabled for a given product.
+ *
+ * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
+ * @return bool True if custom landing page is enabled.
+ */
+function woodmart_child_is_custom_landing( $product_or_id = null ) {
+	return woodmart_child_is_filament_landing( $product_or_id ) || woodmart_child_is_printer_landing( $product_or_id );
 }
 
 /**
@@ -609,33 +661,46 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 			$var_price   = $var['display_price'];
 			$formatted_p = wc_price( $var_price );
 
-			// Retrieve configured package labels if available
-			$builder_settings = woodmart_child_get_builder_settings( $product_id );
-			$sa_title         = ! empty( $builder_settings['packages']['standalone']['title'] ) ? $builder_settings['packages']['standalone']['title'] : $product->get_name();
-			$cb_title         = ! empty( $builder_settings['packages']['combo']['title'] ) ? $builder_settings['packages']['combo']['title'] : ( $product->get_name() . ' Combo' );
+			$is_printer = woodmart_child_is_printer_landing( $product_id );
 
-			// Name fallback or attribute title
-			$attr_summary = implode( ' / ', array_values( $var['attributes'] ) );
-			$var_title    = $var_obj ? $var_obj->get_name() : $product->get_name() . ' ' . $attr_summary;
+			if ( $is_printer ) {
+				// Retrieve configured package labels if available
+				$builder_settings = woodmart_child_get_builder_settings( $product_id );
+				$sa_title         = ! empty( $builder_settings['packages']['standalone']['title'] ) ? $builder_settings['packages']['standalone']['title'] : $product->get_name();
+				$cb_title         = ! empty( $builder_settings['packages']['combo']['title'] ) ? $builder_settings['packages']['combo']['title'] : ( $product->get_name() . ' Combo' );
 
-			// Match setup labels if available
-			$is_combo = ( false !== stripos( $var_title, 'combo' ) || false !== stripos( $attr_summary, 'combo' ) || $idx === 1 );
+				// Name fallback or attribute title
+				$attr_summary = implode( ' / ', array_values( $var['attributes'] ) );
+				$var_title    = $var_obj ? $var_obj->get_name() : $product->get_name() . ' ' . $attr_summary;
 
-			$display_title = $is_combo ? $cb_title : $sa_title;
-			if ( $var_obj && $var_obj->get_name() && $var_obj->get_name() !== $product->get_name() ) {
-				$raw_var_name = $var_obj->get_name();
-				if ( false !== strpos( $raw_var_name, ' - ' ) ) {
-					$parts = explode( ' - ', $raw_var_name );
-					$display_title = trim( end( $parts ) );
-				} else {
-					$display_title = $raw_var_name;
+				// Match setup labels if available
+				$is_combo = ( false !== stripos( $var_title, 'combo' ) || false !== stripos( $attr_summary, 'combo' ) || $idx === 1 );
+
+				$display_title = $is_combo ? $cb_title : $sa_title;
+				if ( $var_obj && $var_obj->get_name() && $var_obj->get_name() !== $product->get_name() ) {
+					$raw_var_name = $var_obj->get_name();
+					if ( false !== strpos( $raw_var_name, ' - ' ) ) {
+						$parts = explode( ' - ', $raw_var_name );
+						$display_title = trim( end( $parts ) );
+					} else {
+						$display_title = $raw_var_name;
+					}
 				}
+				$display_sub = $is_combo ? __( 'Add AMS for automatic multi color and multi material printing.', 'woodmart-child' ) : __( 'The printer, ready for focused single material work.', 'woodmart-child' );
+			} else {
+				$display_title = $var_obj ? $var_obj->get_name() : $product->get_name();
+				if ( false !== strpos( $display_title, ' - ' ) ) {
+					$parts = explode( ' - ', $display_title );
+					$display_title = trim( end( $parts ) );
+				}
+				$display_sub = $var_obj ? $var_obj->get_description() : '';
+				$is_combo = false;
 			}
 
 			$variations[] = array(
 				'id'           => $var['variation_id'],
 				'title'        => $display_title,
-				'subtitle'     => $is_combo ? __( 'Add AMS for automatic multi color and multi material printing.', 'woodmart-child' ) : __( 'The printer, ready for focused single material work.', 'woodmart-child' ),
+				'subtitle'     => $display_sub,
 				'price_raw'    => $var_price,
 				'price_html'   => $formatted_p,
 				'sku'          => $var['sku'] ?: $product->get_sku(),
@@ -714,3 +779,283 @@ function woodmart_child_render_image( $image_url, $alt = '', $extra_class = '', 
 		);
 	}
 }
+
+/**
+ * Get default demo data for Filament Landing Page (Bambu Lab PLA Basic Filament).
+ *
+ * @return array
+ */
+function woodmart_child_get_default_filament_builder_data() {
+	return array(
+		'general'             => array(
+			'enable_landing'    => '0',
+			'badge_text'        => 'Authorized Bambu Lab Reseller',
+			'title'             => 'Bambu Lab PLA Basic Filament',
+			'subtitle'          => 'Reliable, easy-to-print PLA for prototypes, models and everyday parts.',
+			'rating_text'       => 'Built for everyday making',
+			'stock_text'        => 'In Stock — Tallinn',
+			'stock_note'        => 'Sample inventory',
+			'price_display'     => '€24.90',
+			'price_raw'         => '24.90',
+			'vat_note'          => 'Incl. 24% VAT · sample price',
+			'ex_vat_text'       => 'Show ex. VAT',
+			'selected_sku_note' => 'Selected variation: BLACK · COMPLETE SPOOL · SAMPLE SKU',
+			'team_quote_text'   => 'Buying for a team? Request a tailored quote →',
+			'benefits'          => array(
+				array(
+					'title'    => 'Fast Baltic delivery',
+					'subtitle' => 'Dispatched from Tallinn',
+				),
+				array(
+					'title'    => 'Local warranty',
+					'subtitle' => 'Guidance from our team',
+				),
+				array(
+					'title'    => 'Human support',
+					'subtitle' => 'Before and after purchase',
+				),
+			),
+			'colors'            => array(
+				array( 'name' => 'BLACK #000000', 'hex' => '#000000' ),
+				array( 'name' => 'WHITE #FFFFFF', 'hex' => '#ffffff' ),
+				array( 'name' => 'BEIGE #F5EBE0', 'hex' => '#f5ebe0' ),
+				array( 'name' => 'LEMON YELLOW #FEF08A', 'hex' => '#fef08a' ),
+				array( 'name' => 'YELLOW #EAB308', 'hex' => '#eab308' ),
+				array( 'name' => 'WARM YELLOW #F59E0B', 'hex' => '#f59e0b' ),
+				array( 'name' => 'ORANGE #F97316', 'hex' => '#f97316' ),
+				array( 'name' => 'BRIGHT ORANGE #EA580C', 'hex' => '#ea580c' ),
+				array( 'name' => 'TAN #D4B996', 'hex' => '#d4b996' ),
+				array( 'name' => 'BROWN #92400E', 'hex' => '#92400e' ),
+				array( 'name' => 'BURGUNDY #831843', 'hex' => '#831843' ),
+				array( 'name' => 'LIGHT PINK #FBCFE8', 'hex' => '#fbcfe8' ),
+				array( 'name' => 'MINT GREEN #86EFAC', 'hex' => '#86efac' ),
+				array( 'name' => 'BRIGHT GREEN #22C55E', 'hex' => '#22c55e' ),
+				array( 'name' => 'FOREST GREEN #15803D', 'hex' => '#15803d' ),
+				array( 'name' => 'CORAL #FB7185', 'hex' => '#fb7185' ),
+				array( 'name' => 'ROSE PINK #F43F5E', 'hex' => '#f43f5e' ),
+				array( 'name' => 'MAGENTA #EC4899', 'hex' => '#ec4899' ),
+				array( 'name' => 'CRIMSON #B91C1C', 'hex' => '#b91c1c' ),
+				array( 'name' => 'DARK RED #7F1D1D', 'hex' => '#7f1d1d' ),
+				array( 'name' => 'LAVENDER #818CF8', 'hex' => '#818cf8' ),
+				array( 'name' => 'PURPLE #6366F1', 'hex' => '#6366f1' ),
+				array( 'name' => 'DARK VIOLET #3B0764', 'hex' => '#3b0764' ),
+				array( 'name' => 'CYAN #06B6D4', 'hex' => '#06b6d4' ),
+				array( 'name' => 'SKY BLUE #0284C7', 'hex' => '#0284c7' ),
+				array( 'name' => 'ROYAL BLUE #2563EB', 'hex' => '#2563eb' ),
+				array( 'name' => 'NAVY BLUE #1E3A8A', 'hex' => '#1e3a8a' ),
+				array( 'name' => 'BRONZE #78350F', 'hex' => '#78350f' ),
+				array( 'name' => 'OLIVE #4D7C0F', 'hex' => '#4d7c0f' ),
+				array( 'name' => 'GRAY #6B7280', 'hex' => '#6b7280' ),
+				array( 'name' => 'LIGHT GRAY #D1D5DB', 'hex' => '#d1d5db' ),
+				array( 'name' => 'SLATE BLUE #475569', 'hex' => '#475569' ),
+				array( 'name' => 'CHARCOAL #374151', 'hex' => '#374151' ),
+			),
+			'formats'           => array(
+				array(
+					'id'        => 'complete-spool',
+					'name'      => 'Complete Spool',
+					'desc'      => 'Ready-to-print 1 kg spool for everyday PLA work.',
+					'price'     => '€24.90',
+					'price_raw' => '24.90',
+					'active'    => '1',
+				),
+				array(
+					'id'        => 'refill',
+					'name'      => 'Refill',
+					'desc'      => '1 kg refill for a reusable spool. Lower packaging, same material.',
+					'price'     => '€21.90',
+					'price_raw' => '21.90',
+					'active'    => '0',
+				),
+			),
+		),
+		'essential_additions' => array(
+			'enabled'           => '1',
+			'eyebrow'           => 'DISCOVER MORE HERE!',
+			'title'             => 'Essential additions specifically tested with Bambu PLA Basic',
+			'cards'             => array(
+				array(
+					'icon'      => 'spool',
+					'title'     => 'Bambu Reusable Spool',
+					'price'     => '€7.99',
+					'old_price' => '€11.99',
+					'desc'      => '',
+					'badge'     => '',
+					'options'   => array( 'Low Temp (≤70°C)', 'High Temp' ),
+				),
+				array(
+					'icon'      => 'support',
+					'title'     => 'Support for PLA/PETG',
+					'price'     => '€27.99',
+					'old_price' => '€34.99',
+					'desc'      => 'Tool-free support removal for clean overhangs',
+					'badge'     => 'With Spool',
+					'options'   => array( 'Black (05103) / 0.5 kg', 'White (05100) / 0.5 kg' ),
+				),
+				array(
+					'icon'      => 'plate',
+					'title'     => 'Bambu Cool Plate SuperTack Series',
+					'price'     => '€24.49',
+					'old_price' => '€34.99',
+					'desc'      => 'Strong adhesion at low bed temp, designed for PLA',
+					'badge'     => '',
+					'options'   => array( 'P1 Series / Cool Plate SuperTack', 'X1 Series / Cool Plate SuperTack', 'A1 Series / Cool Plate SuperTack' ),
+				),
+			),
+			'shipping_bullet_1' => 'Free shipping over €50 across Estonia, Latvia and Lithuania',
+			'shipping_bullet_2' => '1–2 day Baltic delivery from Tallinn. See our Shipping Policy',
+			'payment_methods'   => array( 'Montonio', 'Bank Payments', 'Card Payments', 'Digital Wallets' ),
+		),
+	);
+}
+
+/**
+ * Get all Filament builder settings for a product, merged with defaults.
+ *
+ * @param int $product_id Product ID.
+ * @return array
+ */
+function woodmart_child_get_filament_builder_settings( $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$defaults = woodmart_child_get_default_filament_builder_data();
+	$saved    = get_post_meta( $product_id, '_woodmart_child_filament_builder', true );
+
+	if ( ! is_array( $saved ) || empty( $saved ) ) {
+		return $defaults;
+	}
+
+	return woodmart_child_merge_builder_settings( $defaults, $saved );
+}
+
+/**
+ * Check if a specific Filament builder section is enabled.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return bool
+ */
+function woodmart_child_is_filament_section_enabled( $section_key, $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$settings = woodmart_child_get_filament_builder_settings( $product_id );
+
+	if ( ! isset( $settings[ $section_key ] ) ) {
+		return false;
+	}
+
+	$section = $settings[ $section_key ];
+
+	if ( ! isset( $section['enabled'] ) || ! in_array( (string) $section['enabled'], array( '1', 'yes', 'true' ), true ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Retrieve the swatch color hex code for a product attribute term.
+ *
+ * @param WP_Term|int|string $term Term object, term ID, or term name/slug.
+ * @param string             $taxonomy Taxonomy slug.
+ * @return string Hex color string (e.g. '#2563eb').
+ */
+function woodmart_child_get_term_color( $term, $taxonomy = 'pa_color' ) {
+	$term_obj = null;
+
+	if ( is_numeric( $term ) ) {
+		$term_obj = get_term( absint( $term ), $taxonomy );
+	} elseif ( is_string( $term ) ) {
+		$term_obj = get_term_by( 'slug', $term, $taxonomy ) ?: get_term_by( 'name', $term, $taxonomy );
+	} elseif ( $term instanceof WP_Term ) {
+		$term_obj = $term;
+	}
+
+	if ( $term_obj && ! is_wp_error( $term_obj ) ) {
+		$term_id = $term_obj->term_id;
+
+		// 1. Woodmart native term meta key is 'color'
+		$meta_keys = array( 'color', '_woodmart_color', 'swatch_color', 'pa_color_color', 'product_attribute_color', 'st_color' );
+		foreach ( $meta_keys as $mk ) {
+			$val = get_term_meta( $term_id, $mk, true );
+			if ( ! empty( $val ) && is_string( $val ) ) {
+				$val = trim( $val );
+				if ( '#' === substr( $val, 0, 1 ) && ( 4 === strlen( $val ) || 7 === strlen( $val ) || 9 === strlen( $val ) ) ) {
+					return $val;
+				}
+				if ( preg_match( '/^[a-fA-F0-9]{3,6}$/', $val ) ) {
+					return '#' . $val;
+				}
+			}
+		}
+
+		$search_name = strtolower( trim( $term_obj->name ) );
+		$search_slug = strtolower( trim( $term_obj->slug ) );
+	} else {
+		$search_name = is_string( $term ) ? strtolower( trim( $term ) ) : '';
+		$search_slug = $search_name;
+	}
+
+	// 2. Check if name or slug contains a hex color code (e.g. "Charcoal #374151")
+	if ( preg_match( '/#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b/', $search_name, $m ) ) {
+		return '#' . $m[1];
+	}
+	if ( preg_match( '/(?:^|-)([a-fA-F0-9]{6})$/', $search_slug, $m ) ) {
+		return '#' . $m[1];
+	}
+
+	// 3. Palette of standard Bambu / 3D printing & web colors
+	$palette = array(
+		'blue'        => '#0051ff',
+		'dark-blue'   => '#1e3a8a',
+		'light-blue'  => '#38bdf8',
+		'sky-blue'    => '#0ea5e9',
+		'green'       => '#008736',
+		'dark-green'  => '#14532d',
+		'bambu-green' => '#00ae42',
+		'light-green' => '#4ade80',
+		'lime'        => '#84cc16',
+		'red'         => '#e11d48',
+		'dark-red'    => '#991b1b',
+		'crimson'     => '#be123c',
+		'black'       => '#111827',
+		'white'       => '#f9fafb',
+		'charcoal'    => '#374151',
+		'gray'        => '#6b7280',
+		'grey'        => '#6b7280',
+		'light-gray'  => '#d1d5db',
+		'dark-gray'   => '#374151',
+		'silver'      => '#94a3b8',
+		'orange'      => '#ea580c',
+		'yellow'      => '#eab308',
+		'gold'        => '#d97706',
+		'purple'      => '#7e22ce',
+		'violet'      => '#8b5cf6',
+		'pink'        => '#ec4899',
+		'magenta'     => '#d946ef',
+		'cyan'        => '#06b6d4',
+		'teal'        => '#0d9488',
+		'brown'       => '#78350f',
+		'beige'       => '#f5f5dc',
+	);
+
+	if ( isset( $palette[ $search_slug ] ) ) {
+		return $palette[ $search_slug ];
+	}
+	if ( isset( $palette[ $search_name ] ) ) {
+		return $palette[ $search_name ];
+	}
+
+	foreach ( $palette as $k => $hex ) {
+		if ( false !== strpos( $search_slug, $k ) || false !== strpos( $search_name, $k ) ) {
+			return $hex;
+		}
+	}
+
+	return '#111827';
+}
+

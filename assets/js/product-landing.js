@@ -18,6 +18,7 @@
 		initStickyPurchaseBar();
 		initVariationSync();
 		initAjaxAddToCart();
+		initFilamentInteractions();
 	});
 
 	/* ==========================================================================
@@ -505,29 +506,29 @@
 	}
 
 	/* ==========================================================================
-	   7. WOOCOMMERCE AJAX ADD-TO-CART
+	   7. WOOCOMMERCE AJAX ADD-TO-CART & NOTICES
 	   ========================================================================== */
+	function showNotice(message, isError) {
+		const existingNotice = document.querySelector('.wc-landing-toast');
+		if (existingNotice) existingNotice.remove();
+
+		const toast = document.createElement('div');
+		toast.className = 'wc-landing-toast' + (isError ? ' is-error' : '');
+		toast.innerHTML = message;
+		document.body.appendChild(toast);
+
+		setTimeout(() => {
+			toast.style.transition = 'opacity 0.3s ease';
+			toast.style.opacity = '0';
+			setTimeout(() => toast.remove(), 300);
+		}, 4000);
+	}
+
 	function initAjaxAddToCart() {
 		const form = document.querySelector('.product-add-to-cart-form');
 		const stickyBtn = document.querySelector('.sticky-purchase-bar .btn');
 
 		if (!form) return;
-
-		function showNotice(message, isError) {
-			const existingNotice = document.querySelector('.wc-landing-toast');
-			if (existingNotice) existingNotice.remove();
-
-			const toast = document.createElement('div');
-			toast.className = 'wc-landing-toast' + (isError ? ' is-error' : '');
-			toast.innerHTML = message;
-			document.body.appendChild(toast);
-
-			setTimeout(() => {
-				toast.style.transition = 'opacity 0.3s ease';
-				toast.style.opacity = '0';
-				setTimeout(() => toast.remove(), 300);
-			}, 4000);
-		}
 
 		function handleAddToCart(submitBtn) {
 			const productIdInput = form.querySelector('input[name="product_id"]');
@@ -540,7 +541,7 @@
 
 			if (!productId) return;
 
-			// Check if variation is required but not selected
+			// Check if variation is required but not selected (printer setup radios)
 			const setupRadios = form.querySelectorAll('input[name="setup"]');
 			if (setupRadios.length > 0 && !variationId) {
 				showNotice('Please choose your setup before adding to basket.', true);
@@ -549,6 +550,19 @@
 					configBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
 					configBox.classList.add('is-unselected-alert');
 					setTimeout(() => configBox.classList.remove('is-unselected-alert'), 1200);
+				}
+				return;
+			}
+
+			// Check if variation is required but not selected (filament format cards)
+			const filamentCards = form.querySelectorAll('.filament-format-card');
+			if (filamentCards.length > 0 && !variationId) {
+				showNotice('Please select a variation before adding to basket.', true);
+				const formatsBlock = form.querySelector('.filament-formats-block');
+				if (formatsBlock) {
+					formatsBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					formatsBlock.classList.add('is-unselected-alert');
+					setTimeout(() => formatsBlock.classList.remove('is-unselected-alert'), 1200);
 				}
 				return;
 			}
@@ -682,4 +696,290 @@
 			});
 		}
 	}
+
+	/* ==========================================================================
+	   8. FILAMENT LANDING PAGE INTERACTIONS
+	   ========================================================================== */
+	function initFilamentInteractions() {
+		const root = document.querySelector('.filament-landing-root');
+		if (!root) return;
+
+		const activeColorSpan = root.querySelector('#active-filament-color-name');
+		const colorInput = root.querySelector('#selected-filament-color');
+		const formatInput = root.querySelector('#selected-filament-format');
+		const variationSummary = root.querySelector('#filament-variation-summary');
+		const mainPriceSpan = root.querySelector('.filament-current-price');
+		const swatches = root.querySelectorAll('.filament-swatch');
+		const formatCards = root.querySelectorAll('.filament-format-card');
+
+		let matrix = [];
+		const matrixScript = root.querySelector('#filament-variation-matrix');
+		if (matrixScript) {
+			try {
+				matrix = JSON.parse(matrixScript.textContent) || [];
+			} catch (e) {
+				matrix = [];
+			}
+		}
+
+		let selectedColorSlug = '';
+		let currentColorName = '';
+		const initialActiveSwatch = root.querySelector('.filament-swatch.is-active');
+		if (initialActiveSwatch) {
+			selectedColorSlug = initialActiveSwatch.dataset.slug || '';
+			currentColorName = initialActiveSwatch.dataset.colorName || '';
+		}
+
+		let selectedFormatSlug = '';
+		let currentFormatTitle = '';
+		const initialActiveCard = root.querySelector('.filament-format-card.is-active');
+		if (initialActiveCard) {
+			selectedFormatSlug = initialActiveCard.dataset.format || '';
+			currentFormatTitle = initialActiveCard.dataset.title || '';
+		}
+
+		function findMatchingVariation(colorSlug, formatSlug) {
+			if (!matrix.length) return null;
+			// 1. Exact match on both color and format
+			let match = matrix.find(v => {
+				const cMatch = (!colorSlug && !v.color) || (v.color && v.color === colorSlug);
+				const fMatch = (!formatSlug && !v.format) || (v.format && v.format === formatSlug);
+				return cMatch && fMatch;
+			});
+			if (match) return match;
+
+			// 2. Match format if color is empty
+			if (formatSlug) {
+				match = matrix.find(v => v.format === formatSlug);
+				if (match) return match;
+			}
+
+			// 3. Match color if format is empty
+			if (colorSlug) {
+				match = matrix.find(v => v.color === colorSlug);
+				if (match) return match;
+			}
+
+			return null;
+		}
+
+		function updateFormatCardPrices() {
+			formatCards.forEach(card => {
+				const fSlug = card.dataset.format;
+				const priceSlot = card.querySelector('[data-format-slot]');
+				if (priceSlot && fSlug) {
+					const v = findMatchingVariation(selectedColorSlug, fSlug);
+					if (v && v.price_html) {
+						priceSlot.innerHTML = v.price_html;
+					}
+				}
+			});
+		}
+
+		function applyVariation(v) {
+			const varInput = root.querySelector('#selected-variation-id') || root.querySelector('input[name="variation_id"]');
+			if (varInput && v) {
+				varInput.value = v.id;
+			}
+			if (mainPriceSpan && v && v.price_html) {
+				mainPriceSpan.innerHTML = v.price_html;
+			}
+			if (v && v.image) {
+				const mainImg = root.querySelector('.product-gallery__main img');
+				if (mainImg) {
+					mainImg.style.transition = 'opacity 0.2s ease';
+					mainImg.style.opacity = '0.3';
+					setTimeout(() => {
+						mainImg.src = v.image;
+						mainImg.style.opacity = '1';
+					}, 150);
+				}
+			}
+
+			if (variationSummary) {
+				const parts = [];
+				if (currentColorName) {
+					parts.push(currentColorName.toUpperCase());
+				}
+				if (currentFormatTitle) {
+					parts.push(currentFormatTitle.toUpperCase());
+				}
+				if (v && v.sku) {
+					parts.push(v.sku);
+				}
+				if (parts.length > 0) {
+					variationSummary.textContent = parts.join(' · ');
+				}
+			}
+		}
+
+		// Initial update of format prices
+		updateFormatCardPrices();
+
+		// Color Swatches Selection
+		swatches.forEach(swatch => {
+			swatch.addEventListener('click', function () {
+				swatches.forEach(s => s.classList.remove('is-active'));
+				this.classList.add('is-active');
+
+				selectedColorSlug = this.dataset.slug || '';
+				currentColorName = this.dataset.colorName || '';
+
+				if (activeColorSpan) {
+					activeColorSpan.textContent = this.dataset.colorDisplay || this.dataset.colorName || '';
+				}
+				if (colorInput) {
+					colorInput.value = currentColorName;
+				}
+
+				// Update prices shown on the 2 format boxes for the newly picked color
+				updateFormatCardPrices();
+
+				// If a format card is already active, sync the matching variation
+				if (selectedFormatSlug) {
+					const matchedVar = findMatchingVariation(selectedColorSlug, selectedFormatSlug);
+					if (matchedVar) {
+						applyVariation(matchedVar);
+					}
+				} else {
+					if (variationSummary && currentColorName) {
+						variationSummary.textContent = currentColorName.toUpperCase();
+					}
+				}
+			});
+		});
+
+		// Format Cards Selection (The 2 Boxes: Complete Spool vs Refill)
+		formatCards.forEach(card => {
+			card.addEventListener('click', function () {
+				formatCards.forEach(c => c.classList.remove('is-active'));
+				this.classList.add('is-active');
+
+				selectedFormatSlug = this.dataset.format || '';
+				currentFormatTitle = this.dataset.title || '';
+
+				if (formatInput) {
+					formatInput.value = currentFormatTitle;
+				}
+
+				const matchedVar = findMatchingVariation(selectedColorSlug, selectedFormatSlug);
+				if (matchedVar) {
+					applyVariation(matchedVar);
+				}
+			});
+		});
+
+		// Essential Additions Add Button (Real WooCommerce Cart & Order Sync)
+		const additionAddBtns = root.querySelectorAll('.btn-addition-add');
+		additionAddBtns.forEach(btn => {
+			btn.addEventListener('click', function (e) {
+				e.preventDefault();
+				const card = this.closest('.filament-addition-card');
+				if (!card) return;
+
+				const productId = parseInt(this.dataset.productId || card.dataset.productId, 10) || 0;
+				const qtyInput = card.querySelector('.addition-quantity input');
+				const quantity = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+				const selectElem = card.querySelector('.addition-select');
+				const selectedOption = selectElem ? selectElem.value : '';
+				const cardTitle = this.dataset.title || 'Product';
+
+				if (!productId) {
+					// Feedback when admin hasn't linked a specific product ID
+					const origText = this.textContent.trim();
+					this.textContent = 'Added ✓';
+					this.style.background = '#047857';
+					setTimeout(() => {
+						this.textContent = origText;
+						this.style.background = '';
+					}, 1500);
+					return;
+				}
+
+				// Real WooCommerce AJAX Add To Cart
+				const origText = this.textContent;
+				this.classList.add('is-loading');
+				this.disabled = true;
+
+				const config = window.woodmartLandingData || {};
+				const ajaxUrl = config.ajaxUrl || '/wp-admin/admin-ajax.php';
+				const nonce = config.nonce || '';
+
+				const formData = new FormData();
+				formData.append('action', 'woodmart_child_add_to_cart');
+				formData.append('security', nonce);
+				formData.append('product_id', productId);
+				formData.append('quantity', quantity);
+				if (selectedOption) {
+					formData.append('addition_option', selectedOption);
+				}
+
+				fetch(ajaxUrl, {
+					method: 'POST',
+					body: formData
+				})
+				.then(res => res.text())
+				.then(text => {
+					this.classList.remove('is-loading');
+					this.disabled = false;
+
+					let data = null;
+					try {
+						data = JSON.parse(text);
+					} catch (err) {
+						const match = text.match(/\{[\s\S]*\}/);
+						if (match) {
+							try { data = JSON.parse(match[0]); } catch (e) {}
+						}
+					}
+
+					const cartUrl = (config && config.cartUrl) || '#';
+
+					if (data && data.success) {
+						const resData = (data && data.data) ? data.data : data;
+						const cartCount = (typeof resData.cart_count !== 'undefined') ? resData.cart_count : data.cart_count;
+						if (typeof cartCount !== 'undefined') {
+							document.querySelectorAll('.wd-cart-number, .whb-cart-number, .woodmart-cart-number, .cart-count, .site-header__tools .cart-count').forEach(b => {
+								b.textContent = cartCount;
+							});
+						}
+
+						this.textContent = 'Added ✓';
+						this.style.background = '#047857';
+						setTimeout(() => {
+							this.textContent = origText;
+							this.style.background = '';
+						}, 2000);
+
+						// Show toast notice
+						showNotice(`✓ Added ${cardTitle} to basket! <a href="${cartUrl}">View basket →</a>`, false);
+
+						// Trigger fragments
+						if (window.jQuery) {
+							try {
+								const fragments = resData.fragments || data.fragments || {};
+								const cartHash = resData.cart_hash || data.cart_hash || '';
+								if (fragments && typeof fragments === 'object') {
+									window.jQuery.each(fragments, function(k, v) {
+										window.jQuery(k).replaceWith(v);
+									});
+								}
+								window.jQuery(document.body).trigger('wc_fragment_refresh');
+								window.jQuery(document.body).trigger('added_to_cart', [fragments, cartHash, window.jQuery(btn)]);
+							} catch (jqErr) {}
+						}
+					} else {
+						const errorMsg = (data && data.data && data.data.message) ? data.data.message : 'Could not add to basket.';
+						showNotice(errorMsg, true);
+					}
+				})
+				.catch(err => {
+					this.classList.remove('is-loading');
+					this.disabled = false;
+					showNotice('Network error. Please try again.', true);
+				});
+			});
+		});
+	}
 })();
+

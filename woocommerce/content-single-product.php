@@ -12,7 +12,36 @@ defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-if ( function_exists( 'woodmart_child_is_custom_landing' ) && woodmart_child_is_custom_landing() ) {
+if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_is_filament_landing() ) {
+	/**
+	 * Hook: woocommerce_before_single_product.
+	 */
+	do_action( 'woocommerce_before_single_product' );
+
+	if ( post_password_required() ) {
+		echo get_the_password_form(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return;
+	}
+	?>
+	<div id="product-<?php the_ID(); ?>" <?php wc_product_class( 'custom-product-landing-root filament-landing-root landing-page-root', $product ); ?>>
+		<?php
+		// 1. Filament Hero Section (Gallery with RFID badge, Swatches, Format cards, Summary)
+		get_template_part( 'template-parts/filament/hero-section' );
+
+		// 2. Essential Additions (3 Cross-sell cards & Baltic shipping / payment trust strip)
+		get_template_part( 'template-parts/filament/essential-additions' );
+
+		// 3. Sticky Bottom Purchase Bar
+		get_template_part( 'template-parts/product/sticky-bottom-bar' );
+		?>
+	</div>
+	<?php
+	/**
+	 * Hook: woocommerce_after_single_product.
+	 */
+	do_action( 'woocommerce_after_single_product' );
+	return;
+} elseif ( function_exists( 'woodmart_child_is_custom_landing' ) && woodmart_child_is_custom_landing() ) {
 	/**
 	 * Hook: woocommerce_before_single_product.
 	 *

@@ -110,12 +110,17 @@ function woodmart_child_enqueue_admin_assets( $hook ) {
 	// WordPress Media Uploader
 	wp_enqueue_media();
 
+	$admin_css = get_stylesheet_directory() . '/assets/css/admin-meta-boxes.css';
+	$admin_js  = get_stylesheet_directory() . '/assets/js/admin-meta-boxes.js';
+	$admin_css_ver = file_exists( $admin_css ) ? (string) filemtime( $admin_css ) : '1.1.0';
+	$admin_js_ver  = file_exists( $admin_js ) ? (string) filemtime( $admin_js ) : '1.1.0';
+
 	// Admin Meta Box Styles
 	wp_enqueue_style(
 		'woodmart-child-admin-meta-boxes',
 		get_stylesheet_directory_uri() . '/assets/css/admin-meta-boxes.css',
 		array(),
-		'1.0.0'
+		$admin_css_ver
 	);
 
 	// Admin Meta Box Scripts
@@ -123,7 +128,7 @@ function woodmart_child_enqueue_admin_assets( $hook ) {
 		'woodmart-child-admin-meta-boxes',
 		get_stylesheet_directory_uri() . '/assets/js/admin-meta-boxes.js',
 		array(),
-		'1.0.0',
+		$admin_js_ver,
 		true
 	);
 }
@@ -257,6 +262,11 @@ function woodmart_child_ajax_add_to_cart() {
 		WC()->session->set_customer_session_cookie( true );
 	}
 
+	$cart_item_data = array();
+	if ( ! empty( $_POST['addition_option'] ) ) {
+		$cart_item_data['addition_option'] = sanitize_text_field( wp_unslash( $_POST['addition_option'] ) );
+	}
+
 	$cart_item_key = false;
 
 	try {
@@ -279,7 +289,7 @@ function woodmart_child_ajax_add_to_cart() {
 			}
 
 			$variation_attrs = $variation_obj->get_variation_attributes();
-			$cart_item_key   = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation_attrs );
+			$cart_item_key   = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation_attrs, $cart_item_data );
 		} else {
 			// Handle Simple Product
 			if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
@@ -289,7 +299,7 @@ function woodmart_child_ajax_add_to_cart() {
 				wp_send_json_error( array( 'message' => __( 'This product is currently unavailable or out of stock.', 'woodmart-child' ) ) );
 			}
 
-			$cart_item_key = WC()->cart->add_to_cart( $product_id, $quantity );
+			$cart_item_key = WC()->cart->add_to_cart( $product_id, $quantity, 0, array(), $cart_item_data );
 		}
 	} catch ( Exception $e ) {
 		while ( ob_get_level() > 0 ) {
@@ -351,3 +361,27 @@ function woodmart_child_ajax_add_to_cart() {
 }
 add_action( 'wp_ajax_woodmart_child_add_to_cart', 'woodmart_child_ajax_add_to_cart' );
 add_action( 'wp_ajax_nopriv_woodmart_child_add_to_cart', 'woodmart_child_ajax_add_to_cart' );
+
+/**
+ * Display Custom Essential Addition Option in Cart & Mini Cart
+ */
+function woodmart_child_display_addition_option_cart( $item_data, $cart_item ) {
+	if ( ! empty( $cart_item['addition_option'] ) ) {
+		$item_data[] = array(
+			'key'   => __( 'Option', 'woodmart-child' ),
+			'value' => wc_clean( $cart_item['addition_option'] ),
+		);
+	}
+	return $item_data;
+}
+add_filter( 'woocommerce_get_item_data', 'woodmart_child_display_addition_option_cart', 10, 2 );
+
+/**
+ * Save Custom Essential Addition Option to WooCommerce Order Item Meta
+ */
+function woodmart_child_add_addition_option_to_order_items( $item, $cart_item_key, $values, $order ) {
+	if ( ! empty( $values['addition_option'] ) ) {
+		$item->add_meta_data( __( 'Option', 'woodmart-child' ), $values['addition_option'], true );
+	}
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'woodmart_child_add_addition_option_to_order_items', 10, 4 );
