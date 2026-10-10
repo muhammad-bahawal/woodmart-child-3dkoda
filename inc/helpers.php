@@ -623,7 +623,13 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 
 			$display_title = $is_combo ? $cb_title : $sa_title;
 			if ( $var_obj && $var_obj->get_name() && $var_obj->get_name() !== $product->get_name() ) {
-				$display_title = $var_obj->get_name();
+				$raw_var_name = $var_obj->get_name();
+				if ( false !== strpos( $raw_var_name, ' - ' ) ) {
+					$parts = explode( ' - ', $raw_var_name );
+					$display_title = trim( end( $parts ) );
+				} else {
+					$display_title = $raw_var_name;
+				}
 			}
 
 			$variations[] = array(

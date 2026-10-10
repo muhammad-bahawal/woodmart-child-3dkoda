@@ -2638,14 +2638,14 @@ div.product.landing-page-root .summary .price * {
 
 
 
-/* 13. STICKY PURCHASE BAR */
+/* 13. STICKY PURCHASE BAR - FIGMA SPEC */
 .sticky-purchase-bar {
 	position: fixed;
 	inset: auto 0 0 0;
-	z-index: 60;
-	background: #fff;
-	border-top: 1px solid var(--border);
-	box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+	z-index: 990;
+	background: #ffffff;
+	border-top: 1px solid #e5e7eb;
+	box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
 	transform: translateY(100%);
 	transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -2654,69 +2654,155 @@ div.product.landing-page-root .summary .price * {
 	transform: translateY(0);
 }
 
-.sticky-purchase-bar .container {
+.sticky-purchase-bar .container,
+.sticky-purchase-bar .sticky-bar__container {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	min-height: 64px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	gap: 16px;
+}
+
+.sticky-bar__left {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	min-width: 0;
+}
+
+.sticky-bar__thumb-wrap {
+	width: 42px;
+	height: 42px;
+	min-width: 42px;
+	border-radius: 6px;
+	border: 1px solid #e5e7eb;
+	background: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	padding: 2px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sticky-bar__thumb {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	display: block;
 }
 
 .sticky-bar-info {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: 3px;
+	min-width: 0;
 }
 
 .sticky-bar-title {
-	font-size: 13px;
+	font-size: 13.5px;
 	font-weight: 700;
-	color: var(--text);
+	color: #111827;
+	line-height: 1.25;
+	letter-spacing: -0.01em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .sticky-bar-price {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 6px;
 	font-size: 13px;
-	font-weight: 800;
-	color: var(--text);
+	font-weight: 700;
+	color: #111827 !important;
+	line-height: 1.2;
+}
+
+.sticky-bar-price,
+.sticky-bar-price .amount,
+.sticky-bar-price .woocommerce-Price-amount,
+.sticky-bar-price bdi,
+.sticky-bar-price span {
+	color: #111827 !important;
+	font-weight: 700 !important;
 }
 
 .sticky-bar-price small {
 	font-size: 11px;
-	font-weight: 500;
-	color: var(--text-2);
-	margin-left: 6px;
+	font-weight: 400;
+	color: #6b7280;
+	white-space: nowrap;
 }
 
-.sticky-variation-toggle {
+.sticky-bar__right {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.sticky-bar-cta {
+	background: #ff5e1a !important;
+	color: #ffffff !important;
+	font-size: 13.5px;
+	font-weight: 700;
+	height: 40px;
+	padding: 0 22px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
-	background: var(--bg-alt);
-	padding: 4px;
-	border-radius: 8px;
-	border: 1px solid var(--border);
+	justify-content: center;
+	gap: 8px;
+	box-shadow: 0 2px 6px rgba(255, 94, 26, 0.2);
+	transition: all 0.2s ease;
+	text-decoration: none;
+	letter-spacing: -0.01em;
 }
 
-.sticky-var-btn {
-	background: none;
-	border: none;
-	padding: 6px 14px;
-	border-radius: 6px;
-	font-size: 12px;
-	font-weight: 600;
-	cursor: pointer;
-	color: var(--text-2);
-	transition: all 0.15s ease;
+.sticky-bar-cta:hover {
+	background: #e64e0f !important;
+	color: #ffffff !important;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(255, 94, 26, 0.3);
 }
 
-.sticky-var-btn:hover {
-	color: var(--text);
+.sticky-bar-cta:active {
+	transform: translateY(0);
 }
 
-.sticky-var-btn.is-active {
-	background: #fff;
-	color: var(--text);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+.sticky-bar-arrow {
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1;
+	transition: transform 0.15s ease;
+}
+
+.sticky-bar-cta:hover .sticky-bar-arrow {
+	transform: translateX(3px);
+}
+
+/* Offset Woodmart Scroll to Top so it doesn't collide with sticky bar */
+.scrollToTop,
+.woodmart-scroll-to-top,
+.wd-scroll-to-top {
+	bottom: 80px !important;
+	transition: bottom 0.25s ease !important;
+}
+
+@media (max-width: 640px) {
+	.sticky-bar-price small {
+		display: none;
+	}
+	.sticky-bar-cta {
+		padding: 0 16px;
+		font-size: 13px;
+		height: 38px;
+	}
 }
 
 /* 14. WOOCOMMERCE FEEDBACK & NOTICES */

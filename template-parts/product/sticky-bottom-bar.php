@@ -13,34 +13,38 @@ $core       = woodmart_child_get_core_product_data( $product_id );
 $variations  = ! empty( $core['variations'] ) ? $core['variations'] : array();
 $default_idx = ( count( $variations ) > 1 ) ? 1 : 0;
 $default_var = isset( $variations[ $default_idx ] ) ? $variations[ $default_idx ] : ( $variations[0] ?? array() );
+$thumb_img   = ! empty( $default_var['image_url'] ) ? $default_var['image_url'] : ( ! empty( $core['main_thumb_url'] ) ? $core['main_thumb_url'] : ( $core['main_image_url'] ?? '' ) );
+$title       = ! empty( $default_var['title'] ) ? $default_var['title'] : ( $core['title'] ?? '' );
+if ( false !== strpos( $title, ' - ' ) ) {
+	$parts = explode( ' - ', $title );
+	$title = trim( end( $parts ) );
+}
+$price_html  = ! empty( $default_var['price_html'] ) ? $default_var['price_html'] : ( $core['price_html'] ?? '' );
 ?>
 
 <div class="sticky-purchase-bar">
-	<div class="container">
-		<div class="sticky-bar-info">
-			<b class="sticky-bar-title"><?php echo esc_html( $default_var['title'] ?? $core['title'] ); ?></b>
-			<span class="sticky-bar-price">
-				<?php echo wp_kses_post( ! empty( $default_var['price_html'] ) ? $default_var['price_html'] : $core['price_html'] ); ?>
-				<small><?php esc_html_e( 'incl. 24% VAT · sample price', 'woodmart-child' ); ?></small>
-			</span>
+	<div class="container sticky-bar__container">
+		<div class="sticky-bar__left">
+			<?php if ( ! empty( $thumb_img ) ) : ?>
+				<div class="sticky-bar__thumb-wrap">
+					<img class="sticky-bar__thumb" src="<?php echo esc_url( $thumb_img ); ?>" alt="<?php echo esc_attr( $title ); ?>" width="40" height="40" loading="lazy">
+				</div>
+			<?php endif; ?>
+
+			<div class="sticky-bar-info">
+				<b class="sticky-bar-title"><?php echo esc_html( $title ); ?></b>
+				<span class="sticky-bar-price">
+					<?php echo wp_kses_post( $price_html ); ?>
+					<small><?php esc_html_e( 'incl. 24% VAT · sample price', 'woodmart-child' ); ?></small>
+				</span>
+			</div>
 		</div>
 
-		<?php if ( ! empty( $core['is_variable'] ) && ! empty( $variations ) && count( $variations ) > 1 ) : ?>
-			<div class="sticky-variation-toggle" role="group" aria-label="<?php esc_attr_e( 'Choose setup', 'woodmart-child' ); ?>">
-				<?php foreach ( $variations as $idx => $var ) :
-					$is_checked = ( $idx === $default_idx );
-				?>
-					<button type="button" class="sticky-var-btn <?php echo $is_checked ? 'is-active' : ''; ?>"
-						data-variation-id="<?php echo esc_attr( $var['id'] ); ?>"
-						data-combo="<?php echo ! empty( $var['is_combo'] ) ? '1' : '0'; ?>">
-						<?php echo esc_html( $var['title'] ); ?>
-					</button>
-				<?php endforeach; ?>
-			</div>
-		<?php endif; ?>
-
-		<button type="button" class="btn sticky-bar-cta">
-			<?php esc_html_e( 'Add to basket', 'woodmart-child' ); ?>
-		</button>
+		<div class="sticky-bar__right">
+			<button type="button" class="btn sticky-bar-cta">
+				<span><?php esc_html_e( 'Add to basket', 'woodmart-child' ); ?></span>
+				<span class="sticky-bar-arrow" aria-hidden="true">→</span>
+			</button>
+		</div>
 	</div>
 </div>

@@ -269,6 +269,7 @@
 		const vatLink = document.querySelector('.vat-link');
 		const stickyBarTitle = document.querySelector('.sticky-bar-title') || document.querySelector('.sticky-purchase-bar b');
 		const stickyBarPrice = document.querySelector('.sticky-bar-price') || document.querySelector('.sticky-purchase-bar small');
+		const stickyBarThumb = document.querySelector('.sticky-bar__thumb') || document.querySelector('.sticky-bar-thumb');
 		const stickyVarBtns = document.querySelectorAll('.sticky-var-btn');
 		const boxCards = document.querySelectorAll('.product-package-contents__grid .pkg[data-select-setup]');
 		const hiddenVariationInput = document.getElementById('selected-variation-id');
@@ -330,9 +331,17 @@
 			currentPriceHtml = priceHtml || '';
 			renderCurrentPrice();
 
-			// Update Sticky Bar Title
+			// Update Sticky Bar Title & Thumbnail
 			if (stickyBarTitle && title) {
-				stickyBarTitle.textContent = title;
+				let cleanTitle = title;
+				if (cleanTitle.indexOf(' - ') !== -1) {
+					const parts = cleanTitle.split(' - ');
+					cleanTitle = parts[parts.length - 1].trim();
+				}
+				stickyBarTitle.textContent = cleanTitle;
+			}
+			if (stickyBarThumb && imageUrl) {
+				stickyBarThumb.src = imageUrl;
 			}
 
 			// Update Main Gallery Image if variation image is provided
