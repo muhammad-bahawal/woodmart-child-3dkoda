@@ -1,0 +1,386 @@
+/**
+ * Admin Meta Box Styles - Product Page Builder
+ *
+ * @package WoodmartChild
+ */
+
+.wc-builder-wrap {
+	margin: -6px -12px -12px -12px;
+	background: #fff;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: #1d2327;
+}
+
+/* Master Bar */
+.wc-builder-master-bar {
+	background: #0f172a;
+	color: #fff;
+	padding: 16px 20px;
+	border-bottom: 2px solid #ff5a1f;
+}
+
+.wc-builder-master-toggle,
+.wc-section-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+	user-select: none;
+	font-size: 14px;
+}
+
+.wc-builder-master-toggle input,
+.wc-section-toggle input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	clip: rect(0, 0, 0, 0);
+	overflow: hidden;
+}
+
+.wc-toggle-slider {
+	position: relative;
+	width: 44px;
+	height: 24px;
+	background: #475569;
+	border-radius: 24px;
+	transition: background 0.25s ease;
+	flex-shrink: 0;
+}
+
+.wc-toggle-slider::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 20px;
+	height: 20px;
+	background: #fff;
+	border-radius: 50%;
+	transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.wc-builder-master-toggle input:checked + .wc-toggle-slider,
+.wc-section-toggle input:checked + .wc-toggle-slider {
+	background: #ff5a1f;
+}
+
+.wc-builder-master-toggle input:checked + .wc-toggle-slider::after,
+.wc-section-toggle input:checked + .wc-toggle-slider::after {
+	transform: translateX(20px);
+}
+
+.wc-builder-master-toggle .wc-toggle-text {
+	color: #f8fafc;
+	font-size: 13px;
+}
+
+.wc-builder-master-toggle strong {
+	font-size: 14px;
+	color: #fff;
+}
+
+/* Body Layout */
+.wc-builder-body {
+	display: grid;
+	grid-template-columns: 220px 1fr;
+	min-height: 580px;
+	background: #f8fafc;
+}
+
+/* Tabs Nav */
+.wc-builder-tabs-nav {
+	background: #f1f5f9;
+	border-right: 1px solid #e2e8f0;
+	display: flex;
+	flex-direction: column;
+	padding: 12px 0;
+}
+
+.wc-tab-btn {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 12px 18px;
+	background: none;
+	border: none;
+	border-left: 3px solid transparent;
+	text-align: left;
+	font-size: 13px;
+	font-weight: 600;
+	color: #475569;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.wc-tab-btn .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+	color: #64748b;
+}
+
+.wc-tab-btn:hover {
+	background: #e2e8f0;
+	color: #0f172a;
+}
+
+.wc-tab-btn.active {
+	background: #fff;
+	color: #ff5a1f;
+	border-left-color: #ff5a1f;
+}
+
+.wc-tab-btn.active .dashicons {
+	color: #ff5a1f;
+}
+
+/* Panels */
+.wc-builder-tabs-content {
+	background: #fff;
+	padding: 24px 30px;
+	overflow-y: auto;
+}
+
+.wc-tab-panel {
+	display: none;
+}
+
+.wc-tab-panel.active {
+	display: block;
+	animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(4px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.wc-panel-head {
+	padding-bottom: 16px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.wc-panel-head h3 {
+	margin: 0 0 4px 0;
+	font-size: 18px;
+	color: #0f172a;
+}
+
+.wc-subhead {
+	margin: 28px 0 14px 0;
+	padding-bottom: 8px;
+	border-bottom: 1px dashed #cbd5e1;
+	font-size: 14px;
+	font-weight: 700;
+	color: #1e293b;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+/* Fields */
+.wc-field {
+	margin-bottom: 14px;
+}
+
+.wc-field label {
+	display: block;
+	font-weight: 600;
+	font-size: 12px;
+	color: #334155;
+	margin-bottom: 5px;
+}
+
+.wc-field input[type="text"],
+.wc-field textarea,
+.wc-field select {
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	padding: 8px 12px;
+	font-size: 13px;
+	box-shadow: none;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wc-field input[type="text"]:focus,
+.wc-field textarea:focus {
+	border-color: #ff5a1f;
+	box-shadow: 0 0 0 2px rgba(255, 90, 31, 0.15);
+	outline: none;
+}
+
+.wc-field-row {
+	display: grid;
+	gap: 16px;
+}
+
+.wc-field-row.grid-2 {
+	grid-template-columns: 1fr 1fr;
+}
+
+.wc-field-row.grid-3 {
+	grid-template-columns: repeat(3, 1fr);
+}
+
+/* Card Boxes */
+.wc-card-box {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 18px;
+	margin-bottom: 20px;
+}
+
+.wc-card-box h4 {
+	margin: 0 0 14px 0;
+	font-size: 14px;
+	color: #0f172a;
+}
+
+/* Repeaters */
+.wc-repeater-container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.wc-repeater-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 12px;
+	position: relative;
+	transition: border-color 0.15s ease;
+}
+
+.wc-repeater-row:hover {
+	border-color: #cbd5e1;
+}
+
+.wc-repeater-row.is-dragging {
+	opacity: 0.45;
+	border: 1px dashed #ff5a1f;
+	background: #fff;
+}
+
+.wc-row-drag {
+	cursor: grab;
+	color: #94a3b8;
+	font-size: 16px;
+	line-height: 1;
+	padding-top: 10px;
+	user-select: none;
+}
+
+.wc-repeater-fields {
+	flex: 1;
+}
+
+.wc-repeater-fields.grid-2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+.wc-repeater-fields.grid-3 {
+	display: grid;
+	grid-template-columns: 100px 1.2fr 2fr;
+	gap: 12px;
+}
+
+.wc-btn-remove-row {
+	background: #fee2e2 !important;
+	border-color: #fca5a5 !important;
+	color: #b91c1c !important;
+	border-radius: 6px !important;
+	padding: 0 10px !important;
+	height: 32px !important;
+	font-size: 18px !important;
+	line-height: 28px !important;
+	font-weight: 700;
+	cursor: pointer;
+	margin-top: 4px;
+}
+
+.wc-btn-remove-row:hover {
+	background: #fecaca !important;
+	color: #991b1b !important;
+}
+
+.wc-btn-add-row {
+	display: inline-flex !important;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 14px !important;
+	font-weight: 600 !important;
+	border-radius: 6px !important;
+	border-color: #cbd5e1 !important;
+	color: #0f172a !important;
+}
+
+.wc-btn-add-row:hover {
+	border-color: #ff5a1f !important;
+	color: #ff5a1f !important;
+}
+
+/* Image Picker */
+.wc-image-picker {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.wc-image-preview {
+	width: 60px;
+	height: 60px;
+	border: 1px dashed #cbd5e1;
+	border-radius: 6px;
+	background: #fff;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.wc-image-preview img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.wc-image-preview:empty::after {
+	content: "No img";
+	font-size: 10px;
+	color: #94a3b8;
+}
+
+.wc-btn-remove-image.hidden {
+	display: none;
+}
+
+/* Color field */
+.wc-color-field-wrap {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wc-color-picker-input {
+	width: 36px;
+	height: 36px;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	padding: 2px;
+	cursor: pointer;
+	background: #fff;
+}
