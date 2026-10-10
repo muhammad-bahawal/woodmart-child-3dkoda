@@ -579,33 +579,57 @@
 
 				if (data && data.success) {
 					// Update cart count badges across Woodmart header builder
-					if (typeof data.cart_count !== 'undefined') {
+					const resData = (data && data.data) ? data.data : (data || {});
+					const cartCount = (typeof resData.cart_count !== 'undefined') ? resData.cart_count : data.cart_count;
+					if (typeof cartCount !== 'undefined') {
 						const cartCountBadges = document.querySelectorAll('.wd-cart-number, .whb-cart-number, .woodmart-cart-number, .cart-count, .site-header__tools .cart-count');
 						cartCountBadges.forEach(badge => {
-							badge.textContent = data.cart_count;
+							badge.textContent = cartCount;
 						});
 					}
 
-					// Trigger native WooCommerce fragments update if jQuery is available
-					if (window.jQuery) {
-						window.jQuery(document.body).trigger('wc_fragment_refresh');
-						window.jQuery(document.body).trigger('added_to_cart', [data.fragments || {}, data.cart_hash || '', submitBtn]);
-					}
-
+					// Show success toast
 					showNotice(`✓ Added to sample basket! <a href="${cartUrl}">View basket →</a>`, false);
+
+					// Trigger native WooCommerce fragments update safely
+					if (window.jQuery) {
+						try {
+							const $btn = submitBtn ? window.jQuery(submitBtn) : (stickyBtn ? window.jQuery(stickyBtn) : window.jQuery(document.body));
+							const fragments = resData.fragments || data.fragments || {};
+							const cartHash = resData.cart_hash || data.cart_hash || '';
+
+							if (fragments && typeof fragments === 'object') {
+								window.jQuery.each(fragments, function(key, val) {
+									window.jQuery(key).replaceWith(val);
+								});
+							}
+
+							window.jQuery(document.body).trigger('wc_fragment_refresh');
+							window.jQuery(document.body).trigger('added_to_cart', [fragments, cartHash, $btn]);
+						} catch (jqErr) {
+							console.warn('Woodmart fragment trigger notice:', jqErr);
+						}
+					}
 				} else if (data && data.success === false) {
 					const errorMsg = (data.data && data.data.message) ? data.data.message : ((data && data.message) ? data.message : 'Could not add item to basket. Please try again.');
 					showNotice(errorMsg, true);
 				} else {
 					// Fallback: If HTTP request succeeded, notify success and trigger fragments
-					if (window.jQuery) {
-						window.jQuery(document.body).trigger('wc_fragment_refresh');
-						window.jQuery(document.body).trigger('added_to_cart', [{}, '', submitBtn]);
-					}
 					showNotice(`✓ Added to sample basket! <a href="${cartUrl}">View basket →</a>`, false);
+
+					if (window.jQuery) {
+						try {
+							const $btn = submitBtn ? window.jQuery(submitBtn) : (stickyBtn ? window.jQuery(stickyBtn) : window.jQuery(document.body));
+							window.jQuery(document.body).trigger('wc_fragment_refresh');
+							window.jQuery(document.body).trigger('added_to_cart', [{}, '', $btn]);
+						} catch (jqErr) {
+							console.warn('Woodmart fragment trigger notice:', jqErr);
+						}
+					}
 				}
 			})
 			.catch(err => {
+				console.error('AJAX add-to-cart error:', err);
 				if (submitBtn) {
 					submitBtn.classList.remove('is-loading');
 					submitBtn.disabled = false;
