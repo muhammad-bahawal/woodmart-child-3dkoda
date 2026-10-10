@@ -50,12 +50,18 @@ function woodmart_child_enqueue_landing_assets() {
 		null
 	);
 
+	// Dynamic versioning to bust browser cache on updates
+	$css_file = get_stylesheet_directory() . '/assets/css/product-landing.css';
+	$js_file  = get_stylesheet_directory() . '/assets/js/product-landing.js';
+	$css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : '1.0.5';
+	$js_ver   = file_exists( $js_file ) ? (string) filemtime( $js_file ) : '1.0.5';
+
 	// Scoped Product Landing CSS
 	wp_enqueue_style(
 		'woodmart-child-landing-css',
 		get_stylesheet_directory_uri() . '/assets/css/product-landing.css',
 		array( 'woodmart-child-style' ),
-		'1.0.0'
+		$css_ver
 	);
 
 	// Scoped Product Landing JS
@@ -63,7 +69,7 @@ function woodmart_child_enqueue_landing_assets() {
 		'woodmart-child-landing-js',
 		get_stylesheet_directory_uri() . '/assets/js/product-landing.js',
 		array(),
-		'1.0.0',
+		$js_ver,
 		true
 	);
 
@@ -215,9 +221,15 @@ add_filter( 'body_class', 'woodmart_child_landing_body_classes' );
  * 7. Native WooCommerce AJAX Add-to-Cart Endpoint (Simple & Variable)
  */
 function woodmart_child_ajax_add_to_cart() {
+	// Start output buffering to prevent accidental PHP notices from corrupting the JSON response
+	ob_start();
+
 	check_ajax_referer( 'woodmart_child_cart_nonce', 'security' );
 
 	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
 		wp_send_json_error( array( 'message' => __( 'WooCommerce cart session is not active.', 'woodmart-child' ) ) );
 	}
 
@@ -226,11 +238,17 @@ function woodmart_child_ajax_add_to_cart() {
 	$variation_id = isset( $_POST['variation_id'] ) ? absint( $_POST['variation_id'] ) : 0;
 
 	if ( ! $product_id ) {
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
 		wp_send_json_error( array( 'message' => __( 'Invalid product ID.', 'woodmart-child' ) ) );
 	}
 
 	$product = wc_get_product( $product_id );
 	if ( ! $product ) {
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
 		wp_send_json_error( array( 'message' => __( 'Product not found.', 'woodmart-child' ) ) );
 	}
 
@@ -254,6 +272,9 @@ function woodmart_child_ajax_add_to_cart() {
 
 			$variation_obj = wc_get_product( $variation_id );
 			if ( ! $variation_obj || ! $variation_obj->is_purchasable() || ! $variation_obj->is_in_stock() ) {
+				while ( ob_get_level() > 0 ) {
+					ob_end_clean();
+				}
 				wp_send_json_error( array( 'message' => __( 'This variation is currently unavailable or out of stock.', 'woodmart-child' ) ) );
 			}
 
@@ -262,38 +283,68 @@ function woodmart_child_ajax_add_to_cart() {
 		} else {
 			// Handle Simple Product
 			if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+				while ( ob_get_level() > 0 ) {
+					ob_end_clean();
+				}
 				wp_send_json_error( array( 'message' => __( 'This product is currently unavailable or out of stock.', 'woodmart-child' ) ) );
 			}
 
 			$cart_item_key = WC()->cart->add_to_cart( $product_id, $quantity );
 		}
 	} catch ( Exception $e ) {
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
 		wp_send_json_error( array( 'message' => $e->getMessage() ) );
 	}
 
 	if ( $cart_item_key ) {
-		// Calculate refreshed fragments
-		ob_start();
-		woocommerce_mini_cart();
-		$mini_cart = ob_get_clean();
+		// Calculate refreshed fragments safely
+		$mini_cart = '';
+		try {
+			if ( function_exists( 'woocommerce_mini_cart' ) ) {
+				ob_start();
+				woocommerce_mini_cart();
+				$mini_cart = ob_get_clean();
+			}
+		} catch ( Throwable $t ) {
+			$mini_cart = '';
+		}
+
+		$fragments = array();
+		if ( ! empty( $mini_cart ) ) {
+			$fragments['div.widget_shopping_cart_content'] = '<div class="widget_shopping_cart_content">' . $mini_cart . '</div>';
+		}
+
+		try {
+			if ( function_exists( 'apply_filters' ) ) {
+				$fragments = apply_filters( 'woocommerce_add_to_cart_fragments', $fragments );
+			}
+		} catch ( Throwable $t ) {
+			// fallback without extra fragments
+		}
 
 		$data = array(
-			'cart_hash'  => WC()->cart->get_cart_hash(),
-			'cart_count' => WC()->cart->get_cart_contents_count(),
-			'fragments'  => apply_filters(
-				'woocommerce_add_to_cart_fragments',
-				array(
-					'div.widget_shopping_cart_content' => '<div class="widget_shopping_cart_content">' . $mini_cart . '</div>',
-				)
-			),
+			'cart_hash'  => WC()->cart ? WC()->cart->get_cart_hash() : '',
+			'cart_count' => WC()->cart ? WC()->cart->get_cart_contents_count() : 1,
+			'fragments'  => $fragments,
 			'message'    => __( 'Product successfully added to basket.', 'woodmart-child' ),
 		);
+
+		// Discard any buffered notices/warnings prior to sending pure JSON
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
 
 		wp_send_json_success( $data );
 	} else {
 		$notices   = wc_get_notices( 'error' );
 		$error_msg = ! empty( $notices[0]['notice'] ) ? wp_strip_all_tags( $notices[0]['notice'] ) : __( 'Failed to add item to basket.', 'woodmart-child' );
 		wc_clear_notices();
+
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
 
 		wp_send_json_error( array( 'message' => $error_msg ) );
 	}

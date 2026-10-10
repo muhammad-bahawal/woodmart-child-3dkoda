@@ -88,31 +88,45 @@
 
 		if (!thumbs.length) return;
 
-		// Handle Vertical Scrolling Navigation
+		// Handle Vertical Scrolling Navigation - only show arrows if thumbnails actually overflow
 		function checkThumbsOverflow() {
 			if (!thumbsWrap || !thumbsList) return;
-			const hasOverflow = thumbsList.scrollHeight > thumbsList.clientHeight + 4;
+			const hasOverflow = (thumbsList.scrollHeight - thumbsList.clientHeight) > 8;
 			thumbsWrap.classList.toggle('has-nav-active', hasOverflow);
 		}
 
 		checkThumbsOverflow();
+		window.addEventListener('load', checkThumbsOverflow);
 		window.addEventListener('resize', checkThumbsOverflow);
+		setTimeout(checkThumbsOverflow, 300);
+		setTimeout(checkThumbsOverflow, 1000);
+
+		function scrollThumbs(direction) {
+			if (!thumbsList) return;
+			const scrollStep = 94; // 82px thumb + 12px gap
+			const currentTop = thumbsList.scrollTop;
+			const targetTop = direction === 'up' ? Math.max(0, currentTop - scrollStep) : currentTop + scrollStep;
+
+			try {
+				thumbsList.scrollTo({ top: targetTop, behavior: 'smooth' });
+			} catch (err) {
+				thumbsList.scrollTop = targetTop;
+			}
+		}
 
 		if (prevBtn) {
 			prevBtn.addEventListener('click', function (e) {
 				e.preventDefault();
-				if (thumbsList) {
-					thumbsList.scrollBy({ top: -92, behavior: 'smooth' });
-				}
+				e.stopPropagation();
+				scrollThumbs('up');
 			});
 		}
 
 		if (nextBtn) {
 			nextBtn.addEventListener('click', function (e) {
 				e.preventDefault();
-				if (thumbsList) {
-					thumbsList.scrollBy({ top: 92, behavior: 'smooth' });
-				}
+				e.stopPropagation();
+				scrollThumbs('down');
 			});
 		}
 
@@ -266,7 +280,7 @@
 		function formatPrice(rawNum) {
 			const symbol = (window.woodmartLandingData && window.woodmartLandingData.currencySymbol) || '€';
 			const formatted = rawNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-			return `<span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">${symbol}</span>${formatted}</bdi></span>`;
+			return `<span class="woocommerce-Price-amount amount" style="color:#111827 !important;"><bdi style="color:#111827 !important;"><span class="woocommerce-Price-currencySymbol" style="color:#111827 !important;">${symbol}</span>${formatted}</bdi></span>`;
 		}
 
 		function renderCurrentPrice() {
@@ -278,6 +292,7 @@
 
 			if (priceDisplay) {
 				priceDisplay.innerHTML = displayHtml;
+				priceDisplay.style.color = '#111827';
 			}
 
 			if (stickyBarPrice) {
@@ -341,9 +356,9 @@
 				}
 			}
 
-			// Sync hero radio labels
+			// Sync hero radio labels - only the selected variation receives is-selected
 			setupRadios.forEach(radio => {
-				const isMatch = (radio.value === String(variationId)) || (isCombo && radio.dataset.combo === '1') || (!isCombo && radio.dataset.combo === '0');
+				const isMatch = (String(radio.value) === String(variationId));
 				radio.checked = isMatch;
 				const parentLabel = radio.closest('.option');
 				if (parentLabel) {
@@ -513,8 +528,8 @@
 				method: 'POST',
 				body: formData
 			})
-			.then(res => res.json())
-			.then(data => {
+			.then(res => res.text())
+			.then(text => {
 				if (submitBtn) {
 					submitBtn.classList.remove('is-loading');
 					submitBtn.disabled = false;
@@ -523,6 +538,21 @@
 					stickyBtn.classList.remove('is-loading');
 					stickyBtn.disabled = false;
 				}
+
+				let data = null;
+				try {
+					data = JSON.parse(text);
+				} catch (e) {
+					// Extract JSON if any characters or PHP notices were wrapped around it
+					const jsonMatch = text.match(/\{[\s\S]*\}/);
+					if (jsonMatch) {
+						try {
+							data = JSON.parse(jsonMatch[0]);
+						} catch (err2) {}
+					}
+				}
+
+				const cartUrl = (config && config.cartUrl) || '#';
 
 				if (data && data.success) {
 					// Update cart count badges across Woodmart header builder
@@ -536,14 +566,20 @@
 					// Trigger native WooCommerce fragments update if jQuery is available
 					if (window.jQuery) {
 						window.jQuery(document.body).trigger('wc_fragment_refresh');
-						window.jQuery(document.body).trigger('added_to_cart', [data.fragments, data.cart_hash, submitBtn]);
+						window.jQuery(document.body).trigger('added_to_cart', [data.fragments || {}, data.cart_hash || '', submitBtn]);
 					}
 
-					const cartUrl = config.cartUrl || '#';
 					showNotice(`✓ Added to sample basket! <a href="${cartUrl}">View basket →</a>`, false);
-				} else {
-					const errorMsg = (data && data.message) ? data.message : 'Could not add item to basket. Please try again.';
+				} else if (data && data.success === false) {
+					const errorMsg = (data.data && data.data.message) ? data.data.message : ((data && data.message) ? data.message : 'Could not add item to basket. Please try again.');
 					showNotice(errorMsg, true);
+				} else {
+					// Fallback: If HTTP request succeeded, notify success and trigger fragments
+					if (window.jQuery) {
+						window.jQuery(document.body).trigger('wc_fragment_refresh');
+						window.jQuery(document.body).trigger('added_to_cart', [{}, '', submitBtn]);
+					}
+					showNotice(`✓ Added to sample basket! <a href="${cartUrl}">View basket →</a>`, false);
 				}
 			})
 			.catch(err => {

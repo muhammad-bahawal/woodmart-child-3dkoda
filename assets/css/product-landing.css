@@ -154,11 +154,12 @@
 	width: 100% !important;
 	margin: 0 !important;
 	padding: 0 !important;
+	overflow: visible !important;
 }
 
 /* Allow full-width sections to span edge-to-edge if main-page-wrapper has a direct container */
-.custom-landing-canvas .main-page-wrapper > .container,
-.custom-product-landing-body .main-page-wrapper > .container {
+.custom-landing-canvas .main-page-wrapper>.container,
+.custom-product-landing-body .main-page-wrapper>.container {
 	width: 100% !important;
 	max-width: 100% !important;
 	margin: 0 !important;
@@ -181,6 +182,7 @@
 body.admin-bar.custom-landing-canvas .product-section-navigation {
 	top: 96px;
 }
+
 @media screen and (max-width: 782px) {
 	body.admin-bar.custom-landing-canvas .product-section-navigation {
 		top: 110px;
@@ -190,7 +192,7 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 /* Scoped inner centered containers strictly for landing page content */
 .landing-page-root .container,
 #custom-product-landing-root .container,
-.landing-page-root > .container,
+.landing-page-root>.container,
 .landing-page-root .product-hero.container {
 	width: min(100% - 40px, var(--w)) !important;
 	max-width: var(--w) !important;
@@ -361,7 +363,7 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	font-weight: 600 !important;
 }
 
-/* 2-Column Hero Grid */
+/* 2-Column Hero Grid - Aligned to top matching Figma */
 .landing-page-root .product-hero,
 .product-hero {
 	display: grid !important;
@@ -369,23 +371,35 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	gap: clamp(28px, 4vw, 48px) !important;
 	padding-bottom: 40px !important;
 	padding-top: 14px !important;
-	align-items: start !important;
+	align-items: flex-start !important;
 	width: min(100% - 40px, var(--w)) !important;
 	max-width: var(--w) !important;
 	margin-inline: auto !important;
 	box-sizing: border-box !important;
 }
 
-/* Left Column: Product Gallery */
-.landing-page-root .product-hero > .product-gallery,
+/* Left Column: Product Gallery - Sticky alongside right section */
+.landing-page-root .product-hero>.product-gallery,
 .landing-page-root .product-gallery {
+	position: -webkit-sticky !important;
+	position: sticky !important;
+	top: 80px !important;
+	align-self: flex-start !important;
 	display: flex !important;
+	flex-direction: row !important;
 	gap: 16px !important;
 	align-items: flex-start !important;
+	height: auto !important;
 	min-width: 0 !important;
 	width: 100% !important;
 	max-width: 100% !important;
 	box-sizing: border-box !important;
+	z-index: 10 !important;
+}
+
+body.admin-bar .landing-page-root .product-hero>.product-gallery,
+body.admin-bar .landing-page-root .product-gallery {
+	top: 112px !important;
 }
 
 /* Thumbnails Wrap with Vertical Navigation */
@@ -393,31 +407,74 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	display: flex !important;
 	flex-direction: column !important;
 	align-items: center !important;
+	justify-content: center !important;
 	position: relative !important;
 	flex-shrink: 0 !important;
 	width: 86px !important;
+	height: 480px !important;
+	max-height: 490px !important;
 	box-sizing: border-box !important;
 }
 
-.landing-page-root .gallery-nav-btn {
-	width: 32px !important;
-	height: 24px !important;
-	border-radius: 6px !important;
-	background: #f8f9fa !important;
-	border: 1px solid #e5e7eb !important;
-	color: #6b7280 !important;
+/* Gallery Slider Navigation Arrows - Proper Circle Shape */
+.landing-page-root .gallery-nav-btn,
+button.gallery-nav-btn {
+	width: 30px !important;
+	height: 30px !important;
+	min-width: 30px !important;
+	max-width: 30px !important;
+	min-height: 30px !important;
+	max-height: 30px !important;
+	aspect-ratio: 1 / 1 !important;
+	border-radius: 50% !important;
+	-webkit-border-radius: 50% !important;
+	background: #ffffff !important;
+	border: 1px solid #d1d5db !important;
+	color: #374151 !important;
 	cursor: pointer !important;
 	display: none !important;
 	align-items: center !important;
 	justify-content: center !important;
-	margin: 2px 0 !important;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
 	transition: all 0.15s ease !important;
+	position: absolute !important;
+	left: 50% !important;
+	transform: translateX(-50%) !important;
+	z-index: 10 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	line-height: 1 !important;
+	outline: none !important;
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+	flex-shrink: 0 !important;
 }
 
-.landing-page-root .gallery-nav-btn:hover {
-	background: #edf0f4 !important;
+.landing-page-root .gallery-nav-btn:hover,
+button.gallery-nav-btn:hover {
+	background: #ffffff !important;
 	color: #111827 !important;
-	border-color: #cbd5e1 !important;
+	border-color: #9ca3af !important;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+	transform: translateX(-50%) scale(1.06) !important;
+}
+
+.landing-page-root .gallery-nav-btn svg,
+button.gallery-nav-btn svg {
+	width: 14px !important;
+	height: 14px !important;
+	stroke: currentColor !important;
+	display: block !important;
+	margin: auto !important;
+	flex-shrink: 0 !important;
+}
+
+.landing-page-root .gallery-nav-prev {
+	top: 4px !important;
+}
+
+.landing-page-root .gallery-nav-next {
+	bottom: 4px !important;
 }
 
 .landing-page-root .product-gallery__thumbs-wrap.has-nav-active .gallery-nav-btn {
@@ -431,19 +488,23 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	min-width: 0 !important;
 	width: 86px !important;
 	max-width: 86px !important;
-	max-height: 520px !important;
-	overflow-y: auto !important;
+	height: 100% !important;
+	max-height: 100% !important;
+	overflow-y: scroll !important;
 	scrollbar-width: none !important;
+	-ms-overflow-style: none !important;
 	scroll-behavior: smooth !important;
-	flex-shrink: 0 !important;
+	flex-shrink: 1 !important;
 	margin: 0 !important;
-	padding: 2px 0 !important;
+	padding: 16px 0 !important;
 	list-style: none !important;
 	box-sizing: border-box !important;
 }
 
 .landing-page-root .product-gallery__thumbs::-webkit-scrollbar {
 	display: none !important;
+	width: 0 !important;
+	height: 0 !important;
 }
 
 .landing-page-root .product-gallery__thumbs li {
@@ -487,22 +548,23 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	font-weight: 700;
 }
 
-/* Main Gallery Image Card matching Figma */
+/* Main Gallery Image Card matching Figma (Compact 480px Height) */
 .landing-page-root .product-gallery__main {
-	flex: 1 !important;
+	flex: 1 1 auto !important;
 	min-width: 0 !important;
 	width: 100% !important;
+	height: 480px !important;
+	max-height: 490px !important;
+	min-height: 440px !important;
 	background: #f8f9fa !important;
 	border: 1px solid #ebecee !important;
 	border-radius: 16px !important;
 	position: relative !important;
-	padding: 36px 24px !important;
+	padding: 28px 20px !important;
 	display: flex !important;
 	align-items: center !important;
 	justify-content: center !important;
 	box-sizing: border-box !important;
-	min-height: 520px !important;
-	max-height: 560px !important;
 	overflow: hidden !important;
 }
 
@@ -553,8 +615,8 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 
 .landing-page-root .product-gallery__main img,
 .landing-page-root #product-main-image {
-	max-width: 95% !important;
-	max-height: 480px !important;
+	max-width: 88% !important;
+	max-height: 400px !important;
 	width: auto !important;
 	height: auto !important;
 	object-fit: contain !important;
@@ -575,7 +637,7 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 }
 
 /* Right Column: Product Summary */
-.landing-page-root .product-hero > .product-summary,
+.landing-page-root .product-hero>.product-summary,
 .landing-page-root .product-summary {
 	min-width: 0 !important;
 	width: 100% !important;
@@ -646,50 +708,61 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	font-weight: 500 !important;
 }
 
-/* 3. Full-width In Stock Row matching Figma */
+/* 3. Full-width In Stock Row matching Figma - Single Row Flat Layout */
 .landing-page-root .product-stock-row {
 	width: 100% !important;
 	display: flex !important;
+	flex-direction: row !important;
 	align-items: center !important;
-	gap: 10px !important;
+	justify-content: flex-start !important;
+	gap: 8px !important;
 	background: #fafbfc !important;
 	border: 1px solid #e5e7eb !important;
 	border-radius: 10px !important;
 	padding: 10px 14px !important;
 	margin-bottom: 18px !important;
 	box-sizing: border-box !important;
+	white-space: nowrap !important;
+	flex-wrap: nowrap !important;
 }
 
 .landing-page-root .product-stock-row .stock-icon {
-	display: flex !important;
+	display: inline-flex !important;
 	align-items: center !important;
+	justify-content: center !important;
 	color: #f97316 !important;
 	flex-shrink: 0 !important;
-}
-
-.landing-page-root .product-stock-row .stock-content {
-	display: flex !important;
-	align-items: center !important;
-	gap: 6px !important;
-	font-size: 13px !important;
-	flex-wrap: wrap !important;
+	width: 16px !important;
+	height: 16px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	line-height: 1 !important;
 }
 
 .landing-page-root .product-stock-row .stock-text {
 	font-weight: 600 !important;
 	color: #111827 !important;
+	font-size: 13px !important;
+	line-height: 1 !important;
+	margin: 0 !important;
 }
 
 .landing-page-root .product-stock-row .stock-sep {
 	color: #9ca3af !important;
+	font-size: 13px !important;
+	line-height: 1 !important;
+	margin: 0 !important;
 }
 
 .landing-page-root .product-stock-row .stock-note {
 	color: #6b7280 !important;
 	font-weight: 400 !important;
+	font-size: 13px !important;
+	line-height: 1 !important;
+	margin: 0 !important;
 }
 
-/* 4. Price Row with Black Color */
+/* 4. Price Row with Strict Pure Black Color */
 .landing-page-root .product-price-row {
 	display: flex !important;
 	align-items: baseline !important;
@@ -702,25 +775,43 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 .landing-page-root .product-price-main {
 	display: flex !important;
 	align-items: baseline !important;
-	gap: 10px !important;
-	flex-wrap: wrap !important;
+	gap: 8px !important;
+	flex-wrap: nowrap !important;
 }
 
+/* Compact Black Price (28px) matching Figma */
 .landing-page-root .product-price,
+.landing-page-root .product-price *,
 .landing-page-root .product-price .amount,
 .landing-page-root .product-price bdi,
-.landing-page-root .product-price span {
-	font-size: clamp(28px, 3.2vw, 36px) !important;
+.landing-page-root .product-price .woocommerce-Price-currencySymbol,
+.landing-page-root .product-price .woocommerce-Price-amount,
+.landing-page-root .product-price-row .product-price,
+.landing-page-root .product-price-row .product-price *,
+.landing-page-root .product-price-row .price,
+.landing-page-root .product-price-row .price *,
+div.product.landing-page-root .summary .price,
+div.product.landing-page-root .summary .price * {
+	font-size: 22px !important;
 	font-weight: 800 !important;
-	letter-spacing: -0.03em !important;
+	letter-spacing: -0.02em !important;
 	color: #111827 !important;
 	line-height: 1 !important;
 }
 
-.landing-page-root .product-price-note {
+/* Small Gray VAT Note strictly on the same line matching Figma */
+.landing-page-root .product-price-note,
+.landing-page-root .product-price-row .product-price-note,
+.landing-page-root .product-price-main .product-price-note {
 	font-size: 12px !important;
-	font-weight: 500 !important;
+	font-weight: 400 !important;
 	color: #6b7280 !important;
+	line-height: 1 !important;
+	white-space: nowrap !important;
+	margin: 0 !important;
+	padding: 0 0 0 4px !important;
+	display: inline-block !important;
+	letter-spacing: normal !important;
 }
 
 .landing-page-root .product-vat-toggle .vat-link {
@@ -749,9 +840,21 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 }
 
 @keyframes wcConfigShake {
-	0%, 100% { transform: translateX(0); }
-	20%, 60% { transform: translateX(-5px); }
-	40%, 80% { transform: translateX(5px); }
+
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+
+	20%,
+	60% {
+		transform: translateX(-5px);
+	}
+
+	40%,
+	80% {
+		transform: translateX(5px);
+	}
 }
 
 .landing-page-root .product-configuration__head {
@@ -825,25 +928,33 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 .landing-page-root .option-header {
 	display: flex !important;
 	align-items: center !important;
+	justify-content: space-between !important;
 	gap: 6px !important;
 	margin-bottom: 4px !important;
-}
-
-.landing-page-root .option-check-icon {
-	display: none !important;
-	color: #ff5e1a !important;
-	flex-shrink: 0 !important;
-}
-
-.landing-page-root .option.is-selected .option-check-icon,
-.landing-page-root .option:has(input:checked) .option-check-icon {
-	display: inline-flex !important;
 }
 
 .landing-page-root .option-title {
 	font-size: 13px !important;
 	font-weight: 700 !important;
 	color: #111827 !important;
+}
+
+.landing-page-root .option-check-icon {
+	display: none !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 18px !important;
+	height: 18px !important;
+	border-radius: 50% !important;
+	background: #ff5e1a !important;
+	color: #ffffff !important;
+	flex-shrink: 0 !important;
+	margin-left: auto !important;
+}
+
+.landing-page-root .option.is-selected .option-check-icon,
+.landing-page-root .option:has(input:checked) .option-check-icon {
+	display: inline-flex !important;
 }
 
 .landing-page-root .option-desc {
@@ -854,11 +965,18 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	flex-grow: 1 !important;
 }
 
-/* Price in option box: strictly BLACK */
+/* Price in option box: strictly PURE BLACK */
 .landing-page-root .option-price,
+.landing-page-root .option-price *,
 .landing-page-root .option-price .amount,
 .landing-page-root .option-price bdi,
-.landing-page-root .option-price span {
+.landing-page-root .option-price span,
+.landing-page-root .option-price .woocommerce-Price-amount,
+.landing-page-root .option-price .woocommerce-Price-currencySymbol,
+.landing-page-root .option .price,
+.landing-page-root .option .price *,
+.landing-page-root .product-configuration .option-price,
+.landing-page-root .product-configuration .option-price * {
 	font-size: 14px !important;
 	font-weight: 700 !important;
 	color: #111827 !important;
@@ -1003,46 +1121,111 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	transform: translateX(2px) !important;
 }
 
-/* 7. Service Benefits Strip (Inside Product Summary) */
-.landing-page-root .product-summary .product-benefits {
+/* 7. Service Highlights - 3 in one row, completely clean without borders or backgrounds */
+.landing-page-root .hero-service-features,
+.hero-service-features {
+	width: 100% !important;
 	display: grid !important;
-	grid-template-columns: repeat(3, 1fr) !important;
-	gap: 14px !important;
+	grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	gap: 16px !important;
 	margin-top: 24px !important;
-	padding-top: 20px !important;
-	border-top: 1px solid #e5e7eb !important;
-	background: transparent !important;
-	border-bottom: none !important;
+	padding: 0 !important;
+	background: none !important;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	box-sizing: border-box !important;
 }
 
-.landing-page-root .product-summary .product-benefit-item {
+.landing-page-root .hero-service-feature-item,
+.hero-service-feature-item {
 	display: flex !important;
 	align-items: flex-start !important;
-	gap: 10px !important;
+	gap: 8px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	background: none !important;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	min-width: 0 !important;
 }
 
-.landing-page-root .product-summary .product-benefit-icon {
+.landing-page-root .hero-service-feature-icon,
+.hero-service-feature-icon {
 	color: #ff5e1a !important;
 	flex-shrink: 0 !important;
 	display: flex !important;
 	align-items: center !important;
-	margin-top: 2px !important;
+	justify-content: center !important;
+	width: auto !important;
+	height: auto !important;
+	min-width: 0 !important;
+	min-height: 0 !important;
+	padding: 0 !important;
+	margin: 2px 0 0 0 !important;
+	background: none !important;
+	background-color: transparent !important;
+	border: none !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
 }
 
-.landing-page-root .product-summary .product-benefit-text b {
+.landing-page-root .hero-service-feature-icon svg,
+.hero-service-feature-icon svg {
+	width: 20px !important;
+	height: 20px !important;
 	display: block !important;
+}
+
+.landing-page-root .hero-service-feature-text,
+.hero-service-feature-text {
+	display: flex !important;
+	flex-direction: column !important;
+	min-width: 0 !important;
+	line-height: 1.25 !important;
+}
+
+.landing-page-root .hero-service-feature-title,
+.hero-service-feature-title {
 	font-size: 12px !important;
 	font-weight: 700 !important;
 	color: #111827 !important;
-	line-height: 1.3 !important;
+	margin: 0 0 2px 0 !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
 }
 
-.landing-page-root .product-summary .product-benefit-text span {
-	display: block !important;
+.landing-page-root .hero-service-feature-desc,
+.hero-service-feature-desc {
 	font-size: 11px !important;
 	color: #6b7280 !important;
 	line-height: 1.3 !important;
-	margin-top: 2px !important;
+	white-space: normal !important;
+}
+
+/* Defensive resets for any Woodmart default .product-benefits overrides */
+.landing-page-root .product-benefits,
+.product-benefits {
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.landing-page-root .product-benefit-item,
+.product-benefit-item {
+	background: transparent !important;
+	border: none !important;
+}
+
+.landing-page-root .product-benefit-icon,
+.product-benefit-icon {
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	width: auto !important;
+	height: auto !important;
 }
 
 /* In-Page Navigation */
@@ -1586,8 +1769,15 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 }
 
 @keyframes slideToast {
-	from { opacity: 0; transform: translateY(-10px); }
-	to { opacity: 1; transform: translateY(0); }
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .wc-landing-toast a {
@@ -1619,11 +1809,14 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 }
 
 @keyframes spin {
-	to { transform: rotate(360deg); }
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 /* 15. RESPONSIVE BREAKPOINTS */
 @media (min-width: 1440px) {
+
 	:root,
 	.landing-page-root {
 		--w: 1240px;
@@ -1634,6 +1827,7 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	.landing-page-root .grid--4 {
 		grid-template-columns: repeat(2, 1fr);
 	}
+
 	.landing-page-root .product-hero,
 	.landing-page-root .feature-main,
 	.landing-page-root .combo,
@@ -1642,6 +1836,7 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 	.landing-page-root .product-brand .container {
 		grid-template-columns: 1fr !important;
 	}
+
 	.landing-page-root .product-gallery {
 		max-width: 580px !important;
 		margin-inline: auto !important;
@@ -1649,48 +1844,60 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 }
 
 @media (max-width: 767px) {
+
 	.landing-page-root .grid--2,
 	.landing-page-root .product-comparison__grid,
 	.landing-page-root .product-package-contents__grid,
 	.landing-page-root .product-benefits .container,
-	.landing-page-root .product-summary .product-benefits {
+	.landing-page-root .product-summary .product-benefits,
+	.landing-page-root .hero-service-features {
 		grid-template-columns: 1fr !important;
 	}
+
 	.landing-page-root .product-comparison__grid .plan--rec {
 		order: 0;
 	}
+
 	.landing-page-root .stats {
 		grid-template-columns: 1fr 1fr;
 	}
+
 	.landing-page-root .spec {
 		grid-template-columns: 1fr;
 		gap: 2px;
 	}
+
 	.landing-page-root .product-section-navigation ul {
 		justify-content: flex-start;
 	}
+
 	.landing-page-root .btn {
 		min-height: 48px;
 	}
 }
 
 @media (max-width: 540px) {
+
 	.landing-page-root .grid--4,
 	.landing-page-root .product-configuration__options {
 		grid-template-columns: 1fr;
 	}
-	.landing-page-root .product-hero > .product-gallery,
+
+	.landing-page-root .product-hero>.product-gallery,
 	.landing-page-root .product-gallery {
 		flex-direction: column !important;
 		gap: 12px !important;
 	}
+
 	.landing-page-root .product-gallery__thumbs-wrap {
 		width: 100% !important;
 		order: 2 !important;
 	}
+
 	.landing-page-root .product-gallery__thumbs-wrap .gallery-nav-btn {
 		display: none !important;
 	}
+
 	.landing-page-root .product-gallery__thumbs {
 		display: flex !important;
 		flex-direction: row !important;
@@ -1704,20 +1911,25 @@ body.admin-bar.custom-landing-canvas .product-section-navigation {
 		padding-bottom: 4px !important;
 		scrollbar-width: none !important;
 	}
+
 	.landing-page-root .product-gallery__thumbs::-webkit-scrollbar {
 		display: none;
 	}
+
 	.landing-page-root .product-gallery__thumbs li {
 		flex: 0 0 54px !important;
 		width: 54px !important;
 		height: 54px !important;
 	}
+
 	.landing-page-root .product-gallery__main {
 		order: 1 !important;
 	}
+
 	.landing-page-root .product-add-to-cart {
 		flex-wrap: wrap;
 	}
+
 	.landing-page-root .sticky-purchase-bar small {
 		display: none;
 	}

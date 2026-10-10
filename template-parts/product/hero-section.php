@@ -124,25 +124,26 @@ $default_var = array();
 		</div>
 
 		<!-- 3. Full-width In Stock Row with Package Icon and Border -->
+		<?php
+		$clean_stock_label = preg_replace( '/^[●•\s·]+/', '', $core['stock_label'] );
+		?>
 		<div class="product-stock-row">
 			<span class="stock-icon" aria-hidden="true">
-				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
 					<polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
 					<line x1="12" y1="22.08" x2="12" y2="12"></line>
 				</svg>
 			</span>
-			<div class="stock-content">
-				<span class="stock-text"><?php echo esc_html( $core['stock_label'] ); ?></span>
-				<span class="stock-sep">·</span>
-				<span class="stock-note"><?php echo esc_html( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : __( 'Demo Inventory', 'woodmart-child' ) ); ?></span>
-			</div>
+			<span class="stock-text"><?php echo esc_html( $clean_stock_label ); ?></span>
+			<span class="stock-sep">·</span>
+			<span class="stock-note"><?php echo esc_html( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : __( 'Demo Inventory', 'woodmart-child' ) ); ?></span>
 		</div>
 
 		<!-- 4. Price Row with Black Color and VAT toggle -->
 		<div class="product-price-row" data-price-raw="<?php echo esc_attr( $core['price'] ?? 0 ); ?>">
 			<div class="product-price-main">
-				<span class="product-price" data-price-raw="<?php echo esc_attr( $core['price'] ?? 0 ); ?>" data-price-html="<?php echo esc_attr( $core['price_html'] ); ?>"><?php echo wp_kses_post( $core['price_html'] ); ?></span>
+				<span class="product-price" style="color: #111827 !important;" data-price-raw="<?php echo esc_attr( $core['price'] ?? 0 ); ?>" data-price-html="<?php echo esc_attr( $core['price_html'] ); ?>"><?php echo wp_kses_post( $core['price_html'] ); ?></span>
 				<span class="product-price-note"><?php esc_html_e( 'incl. 24% VAT · sample price', 'woodmart-child' ); ?></span>
 			</div>
 			<div class="product-vat-toggle">
@@ -173,15 +174,15 @@ $default_var = array();
 									data-sku="<?php echo esc_attr( $var['sku'] ); ?>"
 									data-image="<?php echo esc_url( $var['image_url'] ?? '' ); ?>">
 								<div class="option-header">
+									<span class="option-title"><?php echo esc_html( $var['title'] ); ?></span>
 									<span class="option-check-icon" aria-hidden="true">
-										<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+										<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
 											<polyline points="20 6 9 17 4 12"></polyline>
 										</svg>
 									</span>
-									<span class="option-title"><?php echo esc_html( $var['title'] ); ?></span>
 								</div>
 								<span class="option-desc"><?php echo esc_html( $var['subtitle'] ); ?></span>
-								<span class="option-price"><?php echo wp_kses_post( $var['price_html'] ); ?></span>
+								<span class="option-price" style="color: #111827 !important;"><?php echo wp_kses_post( $var['price_html'] ); ?></span>
 							</label>
 						<?php endforeach; ?>
 					</div>
@@ -217,23 +218,23 @@ $default_var = array();
 			</a>
 		</div>
 
-		<!-- 7. 3 Service Highlights Strip (Now placed inside right column right after Buying for a Team) -->
+		<!-- 7. 3 Service Highlights Strip (Same row, no background, no borders) -->
 		<?php if ( ! empty( $settings['general']['benefits'] ) ) : ?>
-			<div class="product-benefits" aria-label="<?php esc_attr_e( 'Service highlights', 'woodmart-child' ); ?>">
+			<div class="hero-service-features" aria-label="<?php esc_attr_e( 'Service highlights', 'woodmart-child' ); ?>">
 				<?php
 				$benefit_svgs = array(
-					'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff5e1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>',
-					'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff5e1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>',
-					'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff5e1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+					'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>',
+					'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>',
+					'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
 				);
 				foreach ( $settings['general']['benefits'] as $b_idx => $b ) :
 					$icon_svg = $benefit_svgs[ $b_idx % count( $benefit_svgs ) ];
 				?>
-					<div class="product-benefit-item">
-						<div class="product-benefit-icon"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-						<div class="product-benefit-text">
-							<b><?php echo esc_html( $b['title'] ); ?></b>
-							<span><?php echo esc_html( $b['subtitle'] ); ?></span>
+					<div class="hero-service-feature-item">
+						<div class="hero-service-feature-icon"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
+						<div class="hero-service-feature-text">
+							<b class="hero-service-feature-title"><?php echo esc_html( $b['title'] ); ?></b>
+							<span class="hero-service-feature-desc"><?php echo esc_html( $b['subtitle'] ); ?></span>
 						</div>
 					</div>
 				<?php endforeach; ?>
