@@ -64,7 +64,16 @@ if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_i
 		// 13. Downloads & Technical Documents (5x2 Grid of PDF Cards)
 		get_template_part( 'template-parts/filament/downloads' );
 
-		// 14. Sticky Bottom Purchase Bar
+		// 14. Printing Tips Accordion
+		get_template_part( 'template-parts/filament/printing-tips' );
+
+		// 15. What's in the Box (Complete Spool vs Refill)
+		get_template_part( 'template-parts/filament/box-contents' );
+
+		// 16. Questions Answered (FAQ) & Bottom Orange CTA Banner
+		get_template_part( 'template-parts/filament/faq' );
+
+		// 17. Sticky Bottom Purchase Bar
 		get_template_part( 'template-parts/product/sticky-bottom-bar' );
 		?>
 	</div>

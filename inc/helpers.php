@@ -1125,6 +1125,94 @@ function woodmart_child_get_default_filament_builder_data() {
 				array( 'title' => 'EN71-3', 'subtitle' => 'Toy Safety Standard', 'url' => '#' ),
 			),
 		),
+		'printing_tips'       => array(
+			'enabled'     => '1',
+			'title'       => 'Printing Tips',
+			'description' => 'PLA Basic is designed for Bambu Lab printers and works with all hotend sizes',
+			'items'       => array(
+				array(
+					'title'   => '1. Accessory Compatibility',
+					'content' => 'Recommended plates: Cool Plate, High Temperature Plate, Textured PEI Plate. Not recommended: Engineering Plate. Hotend: all sizes and materials. Glue: Bambu Liquid Glue or Glue Stick',
+				),
+				array(
+					'title'   => '2. Drying Recommendations',
+					'content' => 'Drying conditions: 55 °C for 8 hours in a filament dryer or heated print chamber. Store in an airtight container with desiccant (< 20% RH) to preserve printability and avoid brittleness.',
+				),
+				array(
+					'title'   => '3. Refill Guidelines',
+					'content' => 'Align the filament spool locator pin with the notch on the reusable spool, press together and twist clockwise until firmly latched. Cut the plastic straps only after locking the spool halves.',
+				),
+				array(
+					'title'   => '4. Safety Tips',
+					'content' => 'Maintain proper ventilation during long print sessions. Do not exceed 250 °C nozzle temperature to prevent thermal degradation and polymer fuming.',
+				),
+			),
+		),
+		'box_contents'        => array(
+			'enabled'       => '1',
+			'eyebrow'       => 'START WITH WHAT YOU NEED',
+			'title'         => "What's in the box.",
+			'spool_badge'   => 'RECOMMENDED',
+			'spool_title'   => 'COMPLETE SPOOL',
+			'spool_items'   => array(
+				'1 × Bambu PLA Basic filament, 1 kg, 1.75 mm, wound on reusable spool',
+				'1 × desiccant pack',
+				'1 × packaging',
+				'Note: RFID-enabled: print parameters are read automatically by AMS',
+			),
+			'refill_title'  => 'REFILL',
+			'refill_items'  => array(
+				'1 × Bambu PLA Basic filament refill, 1 kg, 1.75 mm (no spool)',
+				'1 × desiccant pack',
+				'1 × packaging',
+				'Note: Requires a Bambu Reusable Spool (sold separately)',
+			),
+			'note'          => 'Contents may vary slightly by region or batch. Confirm against the selected SKU',
+		),
+		'faq'                 => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'BEFORE YOU DECIDE',
+			'title'       => 'Questions, answered.',
+			'description' => 'Still deciding? Our team can help you choose the right material for your printer and application',
+			'ask_text'    => 'Ask 3DKoda →',
+			'ask_url'     => '#',
+			'items'       => array(
+				array(
+					'question' => "What's the difference between Complete Spool and Refill?",
+					'answer'   => 'Complete Spool includes the filament wound on a reusable Bambu spool and is ready to print. Refill contains the filament only, to be loaded onto a Bambu Reusable Spool you already own',
+				),
+				array(
+					'question' => 'Which printers is this filament compatible with?',
+					'answer'   => 'Compatible with all Bambu Lab 3D printers including X1-Carbon, X1E, P1S, P1P, and A1 / A1 mini series. Also works with third-party printers using 1.75 mm filament.',
+				),
+				array(
+					'question' => 'Does this filament support RFID/AMS auto-detection?',
+					'answer'   => 'Yes! Every spool and refill comes with dual RFID tags that the Bambu Lab AMS automatically reads to set material type, color, and starting printing parameters.',
+				),
+				array(
+					'question' => 'What print settings should I use?',
+					'answer'   => 'Use the default official Bambu PLA Basic print profile in Bambu Studio. Standard nozzle temperature is 190–230 °C, and bed temperature is 35–45 °C with glue.',
+				),
+				array(
+					'question' => 'How should I store this filament?',
+					'answer'   => 'Keep filament sealed in an airtight bag or container with desiccant (< 20% RH). If exposed to humidity, dry at 55 °C for 8 hours before printing.',
+				),
+				array(
+					'question' => 'Can my company buy without Estonian VAT?',
+					'answer'   => 'Yes, EU businesses with a valid VIES VAT number outside Estonia can purchase with 0% reverse charge VAT. Tallinn-based local companies receive standard VAT invoices.',
+				),
+			),
+			'cta'         => array(
+				'enabled'        => '1',
+				'badge'          => 'BALTIC LOGISTICS & BULK TIERS',
+				'title'          => 'Ready to bring your next print to life?',
+				'description'    => 'Choose your Bambu PLA setup today or connect with a Baltic 3D printing specialist in Tallinn for test prints and volume pricing.',
+				'btn_shop_text'  => 'Shop PLA Basic Now',
+				'btn_shop_url'   => '#choose-format',
+				'btn_quote_text' => 'Request Business Quote',
+				'btn_quote_url'  => '#',
+			),
+		),
 	);
 }
 

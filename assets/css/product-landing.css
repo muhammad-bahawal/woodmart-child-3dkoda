@@ -2604,13 +2604,13 @@ div.product.landing-page-root .summary .price * {
 	display: none;
 }
 
-.landing-page-root summary::after {
+.landing-page-root:not(.filament-landing-root) summary::after {
 	content: "+";
 	font-size: 18px;
 	font-weight: 400;
 }
 
-.landing-page-root details[open] summary::after {
+.landing-page-root:not(.filament-landing-root) details[open] summary::after {
 	content: "–";
 }
 
@@ -3774,18 +3774,46 @@ div.product.landing-page-root .summary .price * {
 }
 
 /* 1. STICKY SUBNAV BAR */
+.filament-landing-root,
+.landing-page-root.filament-landing-root,
+.custom-product-landing-root.filament-landing-root,
+.site-content,
+.main-page-wrapper,
+.content-layout-wrapper {
+	overflow: visible !important;
+	overflow-x: clip !important;
+}
+
 .landing-page-root .filament-subnav-bar {
 	background: #0d1117 !important;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 	position: sticky !important;
-	top: 0 !important;
-	z-index: 100 !important;
+	top: var(--filament-subnav-top, 60px) !important;
+	z-index: 40 !important;
 	width: 100% !important;
 	transition: background 0.2s ease, box-shadow 0.2s ease !important;
 }
 
+@media (min-width: 1025px) {
+	.landing-page-root .filament-subnav-bar {
+		top: var(--filament-subnav-top, 64px) !important;
+	}
+}
+
+body.admin-bar .landing-page-root .filament-subnav-bar,
+body.admin-bar.custom-landing-canvas .filament-subnav-bar {
+	top: var(--filament-subnav-top, 96px) !important;
+}
+
+@media (max-width: 1024px) {
+	body.admin-bar .landing-page-root .filament-subnav-bar,
+	body.admin-bar.custom-landing-canvas .filament-subnav-bar {
+		top: var(--filament-subnav-top, 60px) !important;
+	}
+}
+
 .landing-page-root .filament-subnav-bar.is-pinned {
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
 .landing-page-root .filament-subnav-inner {
@@ -3793,15 +3821,22 @@ div.product.landing-page-root .summary .price * {
 	align-items: center !important;
 	justify-content: space-between !important;
 	height: 52px !important;
+	width: 100% !important;
+	max-width: 1220px !important;
+	margin: 0 auto !important;
+	padding: 0 20px !important;
+	box-sizing: border-box !important;
 }
 
 .landing-page-root .filament-subnav-links {
 	display: flex !important;
 	align-items: center !important;
+	justify-content: space-between !important;
+	flex: 1 1 auto !important;
 	list-style: none !important;
 	padding: 0 !important;
-	margin: 0 !important;
-	gap: 28px !important;
+	margin: 0 32px 0 0 !important;
+	gap: 0 !important;
 	overflow-x: auto !important;
 	scrollbar-width: none !important;
 }
@@ -3810,9 +3845,19 @@ div.product.landing-page-root .summary .price * {
 	display: none !important;
 }
 
+.landing-page-root .filament-subnav-links li {
+	flex: 1 1 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	text-align: center !important;
+}
+
 .landing-page-root .filament-subnav-link {
 	display: inline-flex !important;
 	align-items: center !important;
+	justify-content: center !important;
+	width: 100% !important;
 	height: 52px !important;
 	font-size: 11.5px !important;
 	font-weight: 700 !important;
@@ -3823,6 +3868,9 @@ div.product.landing-page-root .summary .price * {
 	position: relative !important;
 	white-space: nowrap !important;
 	transition: color 0.15s ease !important;
+	text-align: center !important;
+	padding: 0 10px !important;
+	box-sizing: border-box !important;
 }
 
 .landing-page-root .filament-subnav-link:hover {
@@ -3837,15 +3885,14 @@ div.product.landing-page-root .summary .price * {
 	content: '' !important;
 	position: absolute !important;
 	bottom: 0 !important;
-	left: 0 !important;
-	right: 0 !important;
+	left: 10% !important;
+	right: 10% !important;
 	height: 2.5px !important;
 	background: #f97316 !important;
 	border-radius: 2px 2px 0 0 !important;
 }
 
 .landing-page-root .filament-subnav-action {
-	margin-left: 20px !important;
 	flex-shrink: 0 !important;
 }
 
@@ -3868,6 +3915,78 @@ div.product.landing-page-root .summary .price * {
 	background: #c2410c !important;
 	transform: translateY(-1px) !important;
 	color: #ffffff !important;
+}
+
+@media (max-width: 1024px) {
+	.landing-page-root .filament-subnav-inner {
+		padding: 0 12px !important;
+		gap: 8px !important;
+		height: 48px !important;
+	}
+
+	.landing-page-root .filament-subnav-links {
+		display: flex !important;
+		align-items: center !important;
+		justify-content: flex-start !important;
+		flex: 1 1 auto !important;
+		min-width: 0 !important;
+		margin: 0 !important;
+		gap: 6px !important;
+		overflow-x: auto !important;
+		overflow-y: hidden !important;
+		scroll-behavior: smooth !important;
+		-webkit-overflow-scrolling: touch !important;
+		scrollbar-width: none !important;
+		position: relative !important;
+	}
+
+	.landing-page-root .filament-subnav-links::-webkit-scrollbar {
+		display: none !important;
+	}
+
+	.landing-page-root .filament-subnav-links li {
+		flex: 0 0 auto !important;
+		width: auto !important;
+	}
+
+	.landing-page-root .filament-subnav-link {
+		width: auto !important;
+		height: 48px !important;
+		padding: 0 12px !important;
+		white-space: nowrap !important;
+		font-size: 11px !important;
+	}
+
+	.landing-page-root .filament-subnav-action {
+		flex: 0 0 auto !important;
+		flex-shrink: 0 !important;
+	}
+
+	.landing-page-root .filament-b2b-btn {
+		font-size: 11px !important;
+		padding: 6px 14px !important;
+		white-space: nowrap !important;
+	}
+}
+
+@media (max-width: 480px) {
+	.landing-page-root .filament-subnav-inner {
+		padding: 0 8px !important;
+	}
+
+	.landing-page-root .filament-subnav-links {
+		gap: 4px !important;
+	}
+
+	.landing-page-root .filament-subnav-link {
+		padding: 0 10px !important;
+		font-size: 10.5px !important;
+	}
+
+	.landing-page-root .filament-b2b-btn {
+		padding: 5px 10px !important;
+		font-size: 10.5px !important;
+	}
 }
 
 /* 2. FORMULATION SHOWCASE BANNER (DARK) */
@@ -3969,38 +4088,57 @@ div.product.landing-page-root .summary .price * {
 	display: flex !important;
 	flex-direction: column !important;
 	align-items: center !important;
-	gap: 16px !important;
-	flex: 1 !important;
+	gap: 7px !important;
+	flex: 1 1 0 !important;
 }
 
+.landing-page-root button.filament-palette-dot,
 .landing-page-root .filament-palette-dot {
+	all: unset !important;
+	box-sizing: border-box !important;
 	width: 28px !important;
 	height: 28px !important;
+	min-width: 28px !important;
+	max-width: 28px !important;
+	min-height: 28px !important;
+	max-height: 28px !important;
+	aspect-ratio: 1 / 1 !important;
+	flex: 0 0 28px !important;
+	flex-shrink: 0 !important;
+	flex-grow: 0 !important;
 	padding: 0 !important;
 	margin: 0 !important;
 	background: transparent !important;
 	border: none !important;
 	border-radius: 50% !important;
 	cursor: pointer !important;
-	display: flex !important;
+	display: inline-flex !important;
 	align-items: center !important;
 	justify-content: center !important;
 	position: relative !important;
 	outline: none !important;
 	box-shadow: none !important;
+	line-height: 1 !important;
+	overflow: visible !important;
 	transition: transform 0.15s ease !important;
 }
 
 .landing-page-root .filament-palette-dot:hover {
-	transform: scale(1.18) !important;
+	transform: scale(1.15) !important;
 }
 
 .landing-page-root .filament-palette-dot .dot-fill {
-	width: 22px !important;
-	height: 22px !important;
+	width: 18px !important;
+	height: 18px !important;
+	min-width: 18px !important;
+	min-height: 18px !important;
+	max-width: 18px !important;
+	max-height: 18px !important;
+	aspect-ratio: 1 / 1 !important;
 	border-radius: 50% !important;
 	display: block !important;
 	pointer-events: none !important;
+	flex-shrink: 0 !important;
 	transition: box-shadow 0.15s ease !important;
 }
 
@@ -4008,14 +4146,23 @@ div.product.landing-page-root .summary .price * {
 	border: 1px solid #cbd5e1 !important;
 }
 
-.landing-page-root .filament-palette-dot.is-active .dot-fill {
-	width: 18px !important;
-	height: 18px !important;
-}
-
-.landing-page-root .filament-palette-dot.is-active {
-	outline: 2px solid #0f172a !important;
-	outline-offset: 3px !important;
+.landing-page-root .filament-palette-dot.is-active::after {
+	content: '' !important;
+	position: absolute !important;
+	top: 50% !important;
+	left: 50% !important;
+	transform: translate(-50%, -50%) !important;
+	width: 26px !important;
+	height: 26px !important;
+	min-width: 26px !important;
+	min-height: 26px !important;
+	max-width: 26px !important;
+	max-height: 26px !important;
+	aspect-ratio: 1 / 1 !important;
+	border-radius: 50% !important;
+	border: 1.5px solid #0f172a !important;
+	pointer-events: none !important;
+	box-sizing: border-box !important;
 }
 
 .landing-page-root .filament-palette-status {
@@ -4213,10 +4360,6 @@ div.product.landing-page-root .summary .price * {
 		grid-template-columns: 1fr !important;
 	}
 
-	.landing-page-root .filament-subnav-links {
-		gap: 18px !important;
-	}
-
 	.landing-page-root .filament-formulation-content {
 		padding: 32px 20px 20px !important;
 	}
@@ -4271,7 +4414,7 @@ div.product.landing-page-root .summary .price * {
 .landing-page-root .filament-use-case-num {
 	font-size: 13px !important;
 	font-weight: 700 !important;
-	color: #64748b !important;
+	color: #FF5500 !important;
 	margin-bottom: 12px !important;
 	display: block !important;
 }
@@ -4305,28 +4448,31 @@ div.product.landing-page-root .summary .price * {
 	margin: 44px auto 0 !important;
 }
 
-.landing-page-root .filament-format-card {
+.landing-page-root .filament-format-cards-grid .filament-format-card {
 	background: #ffffff !important;
+	border: 1.5px solid #e2e8f0 !important;
 	border-radius: 20px !important;
 	padding: 38px 36px 32px !important;
 	display: flex !important;
 	flex-direction: column !important;
 	justify-content: space-between !important;
 	position: relative !important;
-	transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+	cursor: pointer !important;
+	transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.landing-page-root .filament-format-card.is-recommended {
-	border: 2px solid #f97316 !important;
-	box-shadow: 0 10px 30px -4px rgba(249, 115, 22, 0.08) !important;
-}
-
-.landing-page-root .filament-format-card.is-refill {
-	border: 1.5px solid #d1d5db !important;
-}
-
-.landing-page-root .filament-format-card:hover {
+.landing-page-root .filament-format-cards-grid .filament-format-card:hover {
 	transform: translateY(-2px) !important;
+	border-color: #cbd5e1 !important;
+}
+
+.landing-page-root .filament-format-cards-grid .filament-format-card.is-selected {
+	border: 2px solid #ea580c !important;
+	box-shadow: 0 10px 30px -4px rgba(234, 88, 12, 0.12) !important;
+}
+
+.landing-page-root .filament-format-cards-grid .filament-format-card.is-selected:hover {
+	border-color: #ea580c !important;
 }
 
 .landing-page-root .format-card-badge {
@@ -4945,5 +5091,489 @@ div.product.landing-page-root .summary .price * {
 		grid-template-columns: 1fr !important;
 		gap: 4px !important;
 		padding: 12px 18px !important;
+	}
+}
+
+/* ==========================================================================
+   FILAMENT: PRINTING TIPS, WHAT'S IN THE BOX, FAQ & CTA BANNER
+   ========================================================================== */
+
+/* 1. PRINTING TIPS ACCORDION */
+.landing-page-root .filament-tips-section {
+	background: #ffffff !important;
+	padding: 60px 0 70px !important;
+}
+
+.landing-page-root .filament-tips-container {
+	max-width: 980px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-tips-header {
+	text-align: center !important;
+	margin-bottom: 36px !important;
+}
+
+.landing-page-root .filament-tips-title {
+	font-size: clamp(28px, 3.4vw, 38px) !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	letter-spacing: -0.025em !important;
+	margin: 0 0 10px !important;
+}
+
+.landing-page-root .filament-tips-subtitle {
+	font-size: 14.5px !important;
+	color: #64748b !important;
+	margin: 0 !important;
+}
+
+.landing-page-root .filament-tips-accordion {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 14px !important;
+}
+
+.landing-page-root .filament-tip-card {
+	background: #ffffff !important;
+	border: 1px solid #e2e8f0 !important;
+	border-radius: 12px !important;
+	overflow: hidden !important;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.landing-page-root .filament-tip-card[open] {
+	border-color: #cbd5e1 !important;
+	box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04) !important;
+}
+
+.landing-page-root .filament-tip-summary {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	padding: 18px 24px !important;
+	cursor: pointer !important;
+	list-style: none !important;
+	user-select: none !important;
+}
+
+.landing-page-root .filament-tip-summary::-webkit-details-marker {
+	display: none !important;
+}
+
+.landing-page-root .filament-tip-summary::before,
+.landing-page-root .filament-tip-summary::after {
+	content: none !important;
+	display: none !important;
+}
+
+.landing-page-root .filament-tip-heading {
+	font-size: 15px !important;
+	font-weight: 700 !important;
+	color: #0f172a !important;
+}
+
+.landing-page-root .filament-tip-chevron {
+	color: #ea580c !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	flex-shrink: 0 !important;
+	margin-left: auto !important;
+	transition: transform 0.25s ease !important;
+}
+
+.landing-page-root .filament-tip-card[open] .filament-tip-chevron {
+	transform: rotate(180deg) !important;
+}
+
+.landing-page-root .filament-tip-body {
+	padding: 0 24px 20px 24px !important;
+}
+
+.landing-page-root .filament-tip-body p {
+	font-size: 13.5px !important;
+	color: #475569 !important;
+	line-height: 1.6 !important;
+	margin: 0 !important;
+}
+
+/* 2. WHAT'S IN THE BOX */
+.landing-page-root .filament-box-section {
+	background: #ffffff !important;
+	padding: 50px 0 70px !important;
+}
+
+.landing-page-root .filament-box-container {
+	max-width: 1140px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-box-header {
+	margin-bottom: 36px !important;
+}
+
+.landing-page-root .filament-box-title {
+	font-size: clamp(28px, 3.4vw, 38px) !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	letter-spacing: -0.025em !important;
+	margin: 8px 0 0 !important;
+}
+
+.landing-page-root .filament-box-grid {
+	display: grid !important;
+	grid-template-columns: repeat(2, 1fr) !important;
+	gap: 28px !important;
+}
+
+.landing-page-root .filament-box-card {
+	background: #ffffff !important;
+	border-radius: 18px !important;
+	padding: 38px 36px 32px !important;
+	position: relative !important;
+}
+
+.landing-page-root .filament-box-card.is-recommended {
+	border: 2px solid #ea580c !important;
+	box-shadow: 0 6px 24px -4px rgba(234, 88, 12, 0.06) !important;
+}
+
+.landing-page-root .filament-box-card.is-refill {
+	border: 1.5px solid #e2e8f0 !important;
+}
+
+.landing-page-root .filament-box-badge {
+	position: absolute !important;
+	top: -11px !important;
+	right: 36px !important;
+	background: #ea580c !important;
+	color: #ffffff !important;
+	font-size: 10px !important;
+	font-weight: 800 !important;
+	letter-spacing: 0.08em !important;
+	text-transform: uppercase !important;
+	padding: 4px 14px !important;
+	border-radius: 20px !important;
+	z-index: 2 !important;
+}
+
+.landing-page-root .filament-box-card-title {
+	font-size: 18px !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	letter-spacing: 0.02em !important;
+	text-transform: uppercase !important;
+	margin: 0 0 20px !important;
+}
+
+.landing-page-root .filament-box-list {
+	list-style: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	display: flex !important;
+	flex-direction: column !important;
+}
+
+.landing-page-root .filament-box-item {
+	display: flex !important;
+	align-items: flex-start !important;
+	gap: 12px !important;
+	padding: 13px 0 !important;
+	border-bottom: 1px solid #f1f5f9 !important;
+	font-size: 13.5px !important;
+	color: #334155 !important;
+	line-height: 1.5 !important;
+}
+
+.landing-page-root .filament-box-item:last-child {
+	border-bottom: none !important;
+}
+
+.landing-page-root .filament-box-check {
+	color: #10b981 !important;
+	flex-shrink: 0 !important;
+	display: inline-flex !important;
+	margin-top: 2px !important;
+}
+
+.landing-page-root .filament-box-text strong {
+	font-weight: 700 !important;
+	color: #0f172a !important;
+}
+
+.landing-page-root .filament-box-footnote {
+	margin-top: 20px !important;
+}
+
+.landing-page-root .filament-box-footnote p {
+	font-size: 12px !important;
+	color: #94a3b8 !important;
+	line-height: 1.4 !important;
+	margin: 0 !important;
+}
+
+/* 3. QUESTIONS ANSWERED (FAQ) */
+.landing-page-root .filament-faq-section {
+	background: #ffffff !important;
+	padding: 70px 0 80px !important;
+}
+
+.landing-page-root .filament-faq-container {
+	max-width: 1140px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-faq-layout {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr) !important;
+	gap: 60px !important;
+	align-items: flex-start !important;
+}
+
+.landing-page-root .filament-faq-info {
+	display: flex !important;
+	flex-direction: column !important;
+	max-width: 420px !important;
+}
+
+.landing-page-root .filament-faq-title {
+	font-size: clamp(28px, 3.4vw, 38px) !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	letter-spacing: -0.025em !important;
+	margin: 8px 0 12px !important;
+	line-height: 1.2 !important;
+}
+
+.landing-page-root .filament-faq-desc {
+	font-size: 14px !important;
+	color: #64748b !important;
+	line-height: 1.6 !important;
+	margin: 0 0 22px !important;
+}
+
+.landing-page-root .filament-faq-ask-link {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 6px !important;
+	font-size: 14px !important;
+	font-weight: 700 !important;
+	color: #0f172a !important;
+	text-decoration: none !important;
+	transition: color 0.15s ease, transform 0.15s ease !important;
+}
+
+.landing-page-root .filament-faq-ask-link:hover {
+	color: #ea580c !important;
+	transform: translateX(2px) !important;
+}
+
+.landing-page-root .filament-faq-accordion {
+	display: flex !important;
+	flex-direction: column !important;
+}
+
+.landing-page-root .filament-faq-item {
+	border-bottom: 1px solid #f1f5f9 !important;
+	padding: 4px 0 !important;
+}
+
+.landing-page-root .filament-faq-item:first-child {
+	border-top: 1px solid #f1f5f9 !important;
+}
+
+.landing-page-root .filament-faq-question {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	padding: 16px 0 !important;
+	cursor: pointer !important;
+	list-style: none !important;
+	user-select: none !important;
+	gap: 16px !important;
+}
+
+.landing-page-root .filament-faq-question::-webkit-details-marker {
+	display: none !important;
+}
+
+.landing-page-root .filament-faq-question::before,
+.landing-page-root .filament-faq-question::after {
+	content: none !important;
+	display: none !important;
+}
+
+.landing-page-root .faq-question-text {
+	font-size: 15px !important;
+	font-weight: 700 !important;
+	color: #0f172a !important;
+	line-height: 1.35 !important;
+}
+
+.landing-page-root .faq-chevron {
+	color: #94a3b8 !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	flex-shrink: 0 !important;
+	margin-left: auto !important;
+	transition: transform 0.25s ease, color 0.2s ease !important;
+}
+
+.landing-page-root .filament-faq-item[open] .faq-chevron {
+	transform: rotate(180deg) !important;
+	color: #ea580c !important;
+}
+
+.landing-page-root .filament-faq-answer {
+	padding: 0 0 16px 0 !important;
+}
+
+.landing-page-root .filament-faq-answer p {
+	font-size: 13.5px !important;
+	color: #64748b !important;
+	line-height: 1.6 !important;
+	margin: 0 !important;
+}
+
+/* 4. BOTTOM ORANGE CTA BANNER */
+.landing-page-root .filament-cta-banner {
+	background: #ea580c !important;
+	padding: 56px 0 !important;
+	color: #ffffff !important;
+}
+
+.landing-page-root .filament-cta-container {
+	max-width: 1140px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-cta-layout {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	gap: 40px !important;
+}
+
+.landing-page-root .filament-cta-content {
+	max-width: 660px !important;
+}
+
+.landing-page-root .filament-cta-badge {
+	display: inline-block !important;
+	background: rgba(0, 0, 0, 0.16) !important;
+	color: #ffffff !important;
+	font-size: 10.5px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.08em !important;
+	text-transform: uppercase !important;
+	padding: 4px 12px !important;
+	border-radius: 20px !important;
+	margin-bottom: 14px !important;
+}
+
+.landing-page-root .filament-cta-title {
+	font-size: clamp(26px, 3.2vw, 36px) !important;
+	font-weight: 800 !important;
+	color: #ffffff !important;
+	line-height: 1.2 !important;
+	letter-spacing: -0.025em !important;
+	margin: 0 0 12px !important;
+}
+
+.landing-page-root .filament-cta-desc {
+	font-size: 14.5px !important;
+	color: rgba(255, 255, 255, 0.9) !important;
+	line-height: 1.55 !important;
+	margin: 0 !important;
+}
+
+.landing-page-root .filament-cta-actions {
+	display: flex !important;
+	align-items: center !important;
+	gap: 14px !important;
+	flex-shrink: 0 !important;
+}
+
+.landing-page-root .btn-cta-shop {
+	background: #0f172a !important;
+	color: #ffffff !important;
+	font-size: 13.5px !important;
+	font-weight: 700 !important;
+	padding: 13px 24px !important;
+	border-radius: 8px !important;
+	text-decoration: none !important;
+	transition: background 0.15s ease, transform 0.15s ease !important;
+	white-space: nowrap !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+.landing-page-root .btn-cta-shop:hover {
+	background: #1e293b !important;
+	transform: translateY(-1px) !important;
+	color: #ffffff !important;
+}
+
+.landing-page-root .btn-cta-quote {
+	background: #ffffff !important;
+	color: #0f172a !important;
+	font-size: 13.5px !important;
+	font-weight: 700 !important;
+	padding: 13px 24px !important;
+	border-radius: 8px !important;
+	text-decoration: none !important;
+	transition: background 0.15s ease, transform 0.15s ease !important;
+	white-space: nowrap !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+.landing-page-root .btn-cta-quote:hover {
+	background: #f8fafc !important;
+	transform: translateY(-1px) !important;
+	color: #0f172a !important;
+}
+
+/* Responsive adjustments for Tips, Box, FAQ & Banner */
+@media (max-width: 991px) {
+	.landing-page-root .filament-faq-layout {
+		grid-template-columns: 1fr !important;
+		gap: 36px !important;
+	}
+
+	.landing-page-root .filament-cta-layout {
+		flex-direction: column !important;
+		align-items: flex-start !important;
+		gap: 24px !important;
+	}
+
+	.landing-page-root .filament-cta-actions {
+		width: 100% !important;
+		flex-wrap: wrap !important;
+	}
+}
+
+@media (max-width: 640px) {
+	.landing-page-root .filament-box-grid {
+		grid-template-columns: 1fr !important;
+		gap: 24px !important;
+	}
+
+	.landing-page-root .filament-box-card {
+		padding: 30px 22px !important;
+	}
+
+	.landing-page-root .filament-cta-actions {
+		flex-direction: column !important;
+		width: 100% !important;
+	}
+
+	.landing-page-root .btn-cta-shop,
+	.landing-page-root .btn-cta-quote {
+		width: 100% !important;
 	}
 }

@@ -64,9 +64,9 @@ $rf_btn_text = ! empty( $data['refill_btn_text'] ) ? $data['refill_btn_text'] : 
 		</div>
 
 		<!-- 2 Side-by-Side Comparison Cards -->
-		<div class="filament-format-cards-grid">
-			<!-- 1. Complete Spool (Highlighted with Orange Border) -->
-			<div class="filament-format-card is-recommended" data-format-type="complete-spool">
+		<div class="filament-format-cards-grid" id="filament-choose-format-grid">
+			<!-- 1. Complete Spool -->
+			<div class="filament-format-card" data-format-type="complete-spool" tabindex="0" role="button" aria-label="<?php echo esc_attr( $sp_title ); ?>">
 				<span class="format-card-badge"><?php echo esc_html( $sp_badge ); ?></span>
 				
 				<h3 class="format-card-title"><?php echo esc_html( $sp_title ); ?></h3>
@@ -96,8 +96,8 @@ $rf_btn_text = ! empty( $data['refill_btn_text'] ) ? $data['refill_btn_text'] : 
 				</button>
 			</div>
 
-			<!-- 2. Refill (Clean Outline Border) -->
-			<div class="filament-format-card is-refill" data-format-type="refill">
+			<!-- 2. Refill -->
+			<div class="filament-format-card" data-format-type="refill" tabindex="0" role="button" aria-label="<?php echo esc_attr( $rf_title ); ?>">
 				<span class="format-card-badge"><?php echo esc_html( $rf_badge ); ?></span>
 				
 				<h3 class="format-card-title"><?php echo esc_html( $rf_title ); ?></h3>

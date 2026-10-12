@@ -1428,6 +1428,9 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 				<button type="button" class="wc-tab-btn" data-tab="tab-filament-specs"><span class="dashicons dashicons-clipboard"></span> <?php esc_html_e( 'Technical Specs', 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-filament-setup"><span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Print Settings', 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-filament-downloads"><span class="dashicons dashicons-download"></span> <?php esc_html_e( 'Downloads & Docs', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-tips"><span class="dashicons dashicons-lightbulb"></span> <?php esc_html_e( 'Printing Tips', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-box"><span class="dashicons dashicons-archive"></span> <?php esc_html_e( "What's in the Box", 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-faq"><span class="dashicons dashicons-editor-help"></span> <?php esc_html_e( 'FAQ & CTA Banner', 'woodmart-child' ); ?></button>
 			</nav>
 
 			<!-- Tab Panels -->
@@ -2222,6 +2225,198 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 						</div>
 					<?php endfor; ?>
 				</section>
+
+				<!-- 14. PRINTING TIPS -->
+				<section class="wc-tab-panel" id="tab-filament-tips">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[printing_tips][enabled]" value="1" <?php checked( ! empty( $settings['printing_tips']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Printing Tips Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[printing_tips][title]" value="<?php echo esc_attr( $settings['printing_tips']['title'] ?? 'Printing Tips' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Subtitle / Description', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[printing_tips][description]" value="<?php echo esc_attr( $settings['printing_tips']['description'] ?? 'PLA Basic is designed for Bambu Lab printers and works with all hotend sizes' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Printing Tips Accordion Items (4 Items)', 'woodmart-child' ); ?></h4>
+					<?php
+					$tips_items = ! empty( $settings['printing_tips']['items'] ) ? $settings['printing_tips']['items'] : array();
+					for ( $t_i = 0; $t_i < 4; $t_i++ ) :
+						$ti = $tips_items[ $t_i ] ?? array();
+					?>
+						<div class="wc-box-group" style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:12px;">
+							<div class="wc-field" style="margin-bottom:8px;">
+								<label><?php printf( esc_html__( 'Item %d Title', 'woodmart-child' ), $t_i + 1 ); ?></label>
+								<input type="text" name="filament_builder[printing_tips][items][<?php echo esc_attr( $t_i ); ?>][title]" value="<?php echo esc_attr( $ti['title'] ?? '' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Content / Guidelines', 'woodmart-child' ); ?></label>
+								<textarea name="filament_builder[printing_tips][items][<?php echo esc_attr( $t_i ); ?>][content]" rows="2" class="widefat"><?php echo esc_textarea( $ti['content'] ?? '' ); ?></textarea>
+							</div>
+						</div>
+					<?php endfor; ?>
+				</section>
+
+				<!-- 15. WHAT'S IN THE BOX -->
+				<section class="wc-tab-panel" id="tab-filament-box">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[box_contents][enabled]" value="1" <?php checked( ! empty( $settings['box_contents']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( "Enable What's in the Box Section", 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[box_contents][eyebrow]" value="<?php echo esc_attr( $settings['box_contents']['eyebrow'] ?? 'START WITH WHAT YOU NEED' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[box_contents][title]" value="<?php echo esc_attr( $settings['box_contents']['title'] ?? "What's in the box." ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field-row grid-2" style="margin-top:16px;">
+						<!-- Complete Spool Box -->
+						<div class="wc-box-group" style="background:#fff; border:2px solid #ea580c; border-radius:10px; padding:16px;">
+							<h4 style="margin:0 0 10px; color:#ea580c;"><?php esc_html_e( 'Complete Spool (Card 1)', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Top Badge Tag', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[box_contents][spool_badge]" value="<?php echo esc_attr( $settings['box_contents']['spool_badge'] ?? 'RECOMMENDED' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Card Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[box_contents][spool_title]" value="<?php echo esc_attr( $settings['box_contents']['spool_title'] ?? 'COMPLETE SPOOL' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Spool Package Items (One per line)', 'woodmart-child' ); ?></label>
+								<?php
+								$sp_box_text = ! empty( $settings['box_contents']['spool_items'] ) ? implode( "\n", $settings['box_contents']['spool_items'] ) : '';
+								?>
+								<textarea name="filament_builder[box_contents][spool_items_text]" rows="5" class="widefat"><?php echo esc_textarea( $sp_box_text ); ?></textarea>
+							</div>
+						</div>
+
+						<!-- Refill Box -->
+						<div class="wc-box-group" style="background:#fff; border:1px solid #cbd5e1; border-radius:10px; padding:16px;">
+							<h4 style="margin:0 0 10px; color:#334155;"><?php esc_html_e( 'Refill (Card 2)', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Card Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[box_contents][refill_title]" value="<?php echo esc_attr( $settings['box_contents']['refill_title'] ?? 'REFILL' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Refill Package Items (One per line)', 'woodmart-child' ); ?></label>
+								<?php
+								$rf_box_text = ! empty( $settings['box_contents']['refill_items'] ) ? implode( "\n", $settings['box_contents']['refill_items'] ) : '';
+								?>
+								<textarea name="filament_builder[box_contents][refill_items_text]" rows="5" class="widefat"><?php echo esc_textarea( $rf_box_text ); ?></textarea>
+							</div>
+						</div>
+					</div>
+
+					<div class="wc-field" style="margin-top:16px;">
+						<label><?php esc_html_e( 'Bottom Footnote', 'woodmart-child' ); ?></label>
+						<input type="text" name="filament_builder[box_contents][note]" value="<?php echo esc_attr( $settings['box_contents']['note'] ?? 'Contents may vary slightly by region or batch. Confirm against the selected SKU' ); ?>" class="widefat">
+					</div>
+				</section>
+
+				<!-- 16. FAQ & CTA BANNER -->
+				<section class="wc-tab-panel" id="tab-filament-faq">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[faq][enabled]" value="1" <?php checked( ! empty( $settings['faq']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable FAQ & CTA Banner Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[faq][eyebrow]" value="<?php echo esc_attr( $settings['faq']['eyebrow'] ?? 'BEFORE YOU DECIDE' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[faq][title]" value="<?php echo esc_attr( $settings['faq']['title'] ?? 'Questions, answered.' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+							<textarea name="filament_builder[faq][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['faq']['description'] ?? '' ); ?></textarea>
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Ask Prompt Link Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[faq][ask_text]" value="<?php echo esc_attr( $settings['faq']['ask_text'] ?? 'Ask 3DKoda →' ); ?>" class="widefat">
+							<label style="margin-top:8px;"><?php esc_html_e( 'Ask Prompt URL', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[faq][ask_url]" value="<?php echo esc_attr( $settings['faq']['ask_url'] ?? '#' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'FAQ Accordion Questions (6 Questions)', 'woodmart-child' ); ?></h4>
+					<?php
+					$faq_items = ! empty( $settings['faq']['items'] ) ? $settings['faq']['items'] : array();
+					for ( $f_i = 0; $f_i < 6; $f_i++ ) :
+						$fi = $faq_items[ $f_i ] ?? array();
+					?>
+						<div class="wc-box-group" style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:12px;">
+							<div class="wc-field" style="margin-bottom:8px;">
+								<label><?php printf( esc_html__( 'Question %d', 'woodmart-child' ), $f_i + 1 ); ?></label>
+								<input type="text" name="filament_builder[faq][items][<?php echo esc_attr( $f_i ); ?>][question]" value="<?php echo esc_attr( $fi['question'] ?? '' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Answer', 'woodmart-child' ); ?></label>
+								<textarea name="filament_builder[faq][items][<?php echo esc_attr( $f_i ); ?>][answer]" rows="2" class="widefat"><?php echo esc_textarea( $fi['answer'] ?? '' ); ?></textarea>
+							</div>
+						</div>
+					<?php endfor; ?>
+
+					<h4 class="wc-subhead" style="margin-top:24px; color:#ea580c;"><?php esc_html_e( 'Bottom Orange Call to Action Banner', 'woodmart-child' ); ?></h4>
+					<div class="wc-box-group" style="background:#fff; border:2px solid #ea580c; border-radius:10px; padding:18px;">
+						<div class="wc-field-row grid-2">
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Banner Badge Tag', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[faq][cta][badge]" value="<?php echo esc_attr( $settings['faq']['cta']['badge'] ?? 'BALTIC LOGISTICS & BULK TIERS' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Banner Heading', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[faq][cta][title]" value="<?php echo esc_attr( $settings['faq']['cta']['title'] ?? 'Ready to bring your next print to life?' ); ?>" class="widefat">
+							</div>
+						</div>
+
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Banner Description', 'woodmart-child' ); ?></label>
+							<textarea name="filament_builder[faq][cta][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['faq']['cta']['description'] ?? '' ); ?></textarea>
+						</div>
+
+						<div class="wc-field-row grid-2">
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Primary Button 1 Text (Dark)', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[faq][cta][btn_shop_text]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_shop_text'] ?? 'Shop PLA Basic Now' ); ?>" class="widefat">
+								<label style="margin-top:6px;"><?php esc_html_e( 'Button 1 URL', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[faq][cta][btn_shop_url]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_shop_url'] ?? '#choose-format' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Secondary Button 2 Text (White)', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[faq][cta][btn_quote_text]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_quote_text'] ?? 'Request Business Quote' ); ?>" class="widefat">
+								<label style="margin-top:6px;"><?php esc_html_e( 'Button 2 URL', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[faq][cta][btn_quote_url]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_quote_url'] ?? '#' ); ?>" class="widefat">
+							</div>
+						</div>
+					</div>
+				</section>
 			</div>
 		</div>
 	</div>
@@ -2558,6 +2753,71 @@ function woodmart_child_save_filament_builder_meta( $post_id, $post ) {
 					'title'    => sanitize_text_field( $dl_item['title'] ),
 					'subtitle' => sanitize_text_field( $dl_item['subtitle'] ?? '' ),
 					'url'      => esc_url_raw( $dl_item['url'] ?? '#' ),
+				);
+			}
+		}
+	}
+
+	// 14. Printing Tips
+	$clean['printing_tips'] = array(
+		'enabled'     => ! empty( $raw_data['printing_tips']['enabled'] ) ? '1' : '0',
+		'title'       => sanitize_text_field( $raw_data['printing_tips']['title'] ?? 'Printing Tips' ),
+		'description' => sanitize_textarea_field( $raw_data['printing_tips']['description'] ?? '' ),
+		'items'       => array(),
+	);
+	if ( ! empty( $raw_data['printing_tips']['items'] ) && is_array( $raw_data['printing_tips']['items'] ) ) {
+		foreach ( $raw_data['printing_tips']['items'] as $tip_item ) {
+			if ( ! empty( $tip_item['title'] ) || ! empty( $tip_item['content'] ) ) {
+				$clean['printing_tips']['items'][] = array(
+					'title'   => sanitize_text_field( $tip_item['title'] ?? '' ),
+					'content' => sanitize_textarea_field( $tip_item['content'] ?? '' ),
+				);
+			}
+		}
+	}
+
+	// 15. What's in the Box
+	$sp_box_arr = array_filter( array_map( 'trim', explode( "\n", sanitize_textarea_field( $raw_data['box_contents']['spool_items_text'] ?? '' ) ) ) );
+	$rf_box_arr = array_filter( array_map( 'trim', explode( "\n", sanitize_textarea_field( $raw_data['box_contents']['refill_items_text'] ?? '' ) ) ) );
+
+	$clean['box_contents'] = array(
+		'enabled'      => ! empty( $raw_data['box_contents']['enabled'] ) ? '1' : '0',
+		'eyebrow'      => sanitize_text_field( $raw_data['box_contents']['eyebrow'] ?? 'START WITH WHAT YOU NEED' ),
+		'title'        => sanitize_text_field( $raw_data['box_contents']['title'] ?? "What's in the box." ),
+		'spool_badge'  => sanitize_text_field( $raw_data['box_contents']['spool_badge'] ?? 'RECOMMENDED' ),
+		'spool_title'  => sanitize_text_field( $raw_data['box_contents']['spool_title'] ?? 'COMPLETE SPOOL' ),
+		'spool_items'  => array_values( $sp_box_arr ),
+		'refill_title' => sanitize_text_field( $raw_data['box_contents']['refill_title'] ?? 'REFILL' ),
+		'refill_items' => array_values( $rf_box_arr ),
+		'note'         => sanitize_text_field( $raw_data['box_contents']['note'] ?? '' ),
+	);
+
+	// 16. FAQ & CTA Banner
+	$clean['faq'] = array(
+		'enabled'     => ! empty( $raw_data['faq']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['faq']['eyebrow'] ?? 'BEFORE YOU DECIDE' ),
+		'title'       => sanitize_text_field( $raw_data['faq']['title'] ?? 'Questions, answered.' ),
+		'description' => sanitize_textarea_field( $raw_data['faq']['description'] ?? '' ),
+		'ask_text'    => sanitize_text_field( $raw_data['faq']['ask_text'] ?? 'Ask 3DKoda →' ),
+		'ask_url'     => esc_url_raw( $raw_data['faq']['ask_url'] ?? '#' ),
+		'items'       => array(),
+		'cta'         => array(
+			'enabled'        => ! empty( $raw_data['faq']['cta']['enabled'] ) ? '1' : '0',
+			'badge'          => sanitize_text_field( $raw_data['faq']['cta']['badge'] ?? 'BALTIC LOGISTICS & BULK TIERS' ),
+			'title'          => sanitize_text_field( $raw_data['faq']['cta']['title'] ?? 'Ready to bring your next print to life?' ),
+			'description'    => sanitize_textarea_field( $raw_data['faq']['cta']['description'] ?? '' ),
+			'btn_shop_text'  => sanitize_text_field( $raw_data['faq']['cta']['btn_shop_text'] ?? 'Shop PLA Basic Now' ),
+			'btn_shop_url'   => esc_url_raw( $raw_data['faq']['cta']['btn_shop_url'] ?? '#choose-format' ),
+			'btn_quote_text' => sanitize_text_field( $raw_data['faq']['cta']['btn_quote_text'] ?? 'Request Business Quote' ),
+			'btn_quote_url'  => esc_url_raw( $raw_data['faq']['cta']['btn_quote_url'] ?? '#' ),
+		),
+	);
+	if ( ! empty( $raw_data['faq']['items'] ) && is_array( $raw_data['faq']['items'] ) ) {
+		foreach ( $raw_data['faq']['items'] as $faq_item ) {
+			if ( ! empty( $faq_item['question'] ) || ! empty( $faq_item['answer'] ) ) {
+				$clean['faq']['items'][] = array(
+					'question' => sanitize_text_field( $faq_item['question'] ?? '' ),
+					'answer'   => sanitize_textarea_field( $faq_item['answer'] ?? '' ),
 				);
 			}
 		}

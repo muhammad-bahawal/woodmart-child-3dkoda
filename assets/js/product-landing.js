@@ -710,7 +710,8 @@
 		const variationSummary = root.querySelector('#filament-variation-summary');
 		const mainPriceSpan = root.querySelector('.filament-current-price');
 		const swatches = root.querySelectorAll('.filament-swatch');
-		const formatCards = root.querySelectorAll('.filament-format-card');
+		const formatCards = root.querySelectorAll('.filament-formats-grid .filament-format-card');
+		const compFormatCards = root.querySelectorAll('.filament-format-cards-grid .filament-format-card');
 
 		let matrix = [];
 		const matrixScript = root.querySelector('#filament-variation-matrix');
@@ -849,7 +850,24 @@
 			});
 		});
 
-		// Format Cards Selection (The 2 Boxes: Complete Spool vs Refill)
+		// Synchronize Choose Format comparison section
+		function syncChooseFormatCards(formatSlug, formatTitle) {
+			if (!compFormatCards || !compFormatCards.length) return;
+			const query = ((formatSlug || '') + ' ' + (formatTitle || '')).toLowerCase();
+
+			compFormatCards.forEach(c => {
+				const type = (c.dataset.formatType || '').toLowerCase();
+				let isMatch = false;
+				if (query.includes('spool') && type.includes('spool')) {
+					isMatch = true;
+				} else if (query.includes('refill') && type.includes('refill')) {
+					isMatch = true;
+				}
+				c.classList.toggle('is-selected', isMatch);
+			});
+		}
+
+		// Format Cards Selection in Hero (The 2 Boxes: Complete Spool vs Refill)
 		formatCards.forEach(card => {
 			card.addEventListener('click', function () {
 				formatCards.forEach(c => c.classList.remove('is-active'));
@@ -866,8 +884,56 @@
 				if (matchedVar) {
 					applyVariation(matchedVar);
 				}
+
+				// Sync with Choose Format section
+				syncChooseFormatCards(selectedFormatSlug, currentFormatTitle);
 			});
 		});
+
+		// Two-way synchronization: clicking on Choose Format comparison cards or buttons
+		if (compFormatCards && compFormatCards.length) {
+			compFormatCards.forEach(card => {
+				card.addEventListener('click', function (e) {
+					const type = (this.dataset.formatType || '').toLowerCase();
+
+					// Highlight this comparison card
+					compFormatCards.forEach(c => c.classList.remove('is-selected'));
+					this.classList.add('is-selected');
+
+					// Find matching hero format card and trigger click
+					let matchedHeroCard = null;
+					formatCards.forEach(hc => {
+						const hSlug = (hc.dataset.format || '').toLowerCase();
+						const hTitle = (hc.dataset.title || '').toLowerCase();
+						if (type.includes('spool') && (hSlug.includes('spool') || hTitle.includes('spool'))) {
+							matchedHeroCard = hc;
+						} else if (type.includes('refill') && (hSlug.includes('refill') || hTitle.includes('refill'))) {
+							matchedHeroCard = hc;
+						}
+					});
+
+					if (matchedHeroCard) {
+						if (!matchedHeroCard.classList.contains('is-active')) {
+							matchedHeroCard.click();
+						}
+					}
+
+					// If the user clicked the action button, smoothly scroll to hero
+					if (e.target.closest('.btn-format-action')) {
+						const heroSection = document.getElementById('filament-hero') || root.querySelector('.filament-hero');
+						if (heroSection) {
+							const subnavEl = document.querySelector('.filament-subnav-bar');
+							const offset = (subnavEl ? subnavEl.offsetHeight : 52) + 20;
+							const topPos = heroSection.getBoundingClientRect().top + window.pageYOffset - offset;
+							window.scrollTo({
+								top: Math.max(0, topPos),
+								behavior: 'smooth'
+							});
+						}
+					}
+				});
+			});
+		}
 
 		// Essential Additions Add Button (Real WooCommerce Cart & Order Sync)
 		const additionAddBtns = root.querySelectorAll('.btn-addition-add');
@@ -986,10 +1052,60 @@
 	   FILAMENT: STICKY SUBNAV SMOOTH SCROLL & SCROLLSPY + COLOR PALETTE SYNC
 	   ========================================================================== */
 	(function initFilamentInteractiveSections() {
-		// 1. Subnav Smooth Scroll & Scrollspy
+		// 1. Subnav Smooth Scroll & Scrollspy (Matching 3D Printer Header Docking)
 		const subnav = document.querySelector('.filament-subnav-bar');
 		if (subnav) {
+			const oldSpacer = document.getElementById('filament-subnav-spacer');
+			if (oldSpacer) oldSpacer.remove();
+
+			const subnavLinksUl = subnav.querySelector('.filament-subnav-links');
 			const links = subnav.querySelectorAll('.filament-subnav-link');
+
+			function getHeaderOffset() {
+				const adminBar = document.getElementById('wpadminbar');
+				let adminOffset = 0;
+				if (adminBar) {
+					const abStyle = window.getComputedStyle(adminBar);
+					if (abStyle.display !== 'none' && abStyle.visibility !== 'hidden' && abStyle.position === 'fixed') {
+						adminOffset = adminBar.offsetHeight || 0;
+					}
+				}
+
+				const isMobile = window.innerWidth <= 1024;
+				let headerHeight = isMobile ? 60 : 64;
+
+				// Check visible Woodmart sticky/pinned header height if present
+				const stickyHeader = document.querySelector('.whb-sticked') || document.querySelector('.whb-clone');
+				if (stickyHeader && stickyHeader.offsetHeight > 0) {
+					headerHeight = stickyHeader.offsetHeight;
+				}
+
+				return adminOffset + headerHeight;
+			}
+
+			function updateStickyTop() {
+				const offset = getHeaderOffset();
+				document.documentElement.style.setProperty('--filament-subnav-top', offset + 'px');
+				subnav.style.setProperty('top', offset + 'px', 'important');
+			}
+			updateStickyTop();
+			window.addEventListener('resize', updateStickyTop);
+
+			function centerActiveTab(activeLink) {
+				if (!activeLink || !subnavLinksUl) return;
+				if (subnavLinksUl.scrollWidth > subnavLinksUl.clientWidth) {
+					const targetLi = activeLink.closest('li') || activeLink;
+					const ulRect = subnavLinksUl.getBoundingClientRect();
+					const liRect = targetLi.getBoundingClientRect();
+					const currentScroll = subnavLinksUl.scrollLeft;
+					const relativeLeft = liRect.left - ulRect.left;
+					const targetScroll = currentScroll + relativeLeft - (ulRect.width / 2) + (liRect.width / 2);
+					subnavLinksUl.scrollTo({
+						left: Math.max(0, targetScroll),
+						behavior: 'smooth'
+					});
+				}
+			}
 
 			// Handle link click with sticky offset
 			links.forEach(link => {
@@ -1000,27 +1116,32 @@
 					const targetEl = document.querySelector(targetId);
 					if (targetEl) {
 						e.preventDefault();
-						const subnavHeight = subnav.offsetHeight || 52;
-						const topPos = targetEl.getBoundingClientRect().top + window.pageYOffset - subnavHeight - 10;
+						const subnavHeight = subnav.offsetHeight || 48;
+						const offset = getHeaderOffset();
+						const topPos = targetEl.getBoundingClientRect().top + window.pageYOffset - (offset + subnavHeight + 10);
 						window.scrollTo({
-							top: topPos,
+							top: Math.max(0, topPos),
 							behavior: 'smooth'
 						});
 
 						links.forEach(l => l.classList.remove('is-active'));
 						this.classList.add('is-active');
+						centerActiveTab(this);
 					}
 				});
 			});
 
-			// Scrollspy to highlight active link
+			// Scrollspy to highlight active link & pinned shadow
 			let isScrolling = false;
 			window.addEventListener('scroll', function () {
 				if (!isScrolling) {
 					window.requestAnimationFrame(() => {
-						const fromTop = window.pageYOffset + (subnav.offsetHeight || 52) + 60;
-						let currentSectionId = '';
+						const offset = getHeaderOffset();
+						const subnavHeight = subnav.offsetHeight || 48;
+						const scrollY = window.pageYOffset;
+						const fromTop = scrollY + offset + subnavHeight + 30;
 
+						let currentSectionId = '';
 						links.forEach(link => {
 							const targetId = link.getAttribute('href');
 							if (targetId && targetId.startsWith('#')) {
@@ -1037,18 +1158,30 @@
 
 						if (currentSectionId) {
 							links.forEach(l => {
-								l.classList.toggle('is-active', l.getAttribute('href') === currentSectionId);
+								const isCurrent = l.getAttribute('href') === currentSectionId;
+								if (isCurrent && !l.classList.contains('is-active')) {
+									l.classList.add('is-active');
+									centerActiveTab(l);
+								} else if (!isCurrent && l.classList.contains('is-active')) {
+									l.classList.remove('is-active');
+								}
 							});
 						}
 
-						// Toggle pinned shadow class
-						subnav.classList.toggle('is-pinned', window.pageYOffset > (subnav.offsetTop || 200));
+						subnav.classList.toggle('is-pinned', scrollY > 200);
 
 						isScrolling = false;
 					});
 					isScrolling = true;
 				}
 			}, { passive: true });
+
+			// Center initial active tab on page load
+			const initialActive = subnav.querySelector('.filament-subnav-link.is-active');
+			if (initialActive) {
+				centerActiveTab(initialActive);
+				setTimeout(() => centerActiveTab(initialActive), 300);
+			}
 		}
 
 		// 2. Color Showcase Interactive Palette
@@ -1085,44 +1218,20 @@
 			});
 		}
 
-		// 3. Choose Format (Spool vs Refill) Comparison Card Actions
-		const formatButtons = document.querySelectorAll('.btn-format-action');
-		formatButtons.forEach(btn => {
-			btn.addEventListener('click', function (e) {
-				e.preventDefault();
-				const targetFormat = this.getAttribute('data-format'); // 'complete-spool' or 'refill'
-
-				// 1. Try to find matching format card in Hero section
-				let matchedHeroCard = null;
-				const heroFormatCards = document.querySelectorAll('.filament-formats-grid .filament-format-card');
-				heroFormatCards.forEach(card => {
-					const cardSlug = (card.getAttribute('data-format-slug') || '').toLowerCase();
-					const cardName = (card.getAttribute('data-format-name') || '').toLowerCase();
-					if (targetFormat === 'complete-spool' && (cardSlug.includes('spool') || cardName.includes('spool'))) {
-						matchedHeroCard = card;
-					} else if (targetFormat === 'refill' && (cardSlug.includes('refill') || cardName.includes('refill'))) {
-						matchedHeroCard = card;
-					}
-				});
-
-				if (matchedHeroCard) {
-					// Activate this format in hero
-					matchedHeroCard.click();
-
-					// Trigger Add to basket
-					const heroAddBtn = document.querySelector('.filament-hero .btn-add-to-cart') || document.querySelector('.btn-add-to-cart');
-					if (heroAddBtn) {
-						heroAddBtn.click();
-					}
-				} else {
-					// Fallback: trigger default hero add-to-cart
-					const heroAddBtn = document.querySelector('.filament-hero .btn-add-to-cart') || document.querySelector('.btn-add-to-cart');
-					if (heroAddBtn) {
-						heroAddBtn.click();
+		// 4. CTA Banner Shop button smooth scroll
+		const ctaShopBtn = document.querySelector('.btn-cta-shop');
+		if (ctaShopBtn) {
+			ctaShopBtn.addEventListener('click', function (e) {
+				const href = this.getAttribute('href');
+				if (href && href.startsWith('#')) {
+					e.preventDefault();
+					const targetEl = document.querySelector(href) || document.getElementById('choose-format') || document.getElementById('filament-hero');
+					if (targetEl) {
+						targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 					}
 				}
 			});
-		});
+		}
 	})();
 })();
 
