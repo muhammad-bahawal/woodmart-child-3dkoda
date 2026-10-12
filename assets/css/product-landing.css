@@ -4559,3 +4559,391 @@ div.product.landing-page-root .summary .price * {
 		padding: 28px 22px !important;
 	}
 }
+
+/* ==========================================================================
+   FILAMENT: TECHNICAL SPECIFICATIONS, RECOMMENDED SETTINGS & DOWNLOADS
+   ========================================================================== */
+
+/* 1. TECHNICAL SPECIFICATIONS TABLE */
+.landing-page-root .filament-specs-section {
+	background: #ffffff !important;
+	padding: 70px 0 60px !important;
+}
+
+.landing-page-root .filament-specs-container {
+	max-width: 1140px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-specs-header {
+	max-width: 780px !important;
+}
+
+.landing-page-root .filament-specs-title {
+	font-size: clamp(28px, 3.4vw, 38px) !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	letter-spacing: -0.025em !important;
+	line-height: 1.2 !important;
+	margin: 8px 0 10px !important;
+}
+
+.landing-page-root .filament-specs-subtitle {
+	font-size: 14px !important;
+	color: #64748b !important;
+	line-height: 1.55 !important;
+	margin: 0 !important;
+}
+
+.landing-page-root .filament-specs-card {
+	background: #ffffff !important;
+	border: 1px solid #e2e8f0 !important;
+	border-radius: 16px !important;
+	margin-top: 32px !important;
+	overflow: hidden !important;
+	box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02) !important;
+}
+
+.landing-page-root .filament-spec-row {
+	display: grid !important;
+	grid-template-columns: minmax(220px, 360px) 1fr !important;
+	padding: 14px 28px !important;
+	border-bottom: 1px solid #f1f5f9 !important;
+	align-items: center !important;
+}
+
+.landing-page-root .filament-spec-row:last-child {
+	border-bottom: none !important;
+}
+
+.landing-page-root .filament-spec-row.row-even {
+	background: #ffffff !important;
+}
+
+.landing-page-root .filament-spec-row.row-odd {
+	background: #f8fafc !important;
+}
+
+.landing-page-root .spec-cell-label {
+	font-size: 13.5px !important;
+	font-weight: 500 !important;
+	color: #475569 !important;
+}
+
+.landing-page-root .spec-cell-value {
+	font-size: 13.5px !important;
+	font-weight: 600 !important;
+	color: #0f172a !important;
+}
+
+.landing-page-root .filament-specs-note {
+	margin-top: 16px !important;
+}
+
+.landing-page-root .filament-specs-note p {
+	font-size: 12px !important;
+	color: #94a3b8 !important;
+	line-height: 1.4 !important;
+	margin: 0 !important;
+}
+
+/* 2. RECOMMENDED PRINT SETTINGS */
+.landing-page-root .filament-setup-section {
+	background: #ffffff !important;
+	padding: 30px 0 60px !important;
+}
+
+.landing-page-root .filament-setup-container {
+	max-width: 1140px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-setup-wrapper {
+	background: #edf3fa !important;
+	border: 1px solid #dce8f3 !important;
+	border-radius: 20px !important;
+	padding: 44px 48px !important;
+}
+
+.landing-page-root .filament-setup-top {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1.25fr) minmax(320px, 380px) !important;
+	gap: 40px !important;
+	align-items: flex-start !important;
+}
+
+.landing-page-root .filament-setup-info {
+	display: flex !important;
+	flex-direction: column !important;
+}
+
+.landing-page-root .filament-setup-title {
+	font-size: clamp(26px, 3.2vw, 36px) !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	letter-spacing: -0.025em !important;
+	line-height: 1.2 !important;
+	margin: 8px 0 12px !important;
+}
+
+.landing-page-root .filament-setup-desc {
+	font-size: 14.5px !important;
+	color: #475569 !important;
+	line-height: 1.6 !important;
+	margin: 0 0 20px !important;
+	max-width: 520px !important;
+}
+
+.landing-page-root .filament-setup-profile-link {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 6px !important;
+	font-size: 13.5px !important;
+	font-weight: 700 !important;
+	color: #0f172a !important;
+	text-decoration: underline !important;
+	text-underline-offset: 3px !important;
+	transition: color 0.15s ease !important;
+}
+
+.landing-page-root .filament-setup-profile-link:hover {
+	color: #ea580c !important;
+}
+
+.landing-page-root .filament-setup-profile-link .external-icon {
+	width: 14px !important;
+	height: 14px !important;
+	flex-shrink: 0 !important;
+}
+
+.landing-page-root .mini-buybox-card {
+	background: #ffffff !important;
+	border: 2px solid #ea580c !important;
+	border-radius: 16px !important;
+	padding: 24px 28px !important;
+	box-shadow: 0 8px 24px -4px rgba(234, 88, 12, 0.08) !important;
+}
+
+.landing-page-root .mini-buybox-badge {
+	font-size: 10.5px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.08em !important;
+	text-transform: uppercase !important;
+	color: #64748b !important;
+	display: block !important;
+	margin-bottom: 8px !important;
+}
+
+.landing-page-root .mini-buybox-title {
+	font-size: 24px !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	margin: 0 0 10px !important;
+	line-height: 1.2 !important;
+}
+
+.landing-page-root .mini-buybox-price-wrap {
+	margin-bottom: 18px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 2px !important;
+}
+
+.landing-page-root .mini-buybox-price {
+	font-size: 24px !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	line-height: 1 !important;
+}
+
+.landing-page-root .mini-buybox-vat {
+	font-size: 11.5px !important;
+	color: #64748b !important;
+}
+
+.landing-page-root .btn-setup-buybox {
+	width: 100% !important;
+	height: 44px !important;
+	background: #ea580c !important;
+	color: #ffffff !important;
+	border: none !important;
+	border-radius: 8px !important;
+	font-size: 13.5px !important;
+	font-weight: 700 !important;
+	cursor: pointer !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	transition: all 0.15s ease !important;
+}
+
+.landing-page-root .btn-setup-buybox:hover {
+	background: #c2410c !important;
+	box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25) !important;
+	transform: translateY(-1px) !important;
+}
+
+.landing-page-root .filament-setup-table-wrap {
+	margin-top: 32px !important;
+	background: #ffffff !important;
+	border: 1px solid #e2e8f0 !important;
+	border-radius: 14px !important;
+	overflow: hidden !important;
+}
+
+.landing-page-root .filament-setup-row {
+	display: grid !important;
+	grid-template-columns: minmax(200px, 320px) 1fr !important;
+	padding: 13px 26px !important;
+	border-bottom: 1px solid #f1f5f9 !important;
+	align-items: center !important;
+}
+
+.landing-page-root .filament-setup-row:last-child {
+	border-bottom: none !important;
+}
+
+.landing-page-root .filament-setup-row.row-even {
+	background: #ffffff !important;
+}
+
+.landing-page-root .filament-setup-row.row-odd {
+	background: #f8fafc !important;
+}
+
+.landing-page-root .setup-cell-label {
+	font-size: 13.5px !important;
+	font-weight: 500 !important;
+	color: #475569 !important;
+}
+
+.landing-page-root .setup-cell-value {
+	font-size: 13.5px !important;
+	font-weight: 600 !important;
+	color: #0f172a !important;
+}
+
+/* 3. DOWNLOADS & TECHNICAL DOCUMENTS */
+.landing-page-root .filament-downloads-section {
+	background: #ffffff !important;
+	padding: 60px 0 80px !important;
+}
+
+.landing-page-root .filament-downloads-container {
+	max-width: 1140px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-downloads-header {
+	text-align: center !important;
+	margin-bottom: 36px !important;
+}
+
+.landing-page-root .filament-downloads-title {
+	font-size: clamp(26px, 3.2vw, 36px) !important;
+	font-weight: 800 !important;
+	color: #0f172a !important;
+	letter-spacing: -0.025em !important;
+	margin: 0 0 10px !important;
+}
+
+.landing-page-root .filament-downloads-subtitle {
+	font-size: 14.5px !important;
+	color: #64748b !important;
+	margin: 0 !important;
+}
+
+.landing-page-root .filament-downloads-grid {
+	display: grid !important;
+	grid-template-columns: repeat(5, 1fr) !important;
+	gap: 16px !important;
+	max-width: 1140px !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-doc-card {
+	background: #ffffff !important;
+	border: 1px solid #e2e8f0 !important;
+	border-radius: 12px !important;
+	padding: 22px 14px 18px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: center !important;
+	text-align: center !important;
+	text-decoration: none !important;
+	transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.landing-page-root .filament-doc-card:hover {
+	transform: translateY(-2px) !important;
+	border-color: #ea580c !important;
+	box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.06) !important;
+}
+
+.landing-page-root .filament-doc-badge {
+	border: 1.5px solid #ea580c !important;
+	color: #ea580c !important;
+	font-size: 10.5px !important;
+	font-weight: 800 !important;
+	letter-spacing: 0.05em !important;
+	padding: 2px 7px !important;
+	border-radius: 4px !important;
+	display: inline-block !important;
+	margin-bottom: 10px !important;
+	line-height: 1.2 !important;
+}
+
+.landing-page-root .filament-doc-title {
+	font-size: 14.5px !important;
+	font-weight: 700 !important;
+	color: #0f172a !important;
+	line-height: 1.25 !important;
+	margin-bottom: 4px !important;
+	display: block !important;
+}
+
+.landing-page-root .filament-doc-subtitle {
+	font-size: 11.5px !important;
+	color: #64748b !important;
+	display: block !important;
+}
+
+/* Responsive adjustments for Specs, Setup & Downloads */
+@media (max-width: 1024px) {
+	.landing-page-root .filament-downloads-grid {
+		grid-template-columns: repeat(3, 1fr) !important;
+	}
+
+	.landing-page-root .filament-setup-top {
+		grid-template-columns: 1fr !important;
+		gap: 28px !important;
+	}
+
+	.landing-page-root .filament-setup-mini-buybox {
+		max-width: 420px !important;
+	}
+}
+
+@media (max-width: 640px) {
+	.landing-page-root .filament-downloads-grid {
+		grid-template-columns: repeat(2, 1fr) !important;
+		gap: 12px !important;
+	}
+
+	.landing-page-root .filament-setup-wrapper {
+		padding: 28px 20px !important;
+	}
+
+	.landing-page-root .filament-setup-row {
+		grid-template-columns: 1fr !important;
+		gap: 4px !important;
+		padding: 12px 18px !important;
+	}
+
+	.landing-page-root .filament-spec-row {
+		grid-template-columns: 1fr !important;
+		gap: 4px !important;
+		padding: 12px 18px !important;
+	}
+}

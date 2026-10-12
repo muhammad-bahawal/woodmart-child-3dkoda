@@ -55,7 +55,16 @@ if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_i
 		// 10. The 3DKoda Difference (Local Team Behind It - Dark)
 		get_template_part( 'template-parts/filament/brand-difference' );
 
-		// 11. Sticky Bottom Purchase Bar
+		// 11. Technical Specifications (PLA Parameters Table)
+		get_template_part( 'template-parts/filament/specifications' );
+
+		// 12. Recommended Print Settings (Ice-blue box with Starting Settings & Mini Buy Box)
+		get_template_part( 'template-parts/filament/recommended-settings' );
+
+		// 13. Downloads & Technical Documents (5x2 Grid of PDF Cards)
+		get_template_part( 'template-parts/filament/downloads' );
+
+		// 14. Sticky Bottom Purchase Bar
 		get_template_part( 'template-parts/product/sticky-bottom-bar' );
 		?>
 	</div>
