@@ -31,7 +31,31 @@ if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_i
 		// 2. Essential Additions (3 Cross-sell cards & Baltic shipping / payment trust strip)
 		get_template_part( 'template-parts/filament/essential-additions' );
 
-		// 3. Sticky Bottom Purchase Bar
+		// 3. In-Page Sticky Navigation
+		get_template_part( 'template-parts/filament/sub-nav' );
+
+		// 4. Flagship Formulation Showcase Banner (Dark)
+		get_template_part( 'template-parts/filament/formulation' );
+
+		// 5. Find the Perfect Color Showcase
+		get_template_part( 'template-parts/filament/colors-showcase' );
+
+		// 6. Material Overview (4 Cards: PLA, PETG, ABS/ASA, CF)
+		get_template_part( 'template-parts/filament/materials' );
+
+		// 7. Smart Material Detection (Built for RFID & AMS Compatibility)
+		get_template_part( 'template-parts/filament/rfid-ams' );
+
+		// 8. Where It Earns Its Place (Dark Use Cases Grid)
+		get_template_part( 'template-parts/filament/use-cases' );
+
+		// 9. Choose Your Format (Complete Spool vs Refill?)
+		get_template_part( 'template-parts/filament/choose-format' );
+
+		// 10. The 3DKoda Difference (Local Team Behind It - Dark)
+		get_template_part( 'template-parts/filament/brand-difference' );
+
+		// 11. Sticky Bottom Purchase Bar
 		get_template_part( 'template-parts/product/sticky-bottom-bar' );
 		?>
 	</div>

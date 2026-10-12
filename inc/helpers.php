@@ -906,6 +906,161 @@ function woodmart_child_get_default_filament_builder_data() {
 			'shipping_bullet_2' => '1–2 day Baltic delivery from Tallinn. See our Shipping Policy',
 			'payment_methods'   => array( 'Montonio', 'Bank Payments', 'Card Payments', 'Digital Wallets' ),
 		),
+		'nav'                 => array(
+			'enabled'  => '1',
+			'items'    => array(
+				array( 'label' => 'OVERVIEW', 'target' => '#overview' ),
+				array( 'label' => 'FIND COLORS', 'target' => '#find-colors' ),
+				array( 'label' => 'PERFORMANCE', 'target' => '#materials' ),
+				array( 'label' => 'RFID & AMS', 'target' => '#rfid-ams' ),
+				array( 'label' => 'DOWNLOAD', 'target' => '#downloads' ),
+				array( 'label' => 'PRINTING TIPS', 'target' => '#printing-tips' ),
+			),
+			'b2b_text' => 'b2b order →',
+			'b2b_url'  => '#',
+		),
+		'formulation'         => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'FLAGSHIP FILAMENT FORMULATION',
+			'title'       => 'PLA Basic',
+			'subtitle'    => 'Stand Out, Never Dull',
+			'description' => 'Designed from the polymer-up for high-speed Bambu Lab ecosystems. Get reliable first-layer adhesion, vibrant consistency, and ultra-smooth surface finishes right out of the box.',
+			'image'       => '',
+			'credits'     => '• Cake Containers @s_branquinho • Cute figure of bear flying on balloon @Sam HellMyth • Brick Stackable Desk Boxes @Sakul • Articulated Orca @Jopek Design',
+		),
+		'colors_showcase'     => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'ONE FILAMENT FAMILY. MANY USE CASES',
+			'title'       => 'Find the Perfect Color',
+			'description' => 'With a palette of up to 30 colors, Bambu PLA Basic lets you find the perfect shade to bring flair to your projects. The colors remain consistent across prints, ensuring a stunning and uniform finish every time',
+		),
+		'materials'           => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'MATERIAL OVERVIEW',
+			'title'       => 'Choose the right material',
+			'description' => 'PLA Basic is the everyday choice. Explore other Bambu Lab material families for tougher or more specialised work',
+			'items'       => array(
+				array(
+					'tag'         => 'PLA',
+					'title'       => 'Fast concepts',
+					'description' => 'Reliable everyday prints and presentation models.',
+				),
+				array(
+					'tag'         => 'PETG',
+					'title'       => 'Functional parts',
+					'description' => 'Balanced durability for tools and fixtures',
+				),
+				array(
+					'tag'         => 'ABS / ASA',
+					'title'       => 'Working prototypes',
+					'description' => 'Heat- and impact-resistant options',
+				),
+				array(
+					'tag'         => 'CF MATERIALS',
+					'title'       => 'Engineering intent',
+					'description' => 'Reinforced composites for stiff parts',
+				),
+			),
+		),
+		'rfid_ams'            => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'SMART MATERIAL DETECTION',
+			'title'       => 'Built for RFID & AMS Compatibility',
+			'description' => 'All printing parameters are embedded in RFID and read automatically through the Bambu Lab AMS. Load and print, with no tedious setup steps',
+			'bullets'     => array(
+				'Automatic material recognition',
+				'Real-time remaining-filament tracking',
+				'Seamless multi-color workflow with AMS',
+				'Reduces print failures from wrong settings',
+			),
+			'link_text'   => 'See AMS-compatible printers →',
+			'link_url'    => '#',
+		),
+		'use_cases'           => array(
+			'enabled' => '1',
+			'eyebrow' => 'WHERE IT EARNS ITS PLACE',
+			'title'   => "Made for ideas\nthat have somewhere to go.",
+			'items'   => array(
+				array(
+					'num'         => '01',
+					'title'       => 'Product development',
+					'description' => 'Move through form, fit and function without waiting on an outside supplier.',
+				),
+				array(
+					'num'         => '02',
+					'title'       => 'Small production',
+					'description' => 'Build jigs, fixtures and repeatable parts near the work that needs them.',
+				),
+				array(
+					'num'         => '03',
+					'title'       => 'Education & labs',
+					'description' => 'Give learners a dependable path from CAD to a physical result.',
+				),
+				array(
+					'num'         => '04',
+					'title'       => 'Creative studios',
+					'description' => 'Create props, models and detailed objects with broad material choice.',
+				),
+			),
+		),
+		'choose_format'       => array(
+			'enabled'        => '1',
+			'eyebrow'        => 'CHOOSE YOUR FORMAT',
+			'title'          => 'Complete Spool or Refill?',
+			'subtitle'       => "The filament is the same. What changes is what's included",
+			'spool_badge'    => 'RECOMMENDED FOR FIRST PURCHASE',
+			'spool_title'    => 'Complete Spool',
+			'spool_price'    => '€24.90',
+			'spool_vat'      => '€24.90 incl. 24% VAT · sample price',
+			'spool_desc'     => "Ready-to-print 1 kg spool for everyday PLA work. Best choice if this is your first time buying Bambu filament or you don't yet own a reusable spool",
+			'spool_bullets'  => array(
+				'Includes reusable spool',
+				'Ready to load and print immediately',
+				"Best if you don't already own a spool",
+			),
+			'spool_btn_text' => 'Add Complete Spool →',
+			'refill_badge'   => 'BEST IF YOU ALREADY OWN A SPOOL',
+			'refill_title'   => 'Refill',
+			'refill_price'   => '€21.90',
+			'refill_vat'     => '€21.90 incl. 24% VAT · sample price',
+			'refill_desc'    => 'Fits the Bambu Reusable Spool. See official assembly guide',
+			'refill_bullets' => array(
+				'No spool included',
+				'Less packaging waste, more eco-friendly',
+				'Requires an existing compatible spool',
+			),
+			'refill_btn_text' => 'Add Refill',
+		),
+		'brand_difference'    => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'THE 3DKODA DIFFERENCE',
+			'title'       => "Quality filament.\nA local team behind it.",
+			'description' => 'Choosing the right filament is the first step. We help you pick the right material, dial in your print settings, and get support whenever you need it',
+			'btn_text'    => 'Talk to a local expert →',
+			'btn_url'     => '#',
+			'items'       => array(
+				array(
+					'icon'        => 'location',
+					'title'       => 'Tallinn-based stock',
+					'description' => 'Faster dispatch and clear local availability.',
+				),
+				array(
+					'icon'        => 'storage',
+					'title'       => 'Storage guidance',
+					'description' => 'Advice on keeping your filament dry and print-ready.',
+				),
+				array(
+					'icon'        => 'support',
+					'title'       => 'Practical print support',
+					'description' => 'Help from people familiar with PLA settings and troubleshooting.',
+				),
+				array(
+					'icon'        => 'business',
+					'title'       => 'Business purchasing',
+					'description' => 'VAT invoices, volume quotes and setup advice for teams.',
+				),
+			),
+		),
 	);
 }
 
@@ -955,6 +1110,18 @@ function woodmart_child_is_filament_section_enabled( $section_key, $product_id =
 	}
 
 	return true;
+}
+
+/**
+ * Get section data for a given Filament product.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return array
+ */
+function woodmart_child_get_filament_section_data( $section_key, $product_id = 0 ) {
+	$settings = woodmart_child_get_filament_builder_settings( $product_id );
+	return isset( $settings[ $section_key ] ) ? $settings[ $section_key ] : array();
 }
 
 /**

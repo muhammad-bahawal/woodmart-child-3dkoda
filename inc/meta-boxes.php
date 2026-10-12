@@ -1417,6 +1417,14 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 			<nav class="wc-builder-tabs-nav" role="tablist">
 				<button type="button" class="wc-tab-btn active" data-tab="tab-filament-hero"><span class="dashicons dashicons-art"></span> <?php esc_html_e( 'Hero & Colors', 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-filament-additions"><span class="dashicons dashicons-plus-alt"></span> <?php esc_html_e( 'Essential Additions', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-nav"><span class="dashicons dashicons-menu"></span> <?php esc_html_e( 'Sticky Subnav', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-formulation"><span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Formulation Banner', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-colors-showcase"><span class="dashicons dashicons-color-picker"></span> <?php esc_html_e( 'Color Showcase', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-materials"><span class="dashicons dashicons-screenoptions"></span> <?php esc_html_e( 'Material Overview', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-rfid-ams"><span class="dashicons dashicons-rss"></span> <?php esc_html_e( 'RFID & AMS', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-use-cases"><span class="dashicons dashicons-grid-view"></span> <?php esc_html_e( 'Use Cases', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-format"><span class="dashicons dashicons-columns"></span> <?php esc_html_e( 'Spool vs Refill', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-filament-brand"><span class="dashicons dashicons-awards"></span> <?php esc_html_e( '3DKoda Difference', 'woodmart-child' ); ?></button>
 			</nav>
 
 			<!-- Tab Panels -->
@@ -1629,6 +1637,419 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 						<input type="text" name="filament_builder[essential_additions][payment_methods_csv]" value="<?php echo esc_attr( $pm ); ?>" class="widefat">
 					</div>
 				</section>
+
+				<!-- 3. STICKY SUBNAV -->
+				<section class="wc-tab-panel" id="tab-filament-nav">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[nav][enabled]" value="1" <?php checked( ! empty( $settings['nav']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable In-Page Sticky Navigation', 'woodmart-child' ); ?></strong></span>
+						</label>
+						<p class="description"><?php esc_html_e( 'Anchor links strip that stays sticky on scroll (OVERVIEW, FIND COLORS, PERFORMANCE, RFID & AMS, etc.).', 'woodmart-child' ); ?></p>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Right Action Button Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[nav][b2b_text]" value="<?php echo esc_attr( $settings['nav']['b2b_text'] ?? 'b2b order →' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Right Action Button URL / Anchor', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[nav][b2b_url]" value="<?php echo esc_attr( $settings['nav']['b2b_url'] ?? '#' ); ?>" class="widefat">
+						</div>
+					</div>
+				</section>
+
+				<!-- 4. FORMULATION SHOWCASE BANNER -->
+				<section class="wc-tab-panel" id="tab-filament-formulation">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[formulation][enabled]" value="1" <?php checked( ! empty( $settings['formulation']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Formulation Showcase Banner', 'woodmart-child' ); ?></strong></span>
+						</label>
+						<p class="description"><?php esc_html_e( 'Dark banner showcasing filament spools, 3D prints, and polymer consistency statement.', 'woodmart-child' ); ?></p>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[formulation][eyebrow]" value="<?php echo esc_attr( $settings['formulation']['eyebrow'] ?? 'FLAGSHIP FILAMENT FORMULATION' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Main Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[formulation][title]" value="<?php echo esc_attr( $settings['formulation']['title'] ?? 'PLA Basic' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Subtitle / Tagline', 'woodmart-child' ); ?></label>
+						<input type="text" name="filament_builder[formulation][subtitle]" value="<?php echo esc_attr( $settings['formulation']['subtitle'] ?? 'Stand Out, Never Dull' ); ?>" class="widefat">
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+						<textarea name="filament_builder[formulation][description]" rows="3" class="widefat"><?php echo esc_textarea( $settings['formulation']['description'] ?? '' ); ?></textarea>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Custom Banner Image URL (Leave blank to use theme default render)', 'woodmart-child' ); ?></label>
+						<div style="display:flex; gap:8px;">
+							<input type="text" name="filament_builder[formulation][image]" value="<?php echo esc_attr( $settings['formulation']['image'] ?? '' ); ?>" class="widefat wc-media-url">
+							<button type="button" class="button button-secondary wc-upload-media-btn"><?php esc_html_e( 'Choose Image', 'woodmart-child' ); ?></button>
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Creator Credits Strip (Displayed along bottom of banner card)', 'woodmart-child' ); ?></label>
+						<textarea name="filament_builder[formulation][credits]" rows="2" class="widefat"><?php echo esc_textarea( $settings['formulation']['credits'] ?? '' ); ?></textarea>
+					</div>
+				</section>
+
+				<!-- 5. COLORS SHOWCASE -->
+				<section class="wc-tab-panel" id="tab-filament-colors-showcase">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[colors_showcase][enabled]" value="1" <?php checked( ! empty( $settings['colors_showcase']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Colors Showcase Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+						<p class="description"><?php esc_html_e( 'Section displaying the 30+ color shade palette grouped vertically in 10 columns matching Figma.', 'woodmart-child' ); ?></p>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[colors_showcase][eyebrow]" value="<?php echo esc_attr( $settings['colors_showcase']['eyebrow'] ?? 'ONE FILAMENT FAMILY. MANY USE CASES' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[colors_showcase][title]" value="<?php echo esc_attr( $settings['colors_showcase']['title'] ?? 'Find the Perfect Color' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Description', 'woodmart-child' ); ?></label>
+						<textarea name="filament_builder[colors_showcase][description]" rows="3" class="widefat"><?php echo esc_textarea( $settings['colors_showcase']['description'] ?? '' ); ?></textarea>
+					</div>
+				</section>
+
+				<!-- 6. MATERIAL OVERVIEW -->
+				<section class="wc-tab-panel" id="tab-filament-materials">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[materials][enabled]" value="1" <?php checked( ! empty( $settings['materials']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Material Overview Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[materials][eyebrow]" value="<?php echo esc_attr( $settings['materials']['eyebrow'] ?? 'MATERIAL OVERVIEW' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[materials][title]" value="<?php echo esc_attr( $settings['materials']['title'] ?? 'Choose the right material' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Description', 'woodmart-child' ); ?></label>
+						<textarea name="filament_builder[materials][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['materials']['description'] ?? '' ); ?></textarea>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Material Cards (4 Cards)', 'woodmart-child' ); ?></h4>
+					<?php
+					$mat_items = ! empty( $settings['materials']['items'] ) ? $settings['materials']['items'] : array();
+					$default_tags = array( 'PLA', 'PETG', 'ABS / ASA', 'CF MATERIALS' );
+					for ( $m_i = 0; $m_i < 4; $m_i++ ) :
+						$mi = $mat_items[ $m_i ] ?? array();
+					?>
+						<div class="wc-box-group" style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:12px;">
+							<h5 style="margin:0 0 10px; font-size:13px; color:#0f172a;"><?php printf( esc_html__( 'Card %d: %s', 'woodmart-child' ), $m_i + 1, esc_html( $mi['tag'] ?? $default_tags[ $m_i ] ) ); ?></h5>
+							<div class="wc-field-row grid-3">
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Tag / Category', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[materials][items][<?php echo esc_attr( $m_i ); ?>][tag]" value="<?php echo esc_attr( $mi['tag'] ?? $default_tags[ $m_i ] ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Card Title', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[materials][items][<?php echo esc_attr( $m_i ); ?>][title]" value="<?php echo esc_attr( $mi['title'] ?? '' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[materials][items][<?php echo esc_attr( $m_i ); ?>][description]" value="<?php echo esc_attr( $mi['description'] ?? '' ); ?>" class="widefat">
+								</div>
+							</div>
+						</div>
+					<?php endfor; ?>
+				</section>
+
+				<!-- 7. SMART MATERIAL DETECTION (RFID & AMS) -->
+				<section class="wc-tab-panel" id="tab-filament-rfid-ams">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[rfid_ams][enabled]" value="1" <?php checked( ! empty( $settings['rfid_ams']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable RFID & AMS Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[rfid_ams][eyebrow]" value="<?php echo esc_attr( $settings['rfid_ams']['eyebrow'] ?? 'SMART MATERIAL DETECTION' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[rfid_ams][title]" value="<?php echo esc_attr( $settings['rfid_ams']['title'] ?? 'Built for RFID & AMS Compatibility' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+						<textarea name="filament_builder[rfid_ams][description]" rows="3" class="widefat"><?php echo esc_textarea( $settings['rfid_ams']['description'] ?? '' ); ?></textarea>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Feature Bullets (One per line)', 'woodmart-child' ); ?></label>
+						<?php
+						$rfid_bullets = ! empty( $settings['rfid_ams']['bullets'] ) ? implode( "\n", $settings['rfid_ams']['bullets'] ) : "Automatic material recognition\nReal-time remaining-filament tracking\nSeamless multi-color workflow with AMS\nReduces print failures from wrong settings";
+						?>
+						<textarea name="filament_builder[rfid_ams][bullets_text]" rows="4" class="widefat"><?php echo esc_textarea( $rfid_bullets ); ?></textarea>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Bottom Link Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[rfid_ams][link_text]" value="<?php echo esc_attr( $settings['rfid_ams']['link_text'] ?? 'See AMS-compatible printers →' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Bottom Link URL', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[rfid_ams][link_url]" value="<?php echo esc_attr( $settings['rfid_ams']['link_url'] ?? '#' ); ?>" class="widefat">
+						</div>
+					</div>
+				</section>
+
+				<!-- 8. WHERE IT EARNS ITS PLACE (USE CASES) -->
+				<section class="wc-tab-panel" id="tab-filament-use-cases">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[use_cases][enabled]" value="1" <?php checked( ! empty( $settings['use_cases']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Use Cases Section (Dark)', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[use_cases][eyebrow]" value="<?php echo esc_attr( $settings['use_cases']['eyebrow'] ?? 'WHERE IT EARNS ITS PLACE' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+							<textarea name="filament_builder[use_cases][title]" rows="2" class="widefat"><?php echo esc_textarea( $settings['use_cases']['title'] ?? "Made for ideas\nthat have somewhere to go." ); ?></textarea>
+						</div>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Use Case Items (4 Numbered Columns)', 'woodmart-child' ); ?></h4>
+					<?php
+					$uc_items = ! empty( $settings['use_cases']['items'] ) ? $settings['use_cases']['items'] : array();
+					$default_nums = array( '01', '02', '03', '04' );
+					for ( $u = 0; $u < 4; $u++ ) :
+						$u_item = $uc_items[ $u ] ?? array();
+					?>
+						<div class="wc-box-group" style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:12px;">
+							<div class="wc-field-row grid-3">
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Number', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[use_cases][items][<?php echo esc_attr( $u ); ?>][num]" value="<?php echo esc_attr( $u_item['num'] ?? $default_nums[ $u ] ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[use_cases][items][<?php echo esc_attr( $u ); ?>][title]" value="<?php echo esc_attr( $u_item['title'] ?? '' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[use_cases][items][<?php echo esc_attr( $u ); ?>][description]" value="<?php echo esc_attr( $u_item['description'] ?? '' ); ?>" class="widefat">
+								</div>
+							</div>
+						</div>
+					<?php endfor; ?>
+				</section>
+
+				<!-- 9. CHOOSE YOUR FORMAT (SPOOL VS REFILL) -->
+				<section class="wc-tab-panel" id="tab-filament-format">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[choose_format][enabled]" value="1" <?php checked( ! empty( $settings['choose_format']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Spool or Refill Format Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[choose_format][eyebrow]" value="<?php echo esc_attr( $settings['choose_format']['eyebrow'] ?? 'CHOOSE YOUR FORMAT' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[choose_format][title]" value="<?php echo esc_attr( $settings['choose_format']['title'] ?? 'Complete Spool or Refill?' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Subtitle', 'woodmart-child' ); ?></label>
+						<input type="text" name="filament_builder[choose_format][subtitle]" value="<?php echo esc_attr( $settings['choose_format']['subtitle'] ?? "The filament is the same. What changes is what's included" ); ?>" class="widefat">
+					</div>
+
+					<div class="wc-field-row grid-2" style="margin-top:20px;">
+						<!-- Card 1: Complete Spool -->
+						<div class="wc-box-group" style="background:#fff; border:2px solid #f97316; border-radius:12px; padding:18px;">
+							<h4 style="margin:0 0 12px; color:#ea580c;"><?php esc_html_e( 'Card 1: Complete Spool', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Badge Tag', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[choose_format][spool_badge]" value="<?php echo esc_attr( $settings['choose_format']['spool_badge'] ?? 'RECOMMENDED FOR FIRST PURCHASE' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Card Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[choose_format][spool_title]" value="<?php echo esc_attr( $settings['choose_format']['spool_title'] ?? 'Complete Spool' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field-row grid-2">
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Price Text', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[choose_format][spool_price]" value="<?php echo esc_attr( $settings['choose_format']['spool_price'] ?? '€24.90' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'VAT Note', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[choose_format][spool_vat]" value="<?php echo esc_attr( $settings['choose_format']['spool_vat'] ?? '€24.90 incl. 24% VAT · sample price' ); ?>" class="widefat">
+								</div>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+								<textarea name="filament_builder[choose_format][spool_desc]" rows="2" class="widefat"><?php echo esc_textarea( $settings['choose_format']['spool_desc'] ?? '' ); ?></textarea>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Bullets (One per line)', 'woodmart-child' ); ?></label>
+								<?php
+								$sp_bullets = ! empty( $settings['choose_format']['spool_bullets'] ) ? implode( "\n", $settings['choose_format']['spool_bullets'] ) : "Includes reusable spool\nReady to load and print immediately\nBest if you don't already own a spool";
+								?>
+								<textarea name="filament_builder[choose_format][spool_bullets_text]" rows="3" class="widefat"><?php echo esc_textarea( $sp_bullets ); ?></textarea>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Button Text', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[choose_format][spool_btn_text]" value="<?php echo esc_attr( $settings['choose_format']['spool_btn_text'] ?? 'Add Complete Spool →' ); ?>" class="widefat">
+							</div>
+						</div>
+
+						<!-- Card 2: Refill -->
+						<div class="wc-box-group" style="background:#fff; border:1px solid #cbd5e1; border-radius:12px; padding:18px;">
+							<h4 style="margin:0 0 12px; color:#334155;"><?php esc_html_e( 'Card 2: Refill', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Badge Tag', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[choose_format][refill_badge]" value="<?php echo esc_attr( $settings['choose_format']['refill_badge'] ?? 'BEST IF YOU ALREADY OWN A SPOOL' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Card Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[choose_format][refill_title]" value="<?php echo esc_attr( $settings['choose_format']['refill_title'] ?? 'Refill' ); ?>" class="widefat">
+							</div>
+							<div class="wc-field-row grid-2">
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Price Text', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[choose_format][refill_price]" value="<?php echo esc_attr( $settings['choose_format']['refill_price'] ?? '€21.90' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'VAT Note', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[choose_format][refill_vat]" value="<?php echo esc_attr( $settings['choose_format']['refill_vat'] ?? '€21.90 incl. 24% VAT · sample price' ); ?>" class="widefat">
+								</div>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+								<textarea name="filament_builder[choose_format][refill_desc]" rows="2" class="widefat"><?php echo esc_textarea( $settings['choose_format']['refill_desc'] ?? '' ); ?></textarea>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Bullets (One per line)', 'woodmart-child' ); ?></label>
+								<?php
+								$rf_bullets = ! empty( $settings['choose_format']['refill_bullets'] ) ? implode( "\n", $settings['choose_format']['refill_bullets'] ) : "No spool included\nLess packaging waste, more eco-friendly\nRequires an existing compatible spool";
+								?>
+								<textarea name="filament_builder[choose_format][refill_bullets_text]" rows="3" class="widefat"><?php echo esc_textarea( $rf_bullets ); ?></textarea>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Button Text', 'woodmart-child' ); ?></label>
+								<input type="text" name="filament_builder[choose_format][refill_btn_text]" value="<?php echo esc_attr( $settings['choose_format']['refill_btn_text'] ?? 'Add Refill' ); ?>" class="widefat">
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 10. THE 3DKODA DIFFERENCE -->
+				<section class="wc-tab-panel" id="tab-filament-brand">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="filament_builder[brand_difference][enabled]" value="1" <?php checked( ! empty( $settings['brand_difference']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable 3DKoda Difference Section (Dark)', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[brand_difference][eyebrow]" value="<?php echo esc_attr( $settings['brand_difference']['eyebrow'] ?? 'THE 3DKODA DIFFERENCE' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+							<textarea name="filament_builder[brand_difference][title]" rows="2" class="widefat"><?php echo esc_textarea( $settings['brand_difference']['title'] ?? "Quality filament.\nA local team behind it." ); ?></textarea>
+						</div>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+							<textarea name="filament_builder[brand_difference][description]" rows="3" class="widefat"><?php echo esc_textarea( $settings['brand_difference']['description'] ?? '' ); ?></textarea>
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Action Link Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[brand_difference][btn_text]" value="<?php echo esc_attr( $settings['brand_difference']['btn_text'] ?? 'Talk to a local expert →' ); ?>" class="widefat">
+							<label style="margin-top:8px;"><?php esc_html_e( 'Action Link URL', 'woodmart-child' ); ?></label>
+							<input type="text" name="filament_builder[brand_difference][btn_url]" value="<?php echo esc_attr( $settings['brand_difference']['btn_url'] ?? '#' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Value Propositions (4 Items)', 'woodmart-child' ); ?></h4>
+					<?php
+					$bd_items = ! empty( $settings['brand_difference']['items'] ) ? $settings['brand_difference']['items'] : array();
+					$default_icons = array( 'location', 'storage', 'support', 'business' );
+					for ( $b_i = 0; $b_i < 4; $b_i++ ) :
+						$bi = $bd_items[ $b_i ] ?? array();
+					?>
+						<div class="wc-box-group" style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:12px;">
+							<div class="wc-field-row grid-3">
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Icon Type', 'woodmart-child' ); ?></label>
+									<select name="filament_builder[brand_difference][items][<?php echo esc_attr( $b_i ); ?>][icon]" class="widefat">
+										<option value="location" <?php selected( ( $bi['icon'] ?? $default_icons[ $b_i ] ), 'location' ); ?>><?php esc_html_e( 'Location / Pin', 'woodmart-child' ); ?></option>
+										<option value="storage" <?php selected( ( $bi['icon'] ?? $default_icons[ $b_i ] ), 'storage' ); ?>><?php esc_html_e( 'Storage / Climate', 'woodmart-child' ); ?></option>
+										<option value="support" <?php selected( ( $bi['icon'] ?? $default_icons[ $b_i ] ), 'support' ); ?>><?php esc_html_e( 'Support / Shield', 'woodmart-child' ); ?></option>
+										<option value="business" <?php selected( ( $bi['icon'] ?? $default_icons[ $b_i ] ), 'business' ); ?>><?php esc_html_e( 'Business / Invoice', 'woodmart-child' ); ?></option>
+									</select>
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[brand_difference][items][<?php echo esc_attr( $b_i ); ?>][title]" value="<?php echo esc_attr( $bi['title'] ?? '' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+									<input type="text" name="filament_builder[brand_difference][items][<?php echo esc_attr( $b_i ); ?>][description]" value="<?php echo esc_attr( $bi['description'] ?? '' ); ?>" class="widefat">
+								</div>
+							</div>
+						</div>
+					<?php endfor; ?>
+				</section>
 			</div>
 		</div>
 	</div>
@@ -1777,6 +2198,135 @@ function woodmart_child_save_filament_builder_meta( $post_id, $post ) {
 	if ( ! empty( $raw_data['essential_additions']['payment_methods_csv'] ) ) {
 		$pm_raw = sanitize_text_field( $raw_data['essential_additions']['payment_methods_csv'] );
 		$clean['essential_additions']['payment_methods'] = array_values( array_filter( array_map( 'trim', explode( ',', $pm_raw ) ) ) );
+	}
+
+	// 3. In-page Subnav
+	$clean['nav'] = array(
+		'enabled'  => ! empty( $raw_data['nav']['enabled'] ) ? '1' : '0',
+		'b2b_text' => sanitize_text_field( $raw_data['nav']['b2b_text'] ?? 'b2b order →' ),
+		'b2b_url'  => esc_url_raw( $raw_data['nav']['b2b_url'] ?? '#' ),
+		'items'    => array(
+			array( 'label' => 'OVERVIEW', 'target' => '#overview' ),
+			array( 'label' => 'FIND COLORS', 'target' => '#find-colors' ),
+			array( 'label' => 'PERFORMANCE', 'target' => '#materials' ),
+			array( 'label' => 'RFID & AMS', 'target' => '#rfid-ams' ),
+			array( 'label' => 'DOWNLOAD', 'target' => '#downloads' ),
+			array( 'label' => 'PRINTING TIPS', 'target' => '#printing-tips' ),
+		),
+	);
+
+	// 4. Formulation Banner
+	$clean['formulation'] = array(
+		'enabled'     => ! empty( $raw_data['formulation']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['formulation']['eyebrow'] ?? '' ),
+		'title'       => sanitize_text_field( $raw_data['formulation']['title'] ?? '' ),
+		'subtitle'    => sanitize_text_field( $raw_data['formulation']['subtitle'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['formulation']['description'] ?? '' ),
+		'image'       => esc_url_raw( $raw_data['formulation']['image'] ?? '' ),
+		'credits'     => sanitize_textarea_field( $raw_data['formulation']['credits'] ?? '' ),
+	);
+
+	// 5. Colors Showcase
+	$clean['colors_showcase'] = array(
+		'enabled'     => ! empty( $raw_data['colors_showcase']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['colors_showcase']['eyebrow'] ?? '' ),
+		'title'       => sanitize_text_field( $raw_data['colors_showcase']['title'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['colors_showcase']['description'] ?? '' ),
+	);
+
+	// 6. Materials
+	$clean['materials'] = array(
+		'enabled'     => ! empty( $raw_data['materials']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['materials']['eyebrow'] ?? '' ),
+		'title'       => sanitize_text_field( $raw_data['materials']['title'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['materials']['description'] ?? '' ),
+		'items'       => array(),
+	);
+
+	if ( ! empty( $raw_data['materials']['items'] ) && is_array( $raw_data['materials']['items'] ) ) {
+		foreach ( $raw_data['materials']['items'] as $m_item ) {
+			$clean['materials']['items'][] = array(
+				'tag'         => sanitize_text_field( $m_item['tag'] ?? '' ),
+				'title'       => sanitize_text_field( $m_item['title'] ?? '' ),
+				'description' => sanitize_text_field( $m_item['description'] ?? '' ),
+			);
+		}
+	}
+
+	// 7. RFID & AMS
+	$rfid_b_raw = sanitize_textarea_field( $raw_data['rfid_ams']['bullets_text'] ?? '' );
+	$rfid_b_arr = array_filter( array_map( 'trim', explode( "\n", $rfid_b_raw ) ) );
+
+	$clean['rfid_ams'] = array(
+		'enabled'     => ! empty( $raw_data['rfid_ams']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['rfid_ams']['eyebrow'] ?? '' ),
+		'title'       => sanitize_text_field( $raw_data['rfid_ams']['title'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['rfid_ams']['description'] ?? '' ),
+		'bullets'     => array_values( $rfid_b_arr ),
+		'link_text'   => sanitize_text_field( $raw_data['rfid_ams']['link_text'] ?? '' ),
+		'link_url'    => esc_url_raw( $raw_data['rfid_ams']['link_url'] ?? '#' ),
+	);
+
+	// 8. Use Cases
+	$clean['use_cases'] = array(
+		'enabled' => ! empty( $raw_data['use_cases']['enabled'] ) ? '1' : '0',
+		'eyebrow' => sanitize_text_field( $raw_data['use_cases']['eyebrow'] ?? '' ),
+		'title'   => sanitize_textarea_field( $raw_data['use_cases']['title'] ?? '' ),
+		'items'   => array(),
+	);
+	if ( ! empty( $raw_data['use_cases']['items'] ) && is_array( $raw_data['use_cases']['items'] ) ) {
+		foreach ( $raw_data['use_cases']['items'] as $u_item ) {
+			$clean['use_cases']['items'][] = array(
+				'num'         => sanitize_text_field( $u_item['num'] ?? '' ),
+				'title'       => sanitize_text_field( $u_item['title'] ?? '' ),
+				'description' => sanitize_text_field( $u_item['description'] ?? '' ),
+			);
+		}
+	}
+
+	// 9. Choose Format
+	$sp_bullets_arr = array_filter( array_map( 'trim', explode( "\n", sanitize_textarea_field( $raw_data['choose_format']['spool_bullets_text'] ?? '' ) ) ) );
+	$rf_bullets_arr = array_filter( array_map( 'trim', explode( "\n", sanitize_textarea_field( $raw_data['choose_format']['refill_bullets_text'] ?? '' ) ) ) );
+
+	$clean['choose_format'] = array(
+		'enabled'        => ! empty( $raw_data['choose_format']['enabled'] ) ? '1' : '0',
+		'eyebrow'        => sanitize_text_field( $raw_data['choose_format']['eyebrow'] ?? '' ),
+		'title'          => sanitize_text_field( $raw_data['choose_format']['title'] ?? '' ),
+		'subtitle'       => sanitize_text_field( $raw_data['choose_format']['subtitle'] ?? '' ),
+		'spool_badge'    => sanitize_text_field( $raw_data['choose_format']['spool_badge'] ?? '' ),
+		'spool_title'    => sanitize_text_field( $raw_data['choose_format']['spool_title'] ?? '' ),
+		'spool_price'    => sanitize_text_field( $raw_data['choose_format']['spool_price'] ?? '' ),
+		'spool_vat'      => sanitize_text_field( $raw_data['choose_format']['spool_vat'] ?? '' ),
+		'spool_desc'     => sanitize_textarea_field( $raw_data['choose_format']['spool_desc'] ?? '' ),
+		'spool_bullets'  => array_values( $sp_bullets_arr ),
+		'spool_btn_text' => sanitize_text_field( $raw_data['choose_format']['spool_btn_text'] ?? '' ),
+		'refill_badge'   => sanitize_text_field( $raw_data['choose_format']['refill_badge'] ?? '' ),
+		'refill_title'   => sanitize_text_field( $raw_data['choose_format']['refill_title'] ?? '' ),
+		'refill_price'   => sanitize_text_field( $raw_data['choose_format']['refill_price'] ?? '' ),
+		'refill_vat'     => sanitize_text_field( $raw_data['choose_format']['refill_vat'] ?? '' ),
+		'refill_desc'    => sanitize_textarea_field( $raw_data['choose_format']['refill_desc'] ?? '' ),
+		'refill_bullets' => array_values( $rf_bullets_arr ),
+		'refill_btn_text' => sanitize_text_field( $raw_data['choose_format']['refill_btn_text'] ?? '' ),
+	);
+
+	// 10. 3DKoda Difference
+	$clean['brand_difference'] = array(
+		'enabled'     => ! empty( $raw_data['brand_difference']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['brand_difference']['eyebrow'] ?? '' ),
+		'title'       => sanitize_textarea_field( $raw_data['brand_difference']['title'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['brand_difference']['description'] ?? '' ),
+		'btn_text'    => sanitize_text_field( $raw_data['brand_difference']['btn_text'] ?? '' ),
+		'btn_url'     => esc_url_raw( $raw_data['brand_difference']['btn_url'] ?? '#' ),
+		'items'       => array(),
+	);
+	if ( ! empty( $raw_data['brand_difference']['items'] ) && is_array( $raw_data['brand_difference']['items'] ) ) {
+		foreach ( $raw_data['brand_difference']['items'] as $bd_item ) {
+			$clean['brand_difference']['items'][] = array(
+				'icon'        => sanitize_key( $bd_item['icon'] ?? 'location' ),
+				'title'       => sanitize_text_field( $bd_item['title'] ?? '' ),
+				'description' => sanitize_text_field( $bd_item['description'] ?? '' ),
+			);
+		}
 	}
 
 	// Save main filament settings array

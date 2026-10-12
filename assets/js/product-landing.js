@@ -981,5 +981,150 @@
 			});
 		});
 	}
+
+	/* ==========================================================================
+	   FILAMENT: STICKY SUBNAV SMOOTH SCROLL & SCROLLSPY + COLOR PALETTE SYNC
+	   ========================================================================== */
+	(function initFilamentInteractiveSections() {
+		// 1. Subnav Smooth Scroll & Scrollspy
+		const subnav = document.querySelector('.filament-subnav-bar');
+		if (subnav) {
+			const links = subnav.querySelectorAll('.filament-subnav-link');
+
+			// Handle link click with sticky offset
+			links.forEach(link => {
+				link.addEventListener('click', function (e) {
+					const targetId = this.getAttribute('href');
+					if (!targetId || targetId === '#' || !targetId.startsWith('#')) return;
+
+					const targetEl = document.querySelector(targetId);
+					if (targetEl) {
+						e.preventDefault();
+						const subnavHeight = subnav.offsetHeight || 52;
+						const topPos = targetEl.getBoundingClientRect().top + window.pageYOffset - subnavHeight - 10;
+						window.scrollTo({
+							top: topPos,
+							behavior: 'smooth'
+						});
+
+						links.forEach(l => l.classList.remove('is-active'));
+						this.classList.add('is-active');
+					}
+				});
+			});
+
+			// Scrollspy to highlight active link
+			let isScrolling = false;
+			window.addEventListener('scroll', function () {
+				if (!isScrolling) {
+					window.requestAnimationFrame(() => {
+						const fromTop = window.pageYOffset + (subnav.offsetHeight || 52) + 60;
+						let currentSectionId = '';
+
+						links.forEach(link => {
+							const targetId = link.getAttribute('href');
+							if (targetId && targetId.startsWith('#')) {
+								const sec = document.querySelector(targetId);
+								if (sec) {
+									const top = sec.offsetTop;
+									const height = sec.offsetHeight;
+									if (fromTop >= top && fromTop < top + height) {
+										currentSectionId = targetId;
+									}
+								}
+							}
+						});
+
+						if (currentSectionId) {
+							links.forEach(l => {
+								l.classList.toggle('is-active', l.getAttribute('href') === currentSectionId);
+							});
+						}
+
+						// Toggle pinned shadow class
+						subnav.classList.toggle('is-pinned', window.pageYOffset > (subnav.offsetTop || 200));
+
+						isScrolling = false;
+					});
+					isScrolling = true;
+				}
+			}, { passive: true });
+		}
+
+		// 2. Color Showcase Interactive Palette
+		const paletteCard = document.querySelector('.filament-palette-card');
+		if (paletteCard) {
+			const dots = paletteCard.querySelectorAll('.filament-palette-dot');
+			const statusSwatch = document.getElementById('filament-palette-status-swatch');
+			const statusName = document.getElementById('filament-palette-status-name');
+
+			dots.forEach(dot => {
+				dot.addEventListener('click', function () {
+					dots.forEach(d => d.classList.remove('is-active'));
+					this.classList.add('is-active');
+
+					const name = this.getAttribute('data-name') || '';
+					const hex = this.getAttribute('data-hex') || '#111827';
+
+					if (statusSwatch) {
+						statusSwatch.style.backgroundColor = hex;
+					}
+					if (statusName) {
+						statusName.textContent = name;
+					}
+
+					// Sync with hero color swatches if present
+					const heroSwatches = document.querySelectorAll('.filament-color-swatch-item');
+					heroSwatches.forEach(hs => {
+						const hsHex = hs.getAttribute('data-hex') || '';
+						if (hsHex && hsHex.toLowerCase() === hex.toLowerCase()) {
+							hs.click();
+						}
+					});
+				});
+			});
+		}
+
+		// 3. Choose Format (Spool vs Refill) Comparison Card Actions
+		const formatButtons = document.querySelectorAll('.btn-format-action');
+		formatButtons.forEach(btn => {
+			btn.addEventListener('click', function (e) {
+				e.preventDefault();
+				const targetFormat = this.getAttribute('data-format'); // 'complete-spool' or 'refill'
+
+				// 1. Try to find matching format card in Hero section
+				let matchedHeroCard = null;
+				const heroFormatCards = document.querySelectorAll('.filament-formats-grid .filament-format-card');
+				heroFormatCards.forEach(card => {
+					const cardSlug = (card.getAttribute('data-format-slug') || '').toLowerCase();
+					const cardName = (card.getAttribute('data-format-name') || '').toLowerCase();
+					if (targetFormat === 'complete-spool' && (cardSlug.includes('spool') || cardName.includes('spool'))) {
+						matchedHeroCard = card;
+					} else if (targetFormat === 'refill' && (cardSlug.includes('refill') || cardName.includes('refill'))) {
+						matchedHeroCard = card;
+					}
+				});
+
+				if (matchedHeroCard) {
+					// Activate this format in hero
+					matchedHeroCard.click();
+
+					// Trigger Add to basket
+					const heroAddBtn = document.querySelector('.filament-hero .btn-add-to-cart') || document.querySelector('.btn-add-to-cart');
+					if (heroAddBtn) {
+						heroAddBtn.click();
+					}
+				} else {
+					// Fallback: trigger default hero add-to-cart
+					const heroAddBtn = document.querySelector('.filament-hero .btn-add-to-cart') || document.querySelector('.btn-add-to-cart');
+					if (heroAddBtn) {
+						heroAddBtn.click();
+					}
+				}
+			});
+		});
+	})();
 })();
+
+
 
