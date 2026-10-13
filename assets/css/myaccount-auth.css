@@ -1,0 +1,1268 @@
+/**
+ * 3DKODA - Custom WooCommerce Login & Register Auth Split-Screen Styles
+ *
+ * Scoped to WoodMart Child Theme unauthenticated My Account page.
+ *
+ * @package WoodmartChild
+ * @version 1.0.1
+ */
+
+/* ==========================================================================
+   0. RESET & THEME CHROME ISOLATION (WOODMART & ELEMENTOR CLEANUP)
+   ========================================================================== */
+
+/* Completely hide WoodMart standard header, clones, sticky bars, skip links */
+body.koda-auth-page > header:not(.koda-auth-header),
+body.koda-auth-page .website-wrapper > header:not(.koda-auth-header),
+body.koda-auth-page .wd-page-wrapper > header:not(.koda-auth-header),
+body.koda-auth-page .whb-header,
+body.koda-auth-page .whb-sticky-header,
+body.koda-auth-page .whb-clone,
+body.koda-auth-page .whb-main-header,
+body.koda-auth-page .whb-row,
+body.koda-auth-page .wd-skip-links,
+body.koda-auth-page .page-title-default,
+body.koda-auth-page .woodmart-page-title,
+body.koda-auth-page .woocommerce-breadcrumb,
+body.koda-auth-page .woodmart-toolbar,
+body.koda-auth-page .col2-set {
+	display: none !important;
+	height: 0 !important;
+	min-height: 0 !important;
+	max-height: 0 !important;
+	overflow: hidden !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+}
+
+/* Completely hide all Theme / Elementor Footers except our minimal .koda-auth-footer */
+body.koda-auth-page footer:not(.koda-auth-footer),
+body.koda-auth-page .elementor-location-footer,
+body.koda-auth-page [data-elementor-type="footer"],
+body.koda-auth-page .footer-container,
+body.koda-auth-page .main-footer,
+body.koda-auth-page .wd-footer,
+body.koda-auth-page .copyrights-wrapper,
+body.koda-auth-page .woodmart-prefooter,
+body.koda-auth-page .woodmart-footer {
+	display: none !important;
+	height: 0 !important;
+	min-height: 0 !important;
+	max-height: 0 !important;
+	overflow: hidden !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+}
+
+/* Ensure ZERO top/bottom margin or padding on all parent wrappers to prevent white header row */
+html,
+body.koda-auth-page,
+body.koda-auth-page .website-wrapper,
+body.koda-auth-page .wd-page-wrapper,
+body.koda-auth-page .main-page-wrapper,
+body.koda-auth-page .wd-page-content,
+body.koda-auth-page .content-layout-wrapper,
+body.koda-auth-page .container,
+body.koda-auth-page .site-content,
+body.koda-auth-page .wd-content-area,
+body.koda-auth-page .entry-content,
+body.koda-auth-page article,
+body.koda-auth-page .woocommerce {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	border-top: none !important;
+	border-bottom: none !important;
+}
+
+body.koda-auth-page {
+	background-color: #ffffff !important;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body.koda-auth-page .website-wrapper {
+	background-color: #ffffff !important;
+	min-height: 100vh !important;
+	display: flex !important;
+	flex-direction: column !important;
+}
+
+body.koda-auth-page .main-page-wrapper {
+	flex: 1 0 auto !important;
+}
+
+body.koda-auth-page .container,
+body.koda-auth-page .content-layout-wrapper {
+	max-width: 100% !important;
+	width: 100% !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+body.koda-auth-page .site-content,
+body.koda-auth-page .entry-content,
+body.koda-auth-page .woocommerce {
+	width: 100% !important;
+}
+
+/* ==========================================================================
+   1. VARIABLES & DESIGN TOKENS
+   ========================================================================== */
+:root {
+	--koda-bg-dark: #0b0f19;
+	--koda-bg-white: #ffffff;
+	--koda-bg-light: #f8fafc;
+	--koda-bg-card: #f4f6fa;
+	--koda-accent: #ff5500;
+	--koda-accent-hover: #e04b00;
+	--koda-accent-glow: rgba(255, 85, 0, 0.25);
+	--koda-accent-focus: rgba(255, 85, 0, 0.15);
+	--koda-text-dark: #0f172a;
+	--koda-text-body: #1e293b;
+	--koda-text-muted: #64748b;
+	--koda-text-light: #94a3b8;
+	--koda-text-white: #ffffff;
+	--koda-border: #e2e8f0;
+	--koda-border-focus: #ff5500;
+	--koda-font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	--koda-font-heading: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	--koda-radius-sm: 6px;
+	--koda-radius-md: 8px;
+	--koda-radius-lg: 12px;
+}
+
+/* Root Wrapper */
+.koda-auth-page-root {
+	width: 100%;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--koda-bg-white);
+	color: var(--koda-text-body);
+	box-sizing: border-box;
+}
+
+.koda-auth-page-root *,
+.koda-auth-page-root *::before,
+.koda-auth-page-root *::after {
+	box-sizing: border-box;
+}
+
+/* ==========================================================================
+   2. TOP ANNOUNCEMENT BAR (PITCH BLACK)
+   ========================================================================== */
+.koda-auth-topbar {
+	width: 100%;
+	background-color: #000000;
+	color: #ffffff;
+	padding: 9px 24px;
+	text-align: center;
+	z-index: 10;
+}
+
+.koda-auth-topbar-inner span {
+	font-family: var(--koda-font-body);
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	display: inline-block;
+}
+
+/* ==========================================================================
+   3. MINIMAL HEADER BAR (MAX-WIDTH ALIGNED)
+   ========================================================================== */
+.koda-auth-header {
+	width: 100%;
+	background-color: var(--koda-bg-white);
+	border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+	z-index: 9;
+}
+
+.koda-auth-header-inner {
+	max-width: 1440px;
+	margin: 0 auto;
+	padding: 20px 48px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.koda-auth-logo {
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+}
+
+.koda-logo-text {
+	font-family: var(--koda-font-heading);
+	font-size: 26px;
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	color: #000000;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.koda-auth-back-link {
+	font-family: var(--koda-font-body);
+	font-size: 14px;
+	font-weight: 500;
+	color: #475569;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	transition: color 0.2s ease;
+}
+
+.koda-auth-back-link:hover {
+	color: var(--koda-accent);
+}
+
+.koda-arrow-icon {
+	font-size: 15px;
+	line-height: 1;
+	transition: transform 0.2s ease;
+}
+
+.koda-auth-back-link:hover .koda-arrow-icon {
+	transform: translate(2px, -2px);
+}
+
+/* ==========================================================================
+   4. SPLIT-SCREEN MAIN WORKSPACE (CONTROLLED MAX-WIDTH FOR ZOOMOUT)
+   ========================================================================== */
+.koda-auth-main {
+	flex: 1 0 auto;
+	display: flex;
+	width: 100%;
+	/* Dual gradient background fills left dark & right white seamlessly on ultrawide/zoomout */
+	background: linear-gradient(to right, #0b0f19 50%, #ffffff 50%);
+}
+
+.koda-auth-split-wrapper {
+	display: grid;
+	grid-template-columns: 48% 52%;
+	width: 100%;
+	max-width: 1440px;
+	margin: 0 auto;
+	min-height: calc(100vh - 34px - 70px - 60px);
+}
+
+/* ==========================================================================
+   5. LEFT COLUMN: DARK HERO (BALANCED, TIGHT SPACING)
+   ========================================================================== */
+.koda-hero-col {
+	background-color: var(--koda-bg-dark);
+	color: var(--koda-text-white);
+	padding: 52px 56px 44px 56px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	position: relative;
+	overflow: hidden;
+}
+
+/* Subtle background accent glow */
+.koda-hero-col::before {
+	content: '';
+	position: absolute;
+	top: -150px;
+	left: -150px;
+	width: 450px;
+	height: 450px;
+	background: radial-gradient(circle, rgba(255, 85, 0, 0.06) 0%, rgba(11, 15, 25, 0) 70%);
+	pointer-events: none;
+}
+
+.koda-hero-content {
+	max-width: 480px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	margin: 0 auto 0 0;
+}
+
+/* Top Sub-tagline */
+.koda-hero-badge {
+	font-family: var(--koda-font-body);
+	color: var(--koda-accent);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	margin-bottom: 22px;
+}
+
+/* Dynamic Headings Area (Compact & Natural Height) */
+.koda-hero-headings-container {
+	position: relative;
+	margin-bottom: 32px;
+}
+
+.koda-hero-title-block {
+	display: none;
+	opacity: 0;
+	transform: translateY(6px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.koda-hero-title-block.active {
+	display: block;
+	opacity: 1;
+	transform: translateY(0);
+	position: relative;
+}
+
+.koda-hero-h1 {
+	font-family: var(--koda-font-heading);
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	color: var(--koda-text-white);
+}
+
+.koda-hero-lead {
+	font-size: clamp(34px, 3.2vw, 44px);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
+	color: #ffffff;
+}
+
+.koda-hero-sub-lines {
+	display: flex;
+	flex-direction: column;
+	margin: 10px 0 8px 0;
+}
+
+.koda-sub-line {
+	font-family: var(--koda-font-body);
+	font-size: clamp(15.5px, 1.35vw, 18.5px);
+	font-weight: 400;
+	line-height: 1.35;
+	color: var(--koda-text-light);
+}
+
+.koda-hero-tail {
+	font-size: clamp(34px, 3.2vw, 44px);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
+	color: #ffffff;
+}
+
+/* Numbered Value Points (Tightly grouped without large gaps) */
+.koda-hero-points {
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+	margin-bottom: 32px;
+}
+
+.koda-point-item {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.koda-point-index {
+	font-family: var(--koda-font-body);
+	color: var(--koda-accent);
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.koda-point-desc {
+	font-family: var(--koda-font-body);
+	color: #f1f5f9;
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 1.4;
+	margin: 0;
+}
+
+/* Bottom Tagline (Flows naturally right after points) */
+.koda-hero-footer-tag {
+	margin-top: 8px;
+}
+
+.koda-hero-footer-tag span {
+	font-family: var(--koda-font-body);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	color: #ffffff;
+	text-transform: uppercase;
+}
+
+/* ==========================================================================
+   6. RIGHT COLUMN: CLEAN FORM WORKSPACE
+   ========================================================================== */
+.koda-forms-col {
+	background-color: var(--koda-bg-white);
+	padding: 48px 48px 40px 48px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.koda-forms-inner {
+	width: 100%;
+	max-width: 440px;
+	margin: 0 auto;
+}
+
+/* ==========================================================================
+   7. NOTICES HANDLING (WC ERROR / SUCCESS)
+   ========================================================================== */
+.koda-notices-wrap {
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.koda-notices-wrap:empty {
+	margin-bottom: 0;
+}
+
+.koda-notices-wrap .woocommerce-error,
+.koda-notices-wrap .woocommerce-message,
+.koda-notices-wrap .woocommerce-info {
+	background-color: #fff1f0 !important;
+	border: 1px solid #ffccc7 !important;
+	border-left: 4px solid #ff4d4f !important;
+	color: #cf1322 !important;
+	padding: 13px 16px !important;
+	border-radius: var(--koda-radius-md) !important;
+	font-size: 13.5px !important;
+	line-height: 1.45 !important;
+	margin: 0 0 16px 0 !important;
+	list-style: none !important;
+}
+
+.koda-notices-wrap .woocommerce-message {
+	background-color: #f6ffed !important;
+	border-color: #b7eb8f !important;
+	border-left-color: #52c41a !important;
+	color: #237804 !important;
+}
+
+.koda-notices-wrap .woocommerce-info {
+	background-color: #e6f7ff !important;
+	border-color: #91d5ff !important;
+	border-left-color: #1890ff !important;
+	color: #096dd9 !important;
+}
+
+.koda-notices-wrap ul {
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style: none !important;
+}
+
+.koda-notices-wrap li {
+	margin: 0 0 4px 0 !important;
+}
+
+.koda-notices-wrap li:last-child {
+	margin-bottom: 0 !important;
+}
+
+/* ==========================================================================
+   8. AUTH FORM CARDS & TABS (PROMINENT TOP VIEW SWITCHER)
+   ========================================================================== */
+/* Segmented pill tabs switcher at the top of the form column */
+.koda-auth-nav-tabs {
+	display: flex !important;
+	background-color: #f1f5f9 !important;
+	padding: 4px !important;
+	border-radius: 12px !important;
+	margin-bottom: 24px !important;
+	border: 1px solid #e2e8f0 !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+.koda-nav-tab-btn {
+	flex: 1 1 50% !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	padding: 10px 16px !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	color: #64748b !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	border-radius: 9px !important;
+	cursor: pointer !important;
+	transition: all 0.2s ease !important;
+	text-align: center !important;
+	line-height: 1.2 !important;
+	box-shadow: none !important;
+	margin: 0 !important;
+	outline: none !important;
+	text-decoration: none !important;
+	user-select: none !important;
+}
+
+.koda-nav-tab-btn:hover {
+	color: #0f172a !important;
+	background-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.koda-nav-tab-btn.is-active {
+	background-color: #ffffff !important;
+	color: #0f172a !important;
+	font-weight: 700 !important;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.koda-auth-card {
+	display: none;
+	opacity: 0;
+	transform: translateY(6px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.koda-auth-card.is-active {
+	display: block;
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.koda-card-header {
+	margin-bottom: 24px !important;
+	display: block !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+.koda-card-header-top {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	margin-bottom: 8px !important;
+}
+
+.koda-card-header-top .koda-eyebrow {
+	margin-bottom: 0 !important;
+}
+
+.koda-top-switch-link {
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	color: var(--koda-accent) !important;
+	cursor: pointer !important;
+	text-decoration: underline !important;
+	text-underline-offset: 3px !important;
+	transition: color 0.2s ease, opacity 0.2s ease !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	line-height: 1.2 !important;
+}
+
+.koda-top-switch-link:hover {
+	opacity: 0.85 !important;
+	color: #c9461d !important;
+}
+
+.koda-eyebrow {
+	display: block !important;
+	font-family: var(--koda-font-body) !important;
+	color: var(--koda-accent) !important;
+	font-size: 12px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.06em !important;
+	text-transform: uppercase !important;
+	margin-bottom: 8px !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+.koda-heading {
+	display: block !important;
+	font-family: var(--koda-font-heading) !important;
+	font-size: clamp(30px, 2.4vw, 35px) !important;
+	font-weight: 800 !important;
+	letter-spacing: -0.025em !important;
+	color: var(--koda-text-dark) !important;
+	line-height: 1.15 !important;
+	margin: 0 0 6px 0 !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+.koda-subtext {
+	display: block !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 14.5px !important;
+	line-height: 1.45 !important;
+	color: var(--koda-text-muted) !important;
+	margin: 0 !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+/* ==========================================================================
+   9. FORM FIELDS & INPUTS
+   ========================================================================== */
+.koda-auth-form {
+	margin: 0 0 20px 0;
+}
+
+.koda-form-row {
+	margin-bottom: 18px;
+	position: relative;
+}
+
+.koda-label {
+	display: block;
+	font-family: var(--koda-font-body);
+	font-size: 13.5px;
+	font-weight: 600;
+	color: var(--koda-text-body);
+	margin-bottom: 6px;
+}
+
+.koda-input {
+	width: 100% !important;
+	height: 48px !important;
+	padding: 0 16px !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 14.5px !important;
+	color: var(--koda-text-dark) !important;
+	background-color: var(--koda-bg-white) !important;
+	border: 1px solid var(--koda-border) !important;
+	border-radius: var(--koda-radius-md) !important;
+	outline: none !important;
+	box-shadow: none !important;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.koda-input::placeholder {
+	color: var(--koda-text-light) !important;
+	opacity: 1 !important;
+}
+
+.koda-input:focus {
+	border-color: var(--koda-border-focus) !important;
+	box-shadow: 0 0 0 3.5px var(--koda-accent-focus) !important;
+}
+
+/* Password wrapper with Show / Hide Toggle (Dead-center embedded inside input) */
+.koda-auth-page-root .koda-password-field-wrap,
+.koda-auth-form .koda-password-field-wrap,
+.koda-password-field-wrap {
+	position: relative !important;
+	width: 100% !important;
+	height: 48px !important;
+	min-height: 48px !important;
+	max-height: 48px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	display: block !important;
+	box-sizing: border-box !important;
+}
+
+.koda-auth-page-root .koda-password-field-wrap input.koda-password-input,
+.koda-auth-form .koda-password-field-wrap input[type="password"],
+.koda-auth-form .koda-password-field-wrap input[type="text"],
+.koda-password-field-wrap .koda-password-input {
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	width: 100% !important;
+	height: 48px !important;
+	min-height: 48px !important;
+	max-height: 48px !important;
+	line-height: 48px !important;
+	margin: 0 !important;
+	padding: 0 72px 0 16px !important;
+	box-sizing: border-box !important;
+	display: block !important;
+	border: 1px solid var(--koda-border) !important;
+	border-radius: var(--koda-radius-md) !important;
+	background-color: var(--koda-bg-white) !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 14.5px !important;
+	color: var(--koda-text-dark) !important;
+	outline: none !important;
+	box-shadow: none !important;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.koda-auth-page-root .koda-password-field-wrap input.koda-password-input:focus,
+.koda-auth-form .koda-password-field-wrap input[type="password"]:focus,
+.koda-auth-form .koda-password-field-wrap input[type="text"]:focus,
+.koda-password-field-wrap .koda-password-input:focus {
+	border-color: var(--koda-border-focus) !important;
+	box-shadow: 0 0 0 3.5px var(--koda-accent-focus) !important;
+}
+
+.koda-auth-page-root .koda-password-field-wrap button.koda-toggle-password-btn,
+.koda-auth-form .koda-password-field-wrap button.koda-toggle-password-btn,
+.koda-password-field-wrap .koda-toggle-password-btn,
+button.koda-toggle-password-btn {
+	position: absolute !important;
+	right: 14px !important;
+	left: auto !important;
+	top: 0 !important;
+	bottom: 0 !important;
+	margin-top: auto !important;
+	margin-bottom: auto !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	height: 28px !important;
+	min-height: 0 !important;
+	max-height: 28px !important;
+	width: auto !important;
+	min-width: 0 !important;
+	padding: 0 6px !important;
+	line-height: 28px !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	transform: none !important;
+	-webkit-transform: none !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	outline: none !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 13.5px !important;
+	font-weight: 600 !important;
+	color: var(--koda-text-muted) !important;
+	cursor: pointer !important;
+	border-radius: 4px !important;
+	transition: color 0.2s ease !important;
+	z-index: 10 !important;
+	text-transform: none !important;
+	letter-spacing: normal !important;
+	text-decoration: none !important;
+}
+
+.koda-auth-page-root .koda-password-field-wrap button.koda-toggle-password-btn:hover,
+button.koda-toggle-password-btn:hover {
+	color: var(--koda-accent) !important;
+	background: transparent !important;
+	background-color: transparent !important;
+}
+
+.koda-field-hint {
+	display: block;
+	font-family: var(--koda-font-body);
+	font-size: 13px;
+	color: var(--koda-text-muted);
+	margin-top: 6px;
+}
+
+/* ==========================================================================
+   PASSWORD STRENGTH METER (WOOCOMMERCE INTEGRATION)
+   ========================================================================== */
+.koda-auth-page-root .woocommerce-password-strength,
+.koda-auth-form .woocommerce-password-strength,
+.woocommerce-password-strength {
+	display: block !important;
+	position: relative !important;
+	width: 100% !important;
+	margin: 10px 0 6px 0 !important;
+	padding: 8px 14px !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	text-align: center !important;
+	border-radius: var(--koda-radius-md) !important;
+	line-height: 1.3 !important;
+	box-sizing: border-box !important;
+	clear: both !important;
+	transition: all 0.25s ease !important;
+}
+
+/* Empty meter should not occupy space or show background */
+.koda-auth-page-root .woocommerce-password-strength:empty,
+.koda-auth-form .woocommerce-password-strength:empty,
+.woocommerce-password-strength:empty {
+	display: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none !important;
+}
+
+/* Strength states */
+.koda-auth-page-root .woocommerce-password-strength.short,
+.koda-auth-page-root .woocommerce-password-strength.bad,
+.woocommerce-password-strength.short,
+.woocommerce-password-strength.bad {
+	background-color: #fef2f2 !important;
+	color: #dc2626 !important;
+	border: 1px solid #fecaca !important;
+}
+
+.koda-auth-page-root .woocommerce-password-strength.good,
+.woocommerce-password-strength.good {
+	background-color: #fffbeb !important;
+	color: #d97706 !important;
+	border: 1px solid #fde68a !important;
+}
+
+.koda-auth-page-root .woocommerce-password-strength.strong,
+.woocommerce-password-strength.strong {
+	background-color: #f0fdf4 !important;
+	color: #16a34a !important;
+	border: 1px solid #bbf7d0 !important;
+}
+
+/* Password hint generated by WooCommerce */
+.koda-auth-page-root .woocommerce-password-hint,
+.koda-auth-form .woocommerce-password-hint,
+.woocommerce-password-hint {
+	display: block !important;
+	margin: 6px 0 8px 0 !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 12.5px !important;
+	color: var(--koda-text-muted) !important;
+	line-height: 1.4 !important;
+	clear: both !important;
+}
+
+
+/* Suppress default WooCommerce registration privacy disclaimer */
+.koda-auth-page-root .woocommerce-privacy-policy-text,
+.koda-auth-form .woocommerce-privacy-policy-text,
+body.koda-auth-page .woocommerce-privacy-policy-text {
+	display: none !important;
+	height: 0 !important;
+	max-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	visibility: hidden !important;
+	overflow: hidden !important;
+	opacity: 0 !important;
+}
+
+/* ==========================================================================
+   10. CHECKBOXES & META ROW
+   ========================================================================== */
+.koda-meta-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: -2px;
+	margin-bottom: 22px;
+}
+
+.koda-checkbox-container {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	position: relative;
+	user-select: none;
+	font-family: var(--koda-font-body);
+	font-size: 13.5px;
+	color: var(--koda-text-body);
+}
+
+.koda-checkbox-container input[type="checkbox"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	cursor: pointer;
+}
+
+.koda-checkbox-custom {
+	width: 17px;
+	height: 17px;
+	background-color: #ffffff;
+	border: 1.5px solid var(--koda-border);
+	border-radius: 4px;
+	flex-shrink: 0;
+	position: relative;
+	transition: all 0.2s ease;
+}
+
+.koda-checkbox-container:hover .koda-checkbox-custom {
+	border-color: var(--koda-accent);
+}
+
+.koda-checkbox-container input[type="checkbox"]:checked ~ .koda-checkbox-custom {
+	background-color: var(--koda-accent);
+	border-color: var(--koda-accent);
+}
+
+.koda-checkbox-container input[type="checkbox"]:checked ~ .koda-checkbox-custom::after {
+	content: '';
+	position: absolute;
+	left: 5px;
+	top: 2px;
+	width: 4px;
+	height: 8px;
+	border: solid #ffffff;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+.koda-checkbox-label-text {
+	line-height: 1.45;
+}
+
+.koda-checkbox-label-text a {
+	color: var(--koda-text-dark);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	transition: color 0.2s ease;
+}
+
+.koda-checkbox-label-text a:hover {
+	color: var(--koda-accent);
+}
+
+.koda-forgot-link {
+	font-family: var(--koda-font-body);
+	font-size: 13.5px;
+	font-weight: 500;
+	color: var(--koda-text-body);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.koda-forgot-link:hover {
+	color: var(--koda-accent);
+}
+
+/* Registration Checkboxes Block */
+.koda-checkboxes-block {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-top: 4px;
+	margin-bottom: 22px;
+}
+
+.koda-checkboxes-block .koda-checkbox-container {
+	align-items: flex-start;
+}
+
+.koda-checkboxes-block .koda-checkbox-custom {
+	margin-top: 2px;
+}
+
+/* ==========================================================================
+   11. SUBMIT BUTTON
+   ========================================================================== */
+.koda-submit-row {
+	margin-top: 20px;
+	margin-bottom: 0;
+}
+
+.koda-btn-submit {
+	width: 100% !important;
+	height: 50px !important;
+	background-color: var(--koda-accent) !important;
+	color: #ffffff !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 14px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.07em !important;
+	text-transform: uppercase !important;
+	border: none !important;
+	border-radius: var(--koda-radius-md) !important;
+	cursor: pointer !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 8px !important;
+	box-shadow: 0 3px 10px var(--koda-accent-glow) !important;
+	transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease !important;
+}
+
+.koda-btn-submit:hover {
+	background-color: var(--koda-accent-hover) !important;
+	transform: translateY(-1px) !important;
+	box-shadow: 0 5px 16px var(--koda-accent-glow) !important;
+}
+
+.koda-btn-submit:active {
+	transform: translateY(0) !important;
+	box-shadow: 0 2px 6px var(--koda-accent-glow) !important;
+}
+
+.koda-btn-arrow {
+	font-size: 16px;
+	line-height: 1;
+	transition: transform 0.2s ease;
+}
+
+.koda-btn-submit:hover .koda-btn-arrow {
+	transform: translateX(3px);
+}
+
+/* ==========================================================================
+   12. VIEW SWITCH BAR (CREATE ACCOUNT / LOG IN)
+   ========================================================================== */
+.koda-switch-bar {
+	margin-top: 20px;
+	font-family: var(--koda-font-body);
+	font-size: 14px;
+	color: var(--koda-text-muted);
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.koda-switch-desc {
+	color: var(--koda-text-muted);
+}
+
+.koda-switch-link {
+	background: none !important;
+	border: none !important;
+	padding: 0 !important;
+	font-family: var(--koda-font-body) !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	color: var(--koda-text-dark) !important;
+	cursor: pointer !important;
+	text-decoration: underline !important;
+	text-underline-offset: 3px !important;
+	transition: color 0.2s ease !important;
+}
+
+.koda-switch-link:hover {
+	color: var(--koda-accent) !important;
+}
+
+/* ==========================================================================
+   13. HELP CARD (BOTTOM OF RIGHT COLUMN)
+   ========================================================================== */
+.koda-help-card {
+	background-color: var(--koda-bg-card);
+	border: 1px solid rgba(226, 232, 240, 0.7);
+	border-radius: var(--koda-radius-lg);
+	padding: 20px 24px;
+	margin-top: 30px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.koda-help-heading {
+	font-family: var(--koda-font-heading);
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--koda-text-dark);
+	margin: 0;
+	line-height: 1.3;
+}
+
+.koda-help-link {
+	font-family: var(--koda-font-body);
+	font-size: 13.5px;
+	font-weight: 500;
+	color: #475569;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	transition: color 0.2s ease;
+}
+
+.koda-help-link:hover {
+	color: var(--koda-accent);
+}
+
+.koda-help-arrow {
+	font-size: 14px;
+	line-height: 1;
+	transition: transform 0.2s ease;
+}
+
+.koda-help-link:hover .koda-help-arrow {
+	transform: translate(2px, -2px);
+}
+
+/* ==========================================================================
+   14. MINIMAL FOOTER BAR (CONTROLLED MAX-WIDTH)
+   ========================================================================== */
+.koda-auth-footer {
+	background-color: var(--koda-bg-light);
+	border-top: 1px solid var(--koda-border);
+	padding: 18px 48px;
+	z-index: 9;
+}
+
+.koda-auth-footer-inner {
+	max-width: 1440px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-family: var(--koda-font-body);
+	font-size: 13px;
+	color: var(--koda-text-muted);
+}
+
+.koda-footer-left {
+	display: flex;
+	align-items: center;
+}
+
+.koda-footer-right {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+
+.koda-footer-right a {
+	color: var(--koda-text-muted);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.koda-footer-right a:hover {
+	color: var(--koda-accent);
+}
+
+/* ==========================================================================
+   15. RESPONSIVE DESIGN & MOBILE BREAKPOINTS
+   ========================================================================== */
+
+/* Large Tablets & Small Desktops (<= 1200px) */
+@media (max-width: 1200px) {
+	.koda-hero-col {
+		padding: 44px 40px 36px 40px;
+	}
+	.koda-forms-col {
+		padding: 40px 36px 36px 36px;
+	}
+}
+
+/* Tablets & Mobile Stack Layout (<= 991px) */
+@media (max-width: 991px) {
+	.koda-auth-main {
+		background: #ffffff;
+	}
+
+	.koda-auth-header-inner,
+	.koda-auth-footer-inner {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	.koda-auth-split-wrapper {
+		grid-template-columns: 1fr;
+		min-height: auto;
+		max-width: 100%;
+	}
+
+	.koda-hero-col {
+		padding: 40px 20px 36px 20px;
+	}
+
+	.koda-hero-content {
+		max-width: 100%;
+	}
+
+	.koda-hero-headings-container {
+		margin-bottom: 24px;
+	}
+
+	.koda-hero-points {
+		margin-bottom: 28px;
+		gap: 18px;
+	}
+
+	.koda-forms-col {
+		padding: 36px 20px 40px 20px;
+	}
+
+	.koda-forms-inner {
+		max-width: 100%;
+	}
+
+	.koda-auth-footer {
+		padding: 18px 20px;
+	}
+
+	.koda-auth-footer-inner {
+		flex-direction: column;
+		gap: 12px;
+		text-align: center;
+	}
+
+	.koda-footer-right {
+		gap: 20px;
+		justify-content: center;
+	}
+}
+
+/* Extra Small Mobile Devices (<= 480px) */
+@media (max-width: 480px) {
+	.koda-auth-topbar {
+		padding: 8px 12px;
+	}
+
+	.koda-auth-topbar-inner span {
+		font-size: 10.5px;
+		letter-spacing: 0.06em;
+	}
+
+	.koda-auth-header-inner {
+		padding: 16px 16px;
+	}
+
+	.koda-logo-text {
+		font-size: 22px;
+	}
+
+	.koda-hero-col {
+		padding: 32px 16px 28px 16px;
+	}
+
+	.koda-hero-lead,
+	.koda-hero-tail {
+		font-size: 30px;
+	}
+
+	.koda-sub-line {
+		font-size: 15px;
+	}
+
+	.koda-forms-col {
+		padding: 28px 16px 32px 16px;
+	}
+
+	.koda-heading {
+		font-size: 26px;
+	}
+
+	.koda-meta-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+}

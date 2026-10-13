@@ -385,3 +385,242 @@ function woodmart_child_add_addition_option_to_order_items( $item, $cart_item_ke
 	}
 }
 add_action( 'woocommerce_checkout_create_order_line_item', 'woodmart_child_add_addition_option_to_order_items', 10, 4 );
+
+/**
+ * ============================================================================
+ * 8. CUSTOM WOOCOMMERCE LOGIN & REGISTER AUTH SPLIT-SCREEN HANDLERS
+ * ============================================================================
+ */
+
+/**
+ * Enqueue dedicated styling & interactivity for guest users on My Account page
+ */
+function woodmart_child_enqueue_auth_assets() {
+	if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || is_user_logged_in() ) {
+		return;
+	}
+
+	// Google Fonts
+	wp_enqueue_style(
+		'woodmart-child-auth-fonts',
+		'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap',
+		array(),
+		null
+	);
+
+	$css_file = get_stylesheet_directory() . '/assets/css/myaccount-auth.css';
+	$js_file  = get_stylesheet_directory() . '/assets/js/myaccount-auth.js';
+	$css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : '1.0.0';
+	$js_ver   = file_exists( $js_file ) ? (string) filemtime( $js_file ) : '1.0.0';
+
+	// Dedicated Auth Split-Screen CSS
+	wp_enqueue_style(
+		'woodmart-child-auth-css',
+		get_stylesheet_directory_uri() . '/assets/css/myaccount-auth.css',
+		array(),
+		$css_ver
+	);
+
+	// Dedicated Auth Split-Screen JS
+	wp_enqueue_script(
+		'woodmart-child-auth-js',
+		get_stylesheet_directory_uri() . '/assets/js/myaccount-auth.js',
+		array(),
+		$js_ver,
+		true
+	);
+
+	// Dequeue theme header builder script to prevent sticky header offset injection
+	wp_dequeue_script( 'wd-header-builder' );
+}
+add_action( 'wp_enqueue_scripts', 'woodmart_child_enqueue_auth_assets', 100 );
+
+/**
+ * Append unique scoped body class for unauthenticated My Account view
+ *
+ * @param array $classes Body classes.
+ * @return array
+ */
+function woodmart_child_auth_body_classes( $classes ) {
+	if ( function_exists( 'is_account_page' ) && is_account_page() && ! is_user_logged_in() ) {
+		$classes[] = 'koda-auth-page';
+	}
+	return array_unique( $classes );
+}
+add_filter( 'body_class', 'woodmart_child_auth_body_classes' );
+
+/**
+ * Suppress WoodMart theme chrome (Page Title, Breadcrumbs, Sidebar, Footer) on Auth screen
+ */
+function woodmart_child_configure_auth_chrome() {
+	if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || is_user_logged_in() ) {
+		return;
+	}
+
+	add_filter( 'woodmart_page_title', '__return_false', 999 );
+	add_filter( 'woodmart_sidebar_layout', function() { return 'none'; }, 999 );
+	add_filter( 'woodmart_get_opt_footer', '__return_false', 999 );
+	add_filter( 'woodmart_footer_builder', '__return_false', 999 );
+	add_filter( 'woodmart_get_opt_sticky_header', '__return_false', 999 );
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+
+	// Remove default WooCommerce registration privacy policy text (handled by custom agreement checkbox)
+	remove_action( 'woocommerce_register_form', 'wc_registration_privacy_policy_text', 20 );
+	add_filter( 'woocommerce_get_privacy_policy_text', function( $text, $type ) {
+		if ( 'registration' === $type ) {
+			return '';
+		}
+		return $text;
+	}, 999, 2 );
+}
+add_action( 'wp', 'woodmart_child_configure_auth_chrome', 1 );
+add_action( 'template_redirect', 'woodmart_child_configure_auth_chrome', 1 );
+
+/**
+ * Ensure native WooCommerce registration is permitted on My Account page
+ */
+add_filter( 'pre_option_woocommerce_enable_myaccount_registration', function() {
+	return 'yes';
+} );
+
+/**
+ * Ensure user defines their own password upon registration (matches UI password field)
+ */
+add_filter( 'pre_option_woocommerce_registration_generate_password', function() {
+	return 'no';
+} );
+
+/**
+ * Generate username automatically from email address
+ */
+add_filter( 'pre_option_woocommerce_registration_generate_username', function() {
+	return 'yes';
+} );
+
+/**
+ * Validate Custom Registration Fields (Full Name, Terms agreement, and Password length)
+ *
+ * @param WP_Error $errors Validation errors.
+ * @param string   $username Username.
+ * @param string   $email Email.
+ * @return WP_Error
+ */
+function woodmart_child_validate_auth_registration( $errors, $username, $email ) {
+	if ( isset( $_POST['register'] ) ) {
+		if ( empty( $_POST['account_full_name'] ) || '' === trim( (string) $_POST['account_full_name'] ) ) {
+			$errors->add( 'full_name_error', __( 'Please enter your full name.', 'woodmart-child' ) );
+		}
+
+		if ( empty( $_POST['terms_privacy_agreed'] ) ) {
+			$errors->add( 'terms_error', __( 'Please agree to the Terms of Service and Privacy Policy.', 'woodmart-child' ) );
+		}
+
+		if ( isset( $_POST['password'] ) && strlen( (string) $_POST['password'] ) < 8 ) {
+			$errors->add( 'password_length_error', __( 'Password must be at least 8 characters long.', 'woodmart-child' ) );
+		}
+	}
+	return $errors;
+}
+add_filter( 'woocommerce_registration_errors', 'woodmart_child_validate_auth_registration', 10, 3 );
+
+/**
+ * Save Customer Full Name and Marketing Opt-in on successful registration
+ *
+ * @param int $customer_id Customer user ID.
+ */
+function woodmart_child_save_auth_registration_fields( $customer_id ) {
+	if ( ! empty( $_POST['account_full_name'] ) ) {
+		$full_name  = sanitize_text_field( wp_unslash( $_POST['account_full_name'] ) );
+		$parts      = explode( ' ', $full_name, 2 );
+		$first_name = trim( $parts[0] );
+		$last_name  = isset( $parts[1] ) ? trim( $parts[1] ) : '';
+
+		wp_update_user(
+			array(
+				'ID'           => $customer_id,
+				'first_name'   => $first_name,
+				'last_name'    => $last_name,
+				'display_name' => $full_name,
+			)
+		);
+
+		update_user_meta( $customer_id, 'first_name', $first_name );
+		update_user_meta( $customer_id, 'last_name', $last_name );
+		update_user_meta( $customer_id, 'billing_first_name', $first_name );
+		update_user_meta( $customer_id, 'billing_last_name', $last_name );
+	}
+
+	if ( ! empty( $_POST['newsletter_optin'] ) ) {
+		update_user_meta( $customer_id, 'marketing_optin', 1 );
+	}
+}
+add_action( 'woocommerce_created_customer', 'woodmart_child_save_auth_registration_fields', 10, 1 );
+
+/**
+ * Direct Redirect to My Account Page on Header "Login / Register" Click
+ *
+ * Prevents WoodMart from opening the off-canvas side login drawer for guest users,
+ * redirecting them directly to the custom split-screen My Account login/register page.
+ */
+function woodmart_child_direct_header_login_redirect() {
+	if ( is_user_logged_in() ) {
+		return;
+	}
+
+	$myaccount_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/my-account/' );
+	?>
+	<style id="koda-disable-side-login-css">
+		/* Suppress off-canvas login drawer for guest users in favor of direct page redirect */
+		.login-form-side,
+		.wd-side-hidden.login-form-side {
+			display: none !important;
+		}
+	</style>
+	<script id="koda-direct-header-login-js">
+		(function() {
+			'use strict';
+			var targetUrl = <?php echo wp_json_encode( esc_url_raw( $myaccount_url ) ); ?>;
+
+			// 1. Remove .login-side-opener class from header account elements to neutralize theme drawer trigger
+			function removeOpenerClasses() {
+				var openers = document.querySelectorAll('.wd-header-my-account.login-side-opener, .login-side-opener');
+				for (var i = 0; i < openers.length; i++) {
+					openers[i].classList.remove('login-side-opener');
+				}
+			}
+
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', removeOpenerClasses);
+			} else {
+				removeOpenerClasses();
+			}
+
+			// 2. Intercept clicks in the CAPTURING phase before WoodMart's jQuery listeners execute
+			document.addEventListener('click', function(e) {
+				if (document.body.classList.contains('logged-in')) {
+					return;
+				}
+
+				var trigger = e.target.closest('.wd-header-my-account, .login-side-opener, .menu-item-my-account');
+				if (!trigger) {
+					return;
+				}
+
+				var link = trigger.tagName === 'A' ? trigger : trigger.querySelector('a');
+				var destination = (link && link.href && link.href !== '#' && !link.href.startsWith('javascript:')) ? link.href : targetUrl;
+
+				// Prevent WoodMart off-canvas sidebar from triggering
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+
+				// Navigate directly to the My Account login/register page
+				window.location.href = destination;
+			}, true); // Event capturing: runs at the earliest possible stage
+		})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'woodmart_child_direct_header_login_redirect', 5 );
+
+
