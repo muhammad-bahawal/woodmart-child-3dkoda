@@ -95,7 +95,7 @@ function woodmart_child_enqueue_landing_assets() {
 			'nonce'          => wp_create_nonce( 'woodmart_child_cart_nonce' ),
 			'cartUrl'        => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : '#',
 			'checkoutUrl'    => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '#',
-			'currencySymbol' => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '€',
+			'currencySymbol' => '€',
 			'i18n'           => array(
 				'adding'    => __( 'Adding to sample basket...', 'woodmart-child' ),
 				'added'     => __( 'Added to sample basket', 'woodmart-child' ),
@@ -634,5 +634,19 @@ function woodmart_child_direct_header_login_redirect() {
 	<?php
 }
 add_action( 'wp_footer', 'woodmart_child_direct_header_login_redirect', 5 );
+
+/**
+ * 15. Strict Storewide Currency Consistency: Baltic Store EUR (€)
+ *
+ * Ensures all WooCommerce price methods, cart blocks, and landing builders
+ * render strictly with the Euro symbol (€) and EUR currency.
+ */
+add_filter( 'woocommerce_currency', function( $currency ) {
+	return 'EUR';
+}, 999 );
+
+add_filter( 'woocommerce_currency_symbol', function( $currency_symbol, $currency ) {
+	return '€';
+}, 999, 2 );
 
 

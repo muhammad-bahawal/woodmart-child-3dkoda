@@ -750,6 +750,15 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 				$is_combo = false;
 			}
 
+			$var_img_id = ! empty( $var['image_id'] ) ? absint( $var['image_id'] ) : ( $var_obj ? absint( $var_obj->get_image_id() ) : 0 );
+			$var_img_url = $var_img_id ? wp_get_attachment_image_url( $var_img_id, 'full' ) : '';
+			if ( empty( $var_img_url ) && ! empty( $var['image'] ) ) {
+				$var_img_url = ! empty( $var['image']['full_src'] ) ? $var['image']['full_src'] : ( ! empty( $var['image']['src'] ) ? $var['image']['src'] : ( ! empty( $var['image']['url'] ) ? $var['image']['url'] : '' ) );
+			}
+			if ( empty( $var_img_url ) ) {
+				$var_img_url = $main_image_url;
+			}
+
 			$variations[] = array(
 				'id'           => $var['variation_id'],
 				'title'        => $display_title,
@@ -759,7 +768,7 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 				'sku'          => $var['sku'] ?: $product->get_sku(),
 				'in_stock'     => $var['is_in_stock'],
 				'is_combo'     => $is_combo,
-				'image_url'    => ! empty( $var['image']['url'] ) ? $var['image']['url'] : $main_image_url,
+				'image_url'    => $var_img_url,
 				'attributes'   => $var['attributes'],
 			);
 		}
@@ -846,7 +855,7 @@ function woodmart_child_get_default_filament_builder_data() {
 			'title'             => 'Bambu Lab PLA Basic Filament',
 			'subtitle'          => 'Reliable, easy-to-print PLA for prototypes, models and everyday parts.',
 			'rating_text'       => 'Built for everyday making',
-			'stock_text'        => 'In Stock — Tallinn',
+			'stock_text'        => 'In Stock',
 			'stock_note'        => 'Sample inventory',
 			'price_display'     => '€24.90',
 			'price_raw'         => '24.90',

@@ -774,6 +774,45 @@ button.gallery-nav-btn svg {
 	margin: 0 !important;
 }
 
+/* Dynamic Stock Status Indicator States */
+.landing-page-root .product-stock-row.is-instock .stock-icon {
+	color: #059669 !important;
+}
+.landing-page-root .product-stock-row.is-instock .stock-icon svg {
+	stroke: #059669 !important;
+}
+.landing-page-root .product-stock-row.is-instock .stock-text {
+	color: #059669 !important;
+}
+
+.landing-page-root .product-stock-row.is-outofstock {
+	background: #fef2f2 !important;
+	border-color: #fecaca !important;
+}
+.landing-page-root .product-stock-row.is-outofstock .stock-icon {
+	color: #dc2626 !important;
+}
+.landing-page-root .product-stock-row.is-outofstock .stock-icon svg {
+	stroke: #dc2626 !important;
+}
+.landing-page-root .product-stock-row.is-outofstock .stock-text {
+	color: #dc2626 !important;
+}
+
+.landing-page-root .product-stock-row.is-backorder {
+	background: #fffbeb !important;
+	border-color: #fde68a !important;
+}
+.landing-page-root .product-stock-row.is-backorder .stock-icon {
+	color: #d97706 !important;
+}
+.landing-page-root .product-stock-row.is-backorder .stock-icon svg {
+	stroke: #d97706 !important;
+}
+.landing-page-root .product-stock-row.is-backorder .stock-text {
+	color: #d97706 !important;
+}
+
 /* 4. Price Row with Strict Pure Black Color */
 .landing-page-root .product-price-row {
 	display: flex !important;
@@ -3389,6 +3428,31 @@ div.product.landing-page-root .summary .price * {
 .landing-page-root .filament-btn-add-to-cart:hover {
 	background: #ea580c !important;
 	border-color: #ea580c !important;
+}
+
+.landing-page-root .filament-btn-add-to-cart.is-disabled,
+.landing-page-root .filament-btn-add-to-cart:disabled {
+	background: #9ca3af !important;
+	border-color: #9ca3af !important;
+	color: #ffffff !important;
+	cursor: not-allowed !important;
+	opacity: 0.85 !important;
+	transform: none !important;
+	box-shadow: none !important;
+}
+
+.landing-page-root .filament-btn-add-to-cart.is-disabled:hover,
+.landing-page-root .filament-btn-add-to-cart:disabled:hover {
+	background: #9ca3af !important;
+	border-color: #9ca3af !important;
+	transform: none !important;
+}
+
+.landing-page-root .filament-colors-header .active-color-name.is-placeholder {
+	color: #6b7280 !important;
+	font-weight: 500 !important;
+	text-transform: none !important;
+	font-style: italic !important;
 }
 
 /* ==========================================================================

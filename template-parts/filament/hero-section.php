@@ -33,7 +33,24 @@ $subtitle        = $core['short_desc'];
 $price_display   = $core['price_html'];
 $badge_text      = ! empty( $settings['general']['badge_text'] ) ? $settings['general']['badge_text'] : __( 'Authorized Bambu Lab Reseller', 'woodmart-child' );
 $rating_text     = ! empty( $settings['general']['rating_text'] ) ? $settings['general']['rating_text'] : __( 'Built for everyday making', 'woodmart-child' );
-$stock_text      = ! empty( $settings['general']['stock_text'] ) ? $settings['general']['stock_text'] : __( 'In Stock — Tallinn', 'woodmart-child' );
+
+// 100% Dynamic Stock Status via WooCommerce Native Methods
+$product_obj  = $core['product'] ?? wc_get_product( $product_id );
+$is_in_stock  = $product_obj ? $product_obj->is_in_stock() : true;
+$stock_status = $product_obj ? $product_obj->get_stock_status() : 'instock';
+$is_backorder = ( 'onbackorder' === $stock_status ) || ( $product_obj && $product_obj->is_on_backorder() );
+
+if ( $is_backorder ) {
+	$stock_text  = __( 'Available on Backorder', 'woodmart-child' );
+	$stock_class = 'is-backorder';
+} elseif ( $is_in_stock && 'outofstock' !== $stock_status ) {
+	$stock_text  = __( 'In Stock', 'woodmart-child' );
+	$stock_class = 'is-instock';
+} else {
+	$stock_text  = __( 'Out of Stock', 'woodmart-child' );
+	$stock_class = 'is-outofstock';
+}
+
 $stock_note      = ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : ( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : __( 'Sample inventory', 'woodmart-child' ) );
 $vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'Incl. 24% VAT · sample price', 'woodmart-child' );
 $ex_vat_text     = ! empty( $settings['general']['ex_vat_text'] ) ? $settings['general']['ex_vat_text'] : __( 'Show ex. VAT', 'woodmart-child' );
@@ -104,8 +121,12 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 				<span class="filament-rfid-text">RFID</span>
 			</div>
 
-			<?php if ( ! empty( $core['main_image_url'] ) ) : ?>
-				<img src="<?php echo esc_url( $core['main_image_url'] ); ?>" alt="<?php echo esc_attr( $title ); ?>" id="product-main-image">
+			<?php
+			$default_img_src    = ! empty( $core['main_image_url'] ) ? $core['main_image_url'] : '';
+			$default_img_id     = ! empty( $core['main_image_id'] ) ? $core['main_image_id'] : 0;
+			$default_img_srcset = $default_img_id ? ( wp_get_attachment_image_srcset( $default_img_id, 'full' ) ?: '' ) : '';
+			if ( ! empty( $default_img_src ) ) : ?>
+				<img src="<?php echo esc_url( $default_img_src ); ?>" <?php echo $default_img_srcset ? 'srcset="' . esc_attr( $default_img_srcset ) . '"' : ''; ?> alt="<?php echo esc_attr( $title ); ?>" id="product-main-image" data-default-src="<?php echo esc_url( $default_img_src ); ?>" data-default-srcset="<?php echo esc_attr( $default_img_srcset ); ?>">
 			<?php else : ?>
 				<div class="placeholder" role="img" aria-label="<?php echo esc_attr( 'Product image: ' . $title ); ?>">
 					[<?php echo esc_html( $title ); ?>]
@@ -146,18 +167,18 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 			<span class="rating-quote"><?php echo esc_html( $rating_text ); ?></span>
 		</div>
 
-		<!-- 4. Stock Banner (Tallinn Sample Inventory) -->
-		<div class="product-stock-row">
+		<!-- 4. Dynamic Stock Banner (WooCommerce Inventory Synced) -->
+		<div class="product-stock-row <?php echo esc_attr( $stock_class ); ?>" id="filament-stock-row">
 			<span class="stock-icon" aria-hidden="true">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
 					<polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
 					<line x1="12" y1="22.08" x2="12" y2="12"></line>
 				</svg>
 			</span>
-			<span class="stock-text"><?php echo esc_html( $stock_text ); ?></span>
+			<span class="stock-text" id="filament-stock-text"><?php echo esc_html( $stock_text ); ?></span>
 			<span class="stock-sep">·</span>
-			<span class="stock-note"><?php echo esc_html( $stock_note ); ?></span>
+			<span class="stock-note" id="filament-stock-note"><?php echo esc_html( $stock_note ); ?></span>
 		</div>
 
 		<!-- 5. Price Display Row -->
@@ -303,17 +324,57 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 						}
 					}
 
+					$var_obj = wc_get_product( $av['variation_id'] );
+					$v_in_stock = $var_obj ? $var_obj->is_in_stock() : ( ! empty( $av['is_in_stock'] ) );
+					$v_stock_status = $var_obj ? $var_obj->get_stock_status() : ( $v_in_stock ? 'instock' : 'outofstock' );
+					$v_backorder = ( 'onbackorder' === $v_stock_status ) || ( $var_obj && $var_obj->is_on_backorder() );
+
+					if ( $v_backorder ) {
+						$v_stock_text  = __( 'Available on Backorder', 'woodmart-child' );
+						$v_stock_state = 'backorder';
+					} elseif ( $v_in_stock && 'outofstock' !== $v_stock_status ) {
+						$v_stock_text  = __( 'In Stock', 'woodmart-child' );
+						$v_stock_state = 'instock';
+					} else {
+						$v_stock_text  = __( 'Out of Stock', 'woodmart-child' );
+						$v_stock_state = 'outofstock';
+					}
+
+					// Dynamic image and srcset extraction
+					$v_img_id = ! empty( $av['image_id'] ) ? absint( $av['image_id'] ) : 0;
+					if ( ! $v_img_id && ! empty( $av['variation_id'] ) ) {
+						$v_img_id = absint( get_post_thumbnail_id( $av['variation_id'] ) );
+						if ( ! $v_img_id && $var_obj && method_exists( $var_obj, 'get_image_id' ) ) {
+							$v_img_id = absint( $var_obj->get_image_id() );
+						}
+					}
+
+					$v_img_url    = '';
+					$v_img_srcset = '';
+					if ( $v_img_id ) {
+						$v_img_url    = wp_get_attachment_image_url( $v_img_id, 'full' );
+						$v_img_srcset = wp_get_attachment_image_srcset( $v_img_id, 'full' ) ?: '';
+					}
+					if ( empty( $v_img_url ) && ! empty( $av['image'] ) ) {
+						$v_img_url    = ! empty( $av['image']['full_src'] ) ? $av['image']['full_src'] : ( ! empty( $av['image']['src'] ) ? $av['image']['src'] : ( ! empty( $av['image']['url'] ) ? $av['image']['url'] : '' ) );
+						$v_img_srcset = ! empty( $av['image']['srcset'] ) ? $av['image']['srcset'] : '';
+					}
+
 					$v_price_html = $av['price_html'] ?: wc_price( $av['display_price'] );
+					$v_sku = $av['sku'] ?: ( $var_obj ? $var_obj->get_sku() : $core['sku'] );
 
 					$matrix[] = array(
-						'id'         => $av['variation_id'],
-						'color'      => $c_slug,
-						'format'     => $f_slug,
-						'price_raw'  => $av['display_price'],
-						'price_html' => $v_price_html,
-						'sku'        => $av['sku'] ?: $core['sku'],
-						'image'      => ! empty( $av['image']['url'] ) ? $av['image']['url'] : '',
-						'in_stock'   => $av['is_in_stock'],
+						'id'           => $av['variation_id'],
+						'color'        => $c_slug,
+						'format'       => $f_slug,
+						'price_raw'    => $av['display_price'],
+						'price_html'   => $v_price_html,
+						'sku'          => $v_sku,
+						'image'        => $v_img_url,
+						'srcset'       => $v_img_srcset,
+						'in_stock'     => $v_in_stock,
+						'stock_status' => $v_stock_state,
+						'stock_text'   => $v_stock_text,
 					);
 
 					if ( $f_slug && ( empty( $first_color_slug ) || $c_slug === $first_color_slug ) ) {
@@ -329,17 +390,15 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 					<div class="filament-colors-block">
 						<div class="filament-colors-header">
 							<div class="filament-colors-label">
-								<?php esc_html_e( 'COLOR :', 'woodmart-child' ); ?> <span class="active-color-name" id="active-filament-color-name"><?php echo esc_html( $color_options[0]['display'] ?? $color_options[0]['name'] ); ?></span>
+								<?php esc_html_e( 'COLOR :', 'woodmart-child' ); ?> <span class="active-color-name is-placeholder" id="active-filament-color-name"><?php esc_html_e( 'Select a color', 'woodmart-child' ); ?></span>
 							</div>
 							<a href="#all-colors" class="filament-view-colors-link"><?php esc_html_e( 'View all colors ›', 'woodmart-child' ); ?></a>
 						</div>
 
 						<div class="filament-swatches-grid" role="radiogroup" aria-label="<?php esc_attr_e( 'Filament Color Swatches', 'woodmart-child' ); ?>">
-							<?php foreach ( $color_options as $c_idx => $c ) :
-								$is_act = ( 0 === $c_idx );
-							?>
+							<?php foreach ( $color_options as $c_idx => $c ) : ?>
 								<button type="button" 
-										class="filament-swatch <?php echo $is_act ? 'is-active' : ''; ?>" 
+										class="filament-swatch" 
 										data-color-name="<?php echo esc_attr( $c['name'] ); ?>" 
 										data-color-display="<?php echo esc_attr( $c['display'] ); ?>" 
 										data-color-hex="<?php echo esc_attr( $c['hex'] ); ?>" 
@@ -402,8 +461,8 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 					<input type="text" name="quantity" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>">
 					<button type="button" data-step="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
 				</div>
-				<button class="btn btn-add-to-cart filament-btn-add-to-cart" type="submit">
-					<span><?php esc_html_e( 'Add to basket', 'woodmart-child' ); ?></span>
+				<button class="btn btn-add-to-cart filament-btn-add-to-cart <?php echo $is_variable ? 'is-disabled' : ''; ?>" type="submit" <?php echo $is_variable ? 'data-state="unselected"' : 'data-state="ready"'; ?>>
+					<span class="btn-text"><?php echo $is_variable ? esc_html__( 'Please select a color', 'woodmart-child' ) : esc_html__( 'Add to basket', 'woodmart-child' ); ?></span>
 					<span class="cart-icon" aria-hidden="true">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>

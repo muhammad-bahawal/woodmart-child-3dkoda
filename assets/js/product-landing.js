@@ -10,6 +10,11 @@
 (function () {
 	'use strict';
 
+	function sanitizeCurrencyHtml(html) {
+		if (!html) return '';
+		return String(html).replace(/&#36;|\$|&dollar;/g, '€');
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
 		initMobileMenu();
 		initQuantitySteppers();
@@ -308,13 +313,14 @@
 		let currentPriceHtml = priceDisplay ? (priceDisplay.dataset.priceHtml || priceDisplay.innerHTML) : '';
 
 		function formatPrice(rawNum) {
-			const symbol = (window.woodmartLandingData && window.woodmartLandingData.currencySymbol) || '€';
+			let symbol = (window.woodmartLandingData && window.woodmartLandingData.currencySymbol) || '€';
+			if (symbol === '$') symbol = '€';
 			const formatted = rawNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 			return `<span class="woocommerce-Price-amount amount" style="color:#111827 !important;"><bdi style="color:#111827 !important;"><span class="woocommerce-Price-currencySymbol" style="color:#111827 !important;">${symbol}</span>${formatted}</bdi></span>`;
 		}
 
 		function renderCurrentPrice() {
-			let displayHtml = currentPriceHtml;
+			let displayHtml = sanitizeCurrencyHtml(currentPriceHtml);
 			if (isExVat && currentRawPrice > 0) {
 				const exVatNum = currentRawPrice / 1.24;
 				displayHtml = formatPrice(exVatNum);
@@ -555,6 +561,19 @@
 				return;
 			}
 
+			// Check if variation is required but not selected (filament swatches)
+			const filamentSwatches = form.querySelectorAll('.filament-swatch');
+			if (filamentSwatches.length > 0 && !variationId) {
+				showNotice('Please select a color before adding to basket.', true);
+				const colorsBlock = form.querySelector('.filament-colors-block');
+				if (colorsBlock) {
+					colorsBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					colorsBlock.classList.add('is-unselected-alert');
+					setTimeout(() => colorsBlock.classList.remove('is-unselected-alert'), 1200);
+				}
+				return;
+			}
+
 			// Check if variation is required but not selected (filament format cards)
 			const filamentCards = form.querySelectorAll('.filament-format-card');
 			if (filamentCards.length > 0 && !variationId) {
@@ -726,6 +745,8 @@
 		const swatches = root.querySelectorAll('.filament-swatch');
 		const formatCards = root.querySelectorAll('.filament-formats-grid .filament-format-card');
 		const compFormatCards = root.querySelectorAll('.filament-format-cards-grid .filament-format-card');
+		const addToCartBtn = root.querySelector('.filament-btn-add-to-cart') || root.querySelector('.product-add-to-cart button[type="submit"]');
+		const btnTextSpan = addToCartBtn ? (addToCartBtn.querySelector('.btn-text') || addToCartBtn.querySelector('span')) : null;
 
 		let matrix = [];
 		const matrixScript = root.querySelector('#filament-variation-matrix');
@@ -741,7 +762,7 @@
 		let currentColorName = '';
 		const initialActiveSwatch = root.querySelector('.filament-swatch.is-active');
 		if (initialActiveSwatch) {
-			selectedColorSlug = initialActiveSwatch.dataset.slug || '';
+			selectedColorSlug = (initialActiveSwatch.dataset.slug || '').toLowerCase();
 			currentColorName = initialActiveSwatch.dataset.colorName || '';
 		}
 
@@ -749,30 +770,35 @@
 		let currentFormatTitle = '';
 		const initialActiveCard = root.querySelector('.filament-format-card.is-active');
 		if (initialActiveCard) {
-			selectedFormatSlug = initialActiveCard.dataset.format || '';
+			selectedFormatSlug = (initialActiveCard.dataset.format || '').toLowerCase();
 			currentFormatTitle = initialActiveCard.dataset.title || '';
 		}
 
 		function findMatchingVariation(colorSlug, formatSlug) {
 			if (!matrix.length) return null;
-			// 1. Exact match on both color and format
-			let match = matrix.find(v => {
-				const cMatch = (!colorSlug && !v.color) || (v.color && v.color === colorSlug);
-				const fMatch = (!formatSlug && !v.format) || (v.format && v.format === formatSlug);
-				return cMatch && fMatch;
-			});
-			if (match) return match;
+			const cSlug = (colorSlug || '').toLowerCase().trim();
+			const fSlug = (formatSlug || '').toLowerCase().trim();
 
-			// 2. Match format if color is empty
-			if (formatSlug) {
-				match = matrix.find(v => v.format === formatSlug);
-				if (match) return match;
+			// 1. Exact match on both color and format
+			if (cSlug && fSlug) {
+				const exact = matrix.find(v => {
+					const cMatch = v.color && (v.color.toLowerCase() === cSlug || cSlug.includes(v.color.toLowerCase()) || v.color.toLowerCase().includes(cSlug));
+					const fMatch = v.format && (v.format.toLowerCase() === fSlug || fSlug.includes(v.format.toLowerCase()) || v.format.toLowerCase().includes(fSlug));
+					return cMatch && fMatch;
+				});
+				if (exact) return exact;
 			}
 
-			// 3. Match color if format is empty
-			if (colorSlug) {
-				match = matrix.find(v => v.color === colorSlug);
-				if (match) return match;
+			// 2. If format is chosen but no color
+			if (fSlug && !cSlug) {
+				const fMatch = matrix.find(v => v.format && (v.format.toLowerCase() === fSlug || fSlug.includes(v.format.toLowerCase())));
+				if (fMatch) return fMatch;
+			}
+
+			// 3. Match color if chosen
+			if (cSlug) {
+				const cMatch = matrix.find(v => v.color && (v.color.toLowerCase() === cSlug || cSlug.includes(v.color.toLowerCase()) || v.color.toLowerCase().includes(cSlug)));
+				if (cMatch) return cMatch;
 			}
 
 			return null;
@@ -785,45 +811,132 @@
 				if (priceSlot && fSlug) {
 					const v = findMatchingVariation(selectedColorSlug, fSlug);
 					if (v && v.price_html) {
-						priceSlot.innerHTML = v.price_html;
+						priceSlot.innerHTML = sanitizeCurrencyHtml(v.price_html);
 					}
 				}
 			});
 		}
 
 		function applyVariation(v) {
+			if (!v) return;
+
+			// 1. Populate Hidden Form Variation ID
 			const varInput = root.querySelector('#selected-variation-id') || root.querySelector('input[name="variation_id"]');
-			if (varInput && v) {
+			if (varInput && v.id) {
 				varInput.value = v.id;
 			}
-			if (mainPriceSpan && v && v.price_html) {
-				mainPriceSpan.innerHTML = v.price_html;
+
+			// 2. Price Update (Strict EUR)
+			if (mainPriceSpan && v.price_html) {
+				mainPriceSpan.innerHTML = sanitizeCurrencyHtml(v.price_html);
 			}
-			if (v && v.image) {
-				const mainImg = root.querySelector('.product-gallery__main img');
-				if (mainImg) {
+			const priceRow = root.querySelector('.filament-price-row');
+			if (priceRow && typeof v.price_raw !== 'undefined') {
+				priceRow.dataset.priceRaw = v.price_raw;
+			}
+
+			// 3. Dynamic Variation Image Switching & Thumbnail Sync
+			const mainImg = root.querySelector('#product-main-image') || root.querySelector('.product-gallery__main img');
+			if (mainImg) {
+				const defaultSrc = mainImg.dataset.defaultSrc || mainImg.src;
+				const defaultSrcset = mainImg.dataset.defaultSrcset || '';
+				const targetSrc = v.image ? v.image : defaultSrc;
+				const targetSrcset = (v.image && v.srcset) ? v.srcset : (!v.image ? defaultSrcset : '');
+
+				if (targetSrc && mainImg.src !== targetSrc) {
 					mainImg.style.transition = 'opacity 0.2s ease';
 					mainImg.style.opacity = '0.3';
 					setTimeout(() => {
-						mainImg.src = v.image;
+						mainImg.src = targetSrc;
+						if (targetSrcset) {
+							mainImg.setAttribute('srcset', targetSrcset);
+						} else {
+							mainImg.removeAttribute('srcset');
+						}
 						mainImg.style.opacity = '1';
 					}, 150);
 				}
+
+				// Highlight matching thumbnail if in gallery list
+				const thumbs = root.querySelectorAll('.product-gallery__thumbs li');
+				thumbs.forEach(t => {
+					const tUrl = t.dataset.fullUrl;
+					if (tUrl && targetSrc && (tUrl === targetSrc || targetSrc.includes(tUrl) || tUrl.includes(targetSrc))) {
+						t.classList.add('is-active');
+					} else {
+						t.classList.remove('is-active');
+					}
+				});
 			}
 
+			// 4. SKU & Summary Note
+			const stockNote = root.querySelector('#filament-stock-note') || root.querySelector('.product-stock-row .stock-note');
+			if (stockNote && v.sku) {
+				stockNote.textContent = 'SKU: ' + v.sku;
+			}
 			if (variationSummary) {
 				const parts = [];
-				if (currentColorName) {
-					parts.push(currentColorName.toUpperCase());
-				}
-				if (currentFormatTitle) {
-					parts.push(currentFormatTitle.toUpperCase());
-				}
-				if (v && v.sku) {
-					parts.push(v.sku);
-				}
+				if (currentColorName) parts.push(currentColorName.toUpperCase());
+				if (currentFormatTitle) parts.push(currentFormatTitle.toUpperCase());
+				if (v.sku) parts.push(v.sku);
 				if (parts.length > 0) {
 					variationSummary.textContent = parts.join(' · ');
+				}
+			}
+
+			// 5. 100% Dynamic Stock Status (Strictly In Stock / Out of Stock / Available on Backorder - NO Tallinn)
+			const stockRow = root.querySelector('#filament-stock-row') || root.querySelector('.product-stock-row');
+			const stockText = root.querySelector('#filament-stock-text') || (stockRow ? stockRow.querySelector('.stock-text') : null);
+			if (stockText && v.stock_text) {
+				stockText.textContent = v.stock_text;
+			}
+			if (stockRow && v.stock_status) {
+				stockRow.classList.remove('is-instock', 'is-outofstock', 'is-backorder');
+				stockRow.classList.add('is-' + v.stock_status);
+			}
+
+			// 6. Add to Basket CTA Conditional State
+			if (addToCartBtn) {
+				if (v.stock_status === 'outofstock' || v.in_stock === false) {
+					addToCartBtn.disabled = true;
+					addToCartBtn.classList.add('is-disabled');
+					addToCartBtn.dataset.state = 'outofstock';
+					if (btnTextSpan) {
+						btnTextSpan.textContent = 'Out of Stock';
+					}
+				} else {
+					addToCartBtn.disabled = false;
+					addToCartBtn.classList.remove('is-disabled');
+					addToCartBtn.dataset.state = 'ready';
+					if (btnTextSpan) {
+						btnTextSpan.textContent = 'Add to basket';
+					}
+				}
+			}
+
+			// 7. Sticky Bottom Purchase Bar Sync
+			const stickyBar = document.querySelector('.sticky-purchase-bar');
+			if (stickyBar) {
+				const sPrice = stickyBar.querySelector('.sticky-bar-price') || stickyBar.querySelector('small');
+				const sThumb = stickyBar.querySelector('.sticky-bar__thumb');
+				const sBtn = stickyBar.querySelector('.sticky-bar-cta') || stickyBar.querySelector('.btn');
+
+				if (sPrice && v.price_html) {
+					sPrice.innerHTML = `${sanitizeCurrencyHtml(v.price_html)} <small>incl. 24% VAT · sample price</small>`;
+				}
+				if (sThumb && v.image) {
+					sThumb.src = v.image;
+				}
+				if (sBtn) {
+					if (v.stock_status === 'outofstock' || v.in_stock === false) {
+						sBtn.disabled = true;
+						sBtn.classList.add('is-disabled');
+						sBtn.textContent = 'Out of Stock';
+					} else {
+						sBtn.disabled = false;
+						sBtn.classList.remove('is-disabled');
+						sBtn.textContent = 'Add to basket';
+					}
 				}
 			}
 		}
@@ -837,25 +950,36 @@
 				swatches.forEach(s => s.classList.remove('is-active'));
 				this.classList.add('is-active');
 
-				selectedColorSlug = this.dataset.slug || '';
+				selectedColorSlug = (this.dataset.slug || '').toLowerCase();
 				currentColorName = this.dataset.colorName || '';
 
 				if (activeColorSpan) {
 					activeColorSpan.textContent = this.dataset.colorDisplay || this.dataset.colorName || '';
+					activeColorSpan.classList.remove('is-placeholder');
 				}
 				if (colorInput) {
 					colorInput.value = currentColorName;
 				}
 
-				// Update prices shown on the 2 format boxes for the newly picked color
+				// If product has format cards and none is selected yet, auto-select first format card (Complete Spool)
+				if (formatCards.length > 0 && !selectedFormatSlug) {
+					const firstCard = formatCards[0];
+					firstCard.classList.add('is-active');
+					selectedFormatSlug = (firstCard.dataset.format || '').toLowerCase();
+					currentFormatTitle = firstCard.dataset.title || '';
+					if (formatInput) {
+						formatInput.value = currentFormatTitle;
+					}
+					syncChooseFormatCards(selectedFormatSlug, currentFormatTitle);
+				}
+
+				// Update prices shown on format cards for newly picked color
 				updateFormatCardPrices();
 
-				// If a format card is already active, sync the matching variation
-				if (selectedFormatSlug) {
-					const matchedVar = findMatchingVariation(selectedColorSlug, selectedFormatSlug);
-					if (matchedVar) {
-						applyVariation(matchedVar);
-					}
+				// Locate and apply matching variation
+				const matchedVar = findMatchingVariation(selectedColorSlug, selectedFormatSlug);
+				if (matchedVar) {
+					applyVariation(matchedVar);
 				} else {
 					if (variationSummary && currentColorName) {
 						variationSummary.textContent = currentColorName.toUpperCase();
@@ -881,22 +1005,29 @@
 			});
 		}
 
-		// Format Cards Selection in Hero (The 2 Boxes: Complete Spool vs Refill)
+		// Format Cards Selection in Hero (Complete Spool vs Refill)
 		formatCards.forEach(card => {
 			card.addEventListener('click', function () {
 				formatCards.forEach(c => c.classList.remove('is-active'));
 				this.classList.add('is-active');
 
-				selectedFormatSlug = this.dataset.format || '';
-				currentFormatTitle = this.dataset.title || '';
+				selectedFormatSlug = (card.dataset.format || '').toLowerCase();
+				currentFormatTitle = card.dataset.title || '';
 
 				if (formatInput) {
 					formatInput.value = currentFormatTitle;
 				}
 
-				const matchedVar = findMatchingVariation(selectedColorSlug, selectedFormatSlug);
-				if (matchedVar) {
-					applyVariation(matchedVar);
+				// If a color has already been chosen, apply the variation for (color, format)
+				if (selectedColorSlug) {
+					const matchedVar = findMatchingVariation(selectedColorSlug, selectedFormatSlug);
+					if (matchedVar) {
+						applyVariation(matchedVar);
+					}
+				} else {
+					if (variationSummary && currentFormatTitle) {
+						variationSummary.textContent = currentFormatTitle.toUpperCase();
+					}
 				}
 
 				// Sync with Choose Format section

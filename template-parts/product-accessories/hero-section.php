@@ -64,86 +64,55 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 </div>
 
 <section class="product-hero container accessories-hero" id="accessories-hero">
-	<!-- Left Column: Gallery with Left Vertical Thumbnails -->
-	<div class="product-gallery accessories-gallery-column">
-		<div class="product-gallery__inner">
-			<div class="product-gallery__thumbs-wrap">
-				<button type="button" class="gallery-nav-btn gallery-nav-prev" aria-label="<?php esc_attr_e( 'Previous thumbnail', 'woodmart-child' ); ?>">
-					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-						<polyline points="18 15 12 9 6 15"></polyline>
-					</svg>
-				</button>
+	<!-- Left Column: Gallery with Left Vertical Thumbnails (Sticky Grid Child) -->
+	<div class="product-gallery">
+		<div class="product-gallery__thumbs-wrap">
+			<button type="button" class="gallery-nav-btn gallery-nav-prev" aria-label="<?php esc_attr_e( 'Previous thumbnail', 'woodmart-child' ); ?>">
+				<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="18 15 12 9 6 15"></polyline>
+				</svg>
+			</button>
 
-				<ul class="product-gallery__thumbs">
-					<?php if ( ! empty( $core['gallery_images'] ) ) : ?>
-						<?php foreach ( $core['gallery_images'] as $idx => $img ) : ?>
-							<li class="<?php echo 0 === $idx ? 'is-active' : ''; ?>" data-full-url="<?php echo esc_url( $img['url'] ); ?>" data-alt="<?php echo esc_attr( $img['alt'] ); ?>">
-								<img src="<?php echo esc_url( $img['thumb'] ); ?>" alt="<?php echo esc_attr( $img['alt'] ); ?>" loading="lazy">
-							</li>
-						<?php endforeach; ?>
-					<?php else : ?>
-						<li class="is-active"><div class="thumb-ph">1</div></li>
-						<li><div class="thumb-ph">2</div></li>
-						<li><div class="thumb-ph">3</div></li>
-						<li><div class="thumb-ph">4</div></li>
-					<?php endif; ?>
-				</ul>
-
-				<button type="button" class="gallery-nav-btn gallery-nav-next" aria-label="<?php esc_attr_e( 'Next thumbnail', 'woodmart-child' ); ?>">
-					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-						<polyline points="6 9 12 15 18 9"></polyline>
-					</svg>
-				</button>
-			</div>
-
-			<div class="product-gallery__main">
-				<span class="hero-badge-corner"><?php echo esc_html( $eyebrow ); ?></span>
-
-				<?php if ( ! empty( $core['main_image_url'] ) ) : ?>
-					<img src="<?php echo esc_url( $core['main_image_url'] ); ?>" alt="<?php echo esc_attr( $title ); ?>" id="product-main-image">
+			<ul class="product-gallery__thumbs">
+				<?php if ( ! empty( $core['gallery_images'] ) ) : ?>
+					<?php foreach ( $core['gallery_images'] as $idx => $img ) : ?>
+						<li class="<?php echo 0 === $idx ? 'is-active' : ''; ?>" data-full-url="<?php echo esc_url( $img['url'] ); ?>" data-alt="<?php echo esc_attr( $img['alt'] ); ?>">
+							<img src="<?php echo esc_url( $img['thumb'] ); ?>" alt="<?php echo esc_attr( $img['alt'] ); ?>" loading="lazy">
+						</li>
+					<?php endforeach; ?>
 				<?php else : ?>
-					<div class="placeholder" role="img" aria-label="<?php echo esc_attr( 'Product image: ' . $title ); ?>">
-						[<?php echo esc_html( $title ); ?>]
-					</div>
+					<li class="is-active"><div class="thumb-ph">1</div></li>
+					<li><div class="thumb-ph">2</div></li>
+					<li><div class="thumb-ph">3</div></li>
+					<li><div class="thumb-ph">4</div></li>
 				<?php endif; ?>
+			</ul>
 
-				<button type="button" class="btn-change-view" id="hero-change-view" aria-label="<?php esc_attr_e( 'Change gallery view', 'woodmart-child' ); ?>">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-					</svg>
-					<span><?php esc_html_e( 'Change view', 'woodmart-child' ); ?></span>
-				</button>
-			</div>
+			<button type="button" class="gallery-nav-btn gallery-nav-next" aria-label="<?php esc_attr_e( 'Next thumbnail', 'woodmart-child' ); ?>">
+				<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="6 9 12 15 18 9"></polyline>
+				</svg>
+			</button>
 		</div>
 
-		<!-- Gallery Badges Strip Under Main Image -->
-		<?php if ( ! empty( $gallery_badges ) ) : ?>
-			<div class="accessories-gallery-badges" aria-label="<?php esc_attr_e( 'Hardware highlights', 'woodmart-child' ); ?>">
-				<?php foreach ( $gallery_badges as $gb ) :
-					$g_icon = strtolower( trim( $gb['icon'] ?? 'shield' ) );
-				?>
-					<div class="accessories-gallery-badge-item">
-						<div class="acc-badge-icon" aria-hidden="true">
-							<?php if ( false !== strpos( $g_icon, 'temp' ) || false !== strpos( $g_icon, 'fire' ) ) : ?>
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
-							<?php elseif ( false !== strpos( $g_icon, 'diamond' ) || false !== strpos( $g_icon, 'steel' ) ) : ?>
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"></path></svg>
-							<?php elseif ( false !== strpos( $g_icon, 'zap' ) || false !== strpos( $g_icon, 'quick' ) || false !== strpos( $g_icon, 'tool' ) ) : ?>
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-							<?php else : ?>
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
-							<?php endif; ?>
-						</div>
-						<div class="acc-badge-text">
-							<strong class="acc-badge-title"><?php echo esc_html( $gb['title'] ); ?></strong>
-							<?php if ( ! empty( $gb['subtitle'] ) ) : ?>
-								<span class="acc-badge-sub"><?php echo esc_html( $gb['subtitle'] ); ?></span>
-							<?php endif; ?>
-						</div>
-					</div>
-				<?php endforeach; ?>
-			</div>
-		<?php endif; ?>
+		<div class="product-gallery__main">
+			<span class="hero-badge-corner"><?php echo esc_html( $eyebrow ); ?></span>
+
+			<?php if ( ! empty( $core['main_image_url'] ) ) : ?>
+				<img src="<?php echo esc_url( $core['main_image_url'] ); ?>" alt="<?php echo esc_attr( $title ); ?>" id="product-main-image">
+			<?php else : ?>
+				<div class="placeholder" role="img" aria-label="<?php echo esc_attr( 'Product image: ' . $title ); ?>">
+					[<?php echo esc_html( $title ); ?>]
+				</div>
+			<?php endif; ?>
+
+			<button type="button" class="btn-change-view" id="hero-change-view" aria-label="<?php esc_attr_e( 'Change gallery view', 'woodmart-child' ); ?>">
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+				</svg>
+				<span><?php esc_html_e( 'Change view', 'woodmart-child' ); ?></span>
+			</button>
+		</div>
 	</div>
 
 	<!-- Right Column: Summary & Add-to-Cart -->
@@ -184,6 +153,35 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 			<span class="stock-sep">·</span>
 			<span class="stock-note" id="acc-stock-note-text"><?php echo esc_html( $stock_note ); ?></span>
 		</div>
+
+		<!-- Hardware Highlights / Feature Badges Strip (Clean Summary Grid - Zero Image Overlap) -->
+		<?php if ( ! empty( $gallery_badges ) ) : ?>
+			<div class="accessories-gallery-badges" aria-label="<?php esc_attr_e( 'Hardware highlights', 'woodmart-child' ); ?>">
+				<?php foreach ( $gallery_badges as $gb ) :
+					$g_icon = strtolower( trim( $gb['icon'] ?? 'shield' ) );
+				?>
+					<div class="accessories-gallery-badge-item">
+						<div class="acc-badge-icon" aria-hidden="true">
+							<?php if ( false !== strpos( $g_icon, 'temp' ) || false !== strpos( $g_icon, 'fire' ) ) : ?>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+							<?php elseif ( false !== strpos( $g_icon, 'diamond' ) || false !== strpos( $g_icon, 'steel' ) ) : ?>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"></path></svg>
+							<?php elseif ( false !== strpos( $g_icon, 'zap' ) || false !== strpos( $g_icon, 'quick' ) || false !== strpos( $g_icon, 'tool' ) ) : ?>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+							<?php else : ?>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+							<?php endif; ?>
+						</div>
+						<div class="acc-badge-text">
+							<strong class="acc-badge-title"><?php echo esc_html( $gb['title'] ); ?></strong>
+							<?php if ( ! empty( $gb['subtitle'] ) ) : ?>
+								<span class="acc-badge-sub"><?php echo esc_html( $gb['subtitle'] ); ?></span>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
 
 		<!-- 5. Price Display Row -->
 		<div class="product-price-row accessories-price-row" data-price-raw="<?php echo esc_attr( $core['price'] ?? 0 ); ?>">
