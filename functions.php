@@ -64,6 +64,18 @@ function woodmart_child_enqueue_landing_assets() {
 		$css_ver
 	);
 
+	// Scoped Accessories Landing CSS (Only on Accessories Landing Pages)
+	if ( function_exists( 'woodmart_child_is_accessories_landing' ) && woodmart_child_is_accessories_landing() ) {
+		$acc_css_file = get_stylesheet_directory() . '/assets/css/accessories-landing.css';
+		$acc_css_ver  = file_exists( $acc_css_file ) ? (string) filemtime( $acc_css_file ) : '1.0.0';
+		wp_enqueue_style(
+			'woodmart-child-accessories-landing-css',
+			get_stylesheet_directory_uri() . '/assets/css/accessories-landing.css',
+			array( 'woodmart-child-landing-css' ),
+			$acc_css_ver
+		);
+	}
+
 	// Scoped Product Landing JS
 	wp_enqueue_script(
 		'woodmart-child-landing-js',

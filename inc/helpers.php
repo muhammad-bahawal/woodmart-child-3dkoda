@@ -8,6 +8,43 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Check if the Accessories product landing page is enabled for a given product.
+ *
+ * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
+ * @return bool True if accessories landing page is enabled.
+ */
+function woodmart_child_is_accessories_landing( $product_or_id = null ) {
+	$product_id = 0;
+
+	if ( $product_or_id instanceof WC_Product ) {
+		$product_id = $product_or_id->get_id();
+	} elseif ( is_numeric( $product_or_id ) && $product_or_id > 0 ) {
+		$product_id = absint( $product_or_id );
+	} elseif ( is_singular( 'product' ) || ( function_exists( 'is_product' ) && is_product() ) ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	} elseif ( is_admin() && isset( $_GET['post'] ) && is_numeric( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_id = absint( $_GET['post'] );
+	}
+
+	if ( ! $product_id ) {
+		return false;
+	}
+
+	$enabled = get_post_meta( $product_id, '_woodmart_child_accessories_landing_enabled', true );
+
+	if ( '' === $enabled ) {
+		$settings = get_post_meta( $product_id, '_woodmart_child_accessories_builder', true );
+		if ( is_array( $settings ) && isset( $settings['general']['enable_landing'] ) ) {
+			$enabled = $settings['general']['enable_landing'];
+		} else {
+			$enabled = '0';
+		}
+	}
+
+	return ( '1' === (string) $enabled || 'yes' === (string) $enabled || true === $enabled );
+}
+
+/**
  * Check if the Filament product landing page is enabled for a given product.
  *
  * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
@@ -27,6 +64,11 @@ function woodmart_child_is_filament_landing( $product_or_id = null ) {
 	}
 
 	if ( ! $product_id ) {
+		return false;
+	}
+
+	// If accessories landing is enabled, accessories takes precedence
+	if ( function_exists( 'woodmart_child_is_accessories_landing' ) && woodmart_child_is_accessories_landing( $product_id ) ) {
 		return false;
 	}
 
@@ -67,20 +109,31 @@ function woodmart_child_is_printer_landing( $product_or_id = null ) {
 		return false;
 	}
 
-	// If filament landing is explicitly enabled, don't run printer landing
-	if ( woodmart_child_is_filament_landing( $product_id ) ) {
+	// 1. If accessories landing is enabled, accessories takes highest precedence
+	if ( function_exists( 'woodmart_child_is_accessories_landing' ) && woodmart_child_is_accessories_landing( $product_id ) ) {
 		return false;
 	}
 
 	$enabled = get_post_meta( $product_id, '_woodmart_child_custom_landing_enabled', true );
 
-	// If not explicitly set yet, check builder array or default to true ('1')
+	// If not explicitly set yet, check builder array or fallback
 	if ( '' === $enabled ) {
 		$settings = get_post_meta( $product_id, '_woodmart_child_product_builder', true );
 		if ( is_array( $settings ) && isset( $settings['general']['enable_landing'] ) ) {
 			$enabled = $settings['general']['enable_landing'];
 		} else {
+			// If filament landing is explicitly enabled on this product, yield to filament
+			if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_is_filament_landing( $product_id ) ) {
+				return false;
+			}
 			$enabled = '1';
+		}
+	}
+
+	// If filament landing is explicitly enabled, yield to filament unless printer is explicitly '1'
+	if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_is_filament_landing( $product_id ) ) {
+		if ( '1' !== (string) $enabled ) {
+			return false;
 		}
 	}
 
@@ -94,7 +147,7 @@ function woodmart_child_is_printer_landing( $product_or_id = null ) {
  * @return bool True if custom landing page is enabled.
  */
 function woodmart_child_is_custom_landing( $product_or_id = null ) {
-	return woodmart_child_is_filament_landing( $product_or_id ) || woodmart_child_is_printer_landing( $product_or_id );
+	return woodmart_child_is_accessories_landing( $product_or_id ) || woodmart_child_is_printer_landing( $product_or_id ) || woodmart_child_is_filament_landing( $product_or_id );
 }
 
 /**
@@ -1377,4 +1430,457 @@ function woodmart_child_get_term_color( $term, $taxonomy = 'pa_color' ) {
 
 	return '#111827';
 }
+
+/**
+ * Get default demo data for Accessories Landing Page (Bambu Lab Hotends & Spare Parts).
+ *
+ * @return array
+ */
+function woodmart_child_get_default_accessories_builder_data() {
+	return array(
+		'general'              => array(
+			'enable_landing'       => '0',
+			'badge_text'           => '● Authorized Bambu Lab Reseller',
+			'eyebrow'              => 'GENUINE ACCESSORIES & SPARE PARTS',
+			'brand_name'           => 'Bambu Lab',
+			'title'                => 'Bambu Hotend with Nozzle',
+			'subtitle'             => 'High-precision extrusion assembly engineered for Bambu Lab X1 and P1 series. Durable hardened steel construction for composite filaments.',
+			'rating_text'          => '4.9 / 5 (128 reviews) · Trusted Baltic Stock',
+			'stock_text'           => 'In Stock — Tallinn',
+			'stock_note'           => 'Sample inventory · Dispatched within 24h',
+			'price_display'        => '€35.00',
+			'price_raw'            => '35.00',
+			'vat_note'             => 'Incl. 24% VAT · sample price',
+			'ex_vat_text'          => 'Show ex. VAT',
+			'warranty_note'        => 'Local 3DKoda warranty guidance',
+			'team_quote_text'      => 'Buying spare parts in bulk for your print farm? Request business volume pricing →',
+			'compatibility_badges' => array(
+				array(
+					'icon'     => 'shield',
+					'title'    => 'Original Part',
+					'subtitle' => 'Bambu Lab Certified',
+				),
+				array(
+					'icon'     => 'temp',
+					'title'    => 'Up to 300°C',
+					'subtitle' => 'High-Temp Ready',
+				),
+				array(
+					'icon'     => 'diamond',
+					'title'    => 'Wear Resistant',
+					'subtitle' => 'Hardened Steel',
+				),
+				array(
+					'icon'     => 'zap',
+					'title'    => 'Quick Swap',
+					'subtitle' => 'Modular Assembly',
+				),
+			),
+			'benefits'             => array(
+				array(
+					'title'    => 'Fast Baltic delivery',
+					'subtitle' => 'Dispatched from Tallinn warehouse',
+				),
+				array(
+					'title'    => 'Genuine components',
+					'subtitle' => 'Direct authorized Bambu sourcing',
+				),
+				array(
+					'title'    => 'Hardware support',
+					'subtitle' => 'Expert advice from our local team',
+				),
+			),
+		),
+		'overview'             => array(
+			'enabled'           => '1',
+			'eyebrow'           => 'QUICK-SWAP DESIGN · ALL-METAL ARCHITECTURE',
+			'title'             => 'Engineered for Demanding Continuous Printing',
+			'description'       => 'The Bambu Lab Hotend incorporates an integrated nozzle and thermal break assembly. Machined from high-temperature copper alloy with hardened steel or stainless steel tips to eliminate leak points and ensure consistent filament melt flow.',
+			'image'             => '',
+			'showcase_eyebrow'  => 'PRINT RESOLUTION COMPARISON',
+			'showcase_title'    => '0.2 mm vs 0.4 mm Micro-Detail Analysis',
+			'showcase_desc'     => 'Choosing the right orifice diameter transforms your model finish and mechanical output.',
+			'card_02'           => array(
+				'tag'         => '0.2 mm Nozzle',
+				'title'       => 'Ultra-Fine Precision',
+				'description' => 'Sub-millimeter detail reproduction with razor-sharp micro text, intricate miniatures, and almost invisible layer lines.',
+				'badge'       => 'Best for Miniatures & Text',
+			),
+			'card_04'           => array(
+				'tag'         => '0.4 mm Nozzle',
+				'title'       => 'Balanced Production Speed',
+				'description' => 'The factory standard for everyday general 3D printing. Delivers great surface fidelity, high structural bonding, and standard high-speed print profiles.',
+				'badge'       => 'Standard Factory Setup',
+			),
+		),
+		'visual_showcase'      => array(
+			'enabled'           => '1',
+			'eyebrow'           => 'SURFACE FINISH & SPEED COMPARISON',
+			'title'             => 'Visual Print Quality Across Nozzle Sizes & Layer Heights',
+			'description'       => 'Understand the trade-offs between resolution, flow rate, and mechanical layer adhesion when choosing your nozzle setup.',
+			'vase_cards'        => array(
+				array(
+					'layer'     => '0.10 mm',
+					'name'      => 'Fine Resolution',
+					'desc'      => 'Imperceptible layer lines for presentation models, artistic sculptures and visual displays.',
+					'badge'     => 'High Detail',
+				),
+				array(
+					'layer'     => '0.20 mm',
+					'name'      => 'Standard Resolution',
+					'desc'      => 'Optimal balance between smooth aesthetics and print turnaround time for everyday parts.',
+					'badge'     => 'Balanced',
+				),
+				array(
+					'layer'     => '0.28 mm',
+					'name'      => 'Draft Resolution',
+					'desc'      => 'Maximum throughput for rapid functional testing, structural brackets and large shells.',
+					'badge'     => 'High Speed',
+				),
+			),
+			'nozzle_columns'    => array(
+				array(
+					'size'        => '0.2 mm',
+					'title'       => 'Ultra-Fine Details',
+					'layer_range' => '0.06 – 0.14 mm',
+					'flow'        => '8–12 mm³/s',
+					'abrasive'    => 'Not recommended (clog risk)',
+					'benchy_desc' => 'Silky smooth hull, micro lettering visible',
+					'best_for'    => 'Miniatures, jewelry, keycaps, text badges',
+				),
+				array(
+					'size'        => '0.4 mm',
+					'title'       => 'Standard Versatile',
+					'layer_range' => '0.12 – 0.28 mm',
+					'flow'        => '16–22 mm³/s',
+					'abrasive'    => 'Recommended (Hardened Steel)',
+					'benchy_desc' => 'Clean balanced hull, crisp overhangs',
+					'best_for'    => 'Everyday prototyping, mechanical components',
+				),
+				array(
+					'size'        => '0.6 mm',
+					'title'       => 'Fast & Carbon Fiber',
+					'layer_range' => '0.18 – 0.40 mm',
+					'flow'        => '24–28 mm³/s',
+					'abrasive'    => 'Highly recommended (anti-clog)',
+					'benchy_desc' => 'Subtle layer lines, robust wall strength',
+					'best_for'    => 'Carbon-fiber composites (CF/GF), rugged jigs',
+				),
+				array(
+					'size'        => '0.8 mm',
+					'title'       => 'Maximum Flow Rate',
+					'layer_range' => '0.24 – 0.56 mm',
+					'flow'        => '30–35 mm³/s',
+					'abrasive'    => 'Excellent for fiber composites',
+					'benchy_desc' => 'Industrial rugged layers, ultra-fast prints',
+					'best_for'    => 'Large functional fixtures, rapid bulk prints',
+				),
+			),
+			'progression'       => array(
+				'title' => 'Flow Rate vs Mechanical Layer Strength Progression',
+				'note'  => 'Comparison benchmarked using Bambu Lab PLA Basic and PAHT-CF on Bambu Lab X1-Carbon at 220°C–280°C.',
+				'bars'  => array(
+					array(
+						'size'         => '0.2 mm',
+						'flow'         => '10 mm³/s',
+						'strength_pct' => '45%',
+						'label'        => 'Max Detail',
+					),
+					array(
+						'size'         => '0.4 mm',
+						'flow'         => '20 mm³/s',
+						'strength_pct' => '75%',
+						'label'        => 'Standard Flow',
+					),
+					array(
+						'size'         => '0.6 mm',
+						'flow'         => '26 mm³/s',
+						'strength_pct' => '90%',
+						'label'        => '+40% Flow Speed',
+					),
+					array(
+						'size'         => '0.8 mm',
+						'flow'         => '32 mm³/s',
+						'strength_pct' => '100%',
+						'label'        => 'Max Flow & Strength',
+					),
+				),
+			),
+		),
+		'compatibility_matrix' => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'FILAMENT & HARDWARE COMPATIBILITY',
+			'title'       => 'Filament & Hardware Compatibility Guide',
+			'description' => 'Verify which materials can be printed safely through each nozzle size and alloy.',
+			'note'        => 'Filaments containing carbon fiber, glass fiber, metal particles, or glow-in-the-dark powders require Hardened Steel nozzles (0.4mm or larger) to prevent rapid orifice erosion and blockages.',
+			'rows'        => array(
+				array(
+					'category'  => 'Standard Filaments',
+					'filament'  => 'PLA / PLA Basic / PLA Matte',
+					'nozzle_02' => 'yes',
+					'nozzle_04' => 'yes',
+					'nozzle_06' => 'yes',
+					'nozzle_08' => 'yes',
+					'notes'     => 'Universal compatibility across all nozzle sizes',
+				),
+				array(
+					'category'  => 'Standard Filaments',
+					'filament'  => 'PETG / PETG Basic',
+					'nozzle_02' => 'yes',
+					'nozzle_04' => 'yes',
+					'nozzle_06' => 'yes',
+					'nozzle_08' => 'yes',
+					'notes'     => 'High layer bonding, versatile functional use',
+				),
+				array(
+					'category'  => 'Standard Filaments',
+					'filament'  => 'ABS / ASA',
+					'nozzle_02' => 'yes',
+					'nozzle_04' => 'yes',
+					'nozzle_06' => 'yes',
+					'nozzle_08' => 'yes',
+					'notes'     => 'Requires enclosed chamber (X1 / P1S)',
+				),
+				array(
+					'category'  => 'Flexible Filaments',
+					'filament'  => 'TPU 95A / TPU 90A',
+					'nozzle_02' => 'no',
+					'nozzle_04' => 'yes',
+					'nozzle_06' => 'yes',
+					'nozzle_08' => 'yes',
+					'notes'     => '0.2mm prone to backpressure and clogs',
+				),
+				array(
+					'category'  => 'Engineering Filaments',
+					'filament'  => 'PC (Polycarbonate)',
+					'nozzle_02' => 'no',
+					'nozzle_04' => 'hardened',
+					'nozzle_06' => 'hardened',
+					'nozzle_08' => 'hardened',
+					'notes'     => 'High temp required (260°C–280°C)',
+				),
+				array(
+					'category'  => 'Abrasive Composites',
+					'filament'  => 'PLA-CF / PETG-CF',
+					'nozzle_02' => 'no',
+					'nozzle_04' => 'hardened',
+					'nozzle_06' => 'hardened',
+					'nozzle_08' => 'hardened',
+					'notes'     => 'Carbon fiber will abrade stainless steel',
+				),
+				array(
+					'category'  => 'Abrasive Composites',
+					'filament'  => 'PA-CF / PAHT-CF',
+					'nozzle_02' => 'no',
+					'nozzle_04' => 'hardened',
+					'nozzle_06' => 'hardened',
+					'nozzle_08' => 'hardened',
+					'notes'     => 'Structural engineering grade; Hardened only',
+				),
+				array(
+					'category'  => 'Abrasive Composites',
+					'filament'  => 'PET-CF / PPS-CF',
+					'nozzle_02' => 'no',
+					'nozzle_04' => 'hardened',
+					'nozzle_06' => 'hardened',
+					'nozzle_08' => 'hardened',
+					'notes'     => 'High wear resistance; 0.6mm+ recommended',
+				),
+				array(
+					'category'  => 'Support Materials',
+					'filament'  => 'Support for PLA / PA',
+					'nozzle_02' => 'no',
+					'nozzle_04' => 'yes',
+					'nozzle_06' => 'yes',
+					'nozzle_08' => 'yes',
+					'notes'     => 'Dual extrusion interface material',
+				),
+				array(
+					'category'  => 'Support Materials',
+					'filament'  => 'PVA (Water Soluble)',
+					'nozzle_02' => 'no',
+					'nozzle_04' => 'yes',
+					'nozzle_06' => 'yes',
+					'nozzle_08' => 'yes',
+					'notes'     => 'Dissolvable support; keep strictly dry',
+				),
+			),
+		),
+		'specifications'       => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'ENGINEERING DETAILS',
+			'title'       => 'Technical Specifications',
+			'description' => 'Accurate dimensions, material hardness, and operating temperatures for Bambu Lab X1 and P1 hotends.',
+			'note'        => 'Specifications verified against official Bambu Lab hardware documentation.',
+			'items'       => array(
+				array(
+					'label' => 'Nozzle Orifice Diameter',
+					'value' => '0.2 mm / 0.4 mm / 0.6 mm / 0.8 mm',
+				),
+				array(
+					'label' => 'Nozzle Tip Material',
+					'value' => 'Hardened Tool Steel (55–60 HRC) / Stainless Steel',
+				),
+				array(
+					'label' => 'Thermal Block Material',
+					'value' => 'Chrome-Zirconium Copper with Nickel Plating',
+				),
+				array(
+					'label' => 'Max Extrusion Temperature',
+					'value' => '300 °C (572 °F)',
+				),
+				array(
+					'label' => 'Filament Diameter',
+					'value' => '1.75 mm',
+				),
+				array(
+					'label' => 'Heater Power Rating',
+					'value' => '48W Ceramic Heating Element',
+				),
+				array(
+					'label' => 'Temperature Sensor',
+					'value' => 'NTC 100K 3950 Precision Thermistor',
+				),
+				array(
+					'label' => 'Cooling Fan',
+					'value' => '3010 Brushless Axial Fan (included with Complete Assembly)',
+				),
+				array(
+					'label' => 'Printer Compatibility',
+					'value' => 'Bambu Lab X1-Carbon, X1E, P1S, P1P, A1 Series',
+				),
+				array(
+					'label' => 'Thermal Interface',
+					'value' => 'Bambu Thermal Grease (1.2 W/m·K included)',
+				),
+			),
+		),
+		'box_contents'         => array(
+			'enabled'        => '1',
+			'eyebrow'        => 'PACKAGE CONTENTS',
+			'title'          => "What's in the box.",
+			'note'           => 'Package contents correspond to the selected SKU variation.',
+			'assembly_title' => 'Complete Hotend Assembly',
+			'assembly_badge' => 'PLUG & PLAY · 2-MINUTE SWAP',
+			'assembly_items' => array(
+				'1 × Bambu Lab Hardened Steel Hotend (Selected Size)',
+				'1 × Silicone Heat-Insulating Sock',
+				'1 × 48W Ceramic Heating Element (Pre-installed)',
+				'1 × NTC 100K Thermistor Sensor (Pre-installed)',
+				'1 × 3010 Hotend Cooling Fan with pre-crimped JST connector',
+				'2 × M3×14 Socket Head Retaining Screws',
+				'1 × Thermal Grease Packet (1.2 W/m·K)',
+			),
+			'nozzle_title'   => 'Hotend with Nozzle (Core Unit)',
+			'nozzle_badge'   => 'COMPONENT UPGRADE',
+			'nozzle_items'   => array(
+				'1 × Bambu Lab Hotend with Integrated Nozzle',
+				'1 × Silicone Heat-Insulating Sock',
+				'2 × M3×14 Retaining Screws',
+				'1 × Thermal Grease Packet',
+			),
+		),
+		'faq'                  => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'BEFORE YOU DECIDE',
+			'title'       => 'Questions, answered.',
+			'description' => 'Still deciding on nozzle size or material alloy? Our Baltic team is here to help.',
+			'ask_text'    => 'Ask 3DKoda Hardware Specialist →',
+			'ask_url'     => '#',
+			'items'       => array(
+				array(
+					'question' => 'How do I know whether to choose Hardened Steel or Stainless Steel?',
+					'answer'   => 'Choose Stainless Steel if you only print standard filaments like PLA, PETG, TPU, and ABS. Choose Hardened Steel (55–60 HRC) if you plan to print any composite or filled filaments (Carbon Fiber PLA-CF/PAHT-CF, Glass Fiber, Wood, or Glow-in-the-dark), as abrasive fibers will wear out a stainless steel nozzle within a few hours.',
+				),
+				array(
+					'question' => 'What is the difference between Complete Hotend Assembly and Hotend with Nozzle?',
+					'answer'   => 'The Complete Hotend Assembly comes fully wired with the ceramic heating element, thermistor sensor, and cooling fan pre-mounted. It allows a seamless 2-minute quick swap. The "Hotend with Nozzle" is the metal assembly only; you will need to unscrew and transfer the ceramic heater, thermistor, and fan from your previous hotend.',
+				),
+				array(
+					'question' => 'When should I choose a 0.2mm or 0.6mm nozzle instead of the standard 0.4mm?',
+					'answer'   => 'The 0.2mm nozzle is designed for high-resolution miniatures, fine typography, and jewelry models where visible layers must be minimized. The 0.6mm and 0.8mm nozzles offer significantly higher volumetric flow rates, enabling 30% to 50% faster print times, stronger layer-to-layer adhesion, and virtually zero clog risk when printing carbon-fiber filaments.',
+				),
+				array(
+					'question' => 'Is thermal paste necessary when replacing the hotend?',
+					'answer'   => 'Yes, always apply a thin layer of the included thermal grease between the metal thermal block and the ceramic heating cartridge. This ensures stable temperature conduction and accurate PID readings.',
+				),
+				array(
+					'question' => 'How fast is dispatch and Baltic delivery for spare parts?',
+					'answer'   => 'All in-stock parts are dispatched from our Tallinn warehouse within 24 hours. Delivery across Estonia, Latvia, and Lithuania takes 1–2 business days via Omniva, DPD, or Smartpost.',
+				),
+			),
+			'cta'         => array(
+				'enabled'        => '1',
+				'badge'          => 'BALTIC HARDWARE INVENTORY',
+				'title'          => 'Keep your 3D printers running at peak uptime.',
+				'description'    => 'Stock up on genuine Bambu Lab hotends, extruders, build plates, and wear parts with local Baltic delivery.',
+				'btn_shop_text'  => 'Choose Hotend Setup',
+				'btn_shop_url'   => '#accessories-hero',
+				'btn_quote_text' => 'Request Print Farm Bulk Quote',
+				'btn_quote_url'  => '#',
+			),
+		),
+	);
+}
+
+/**
+ * Get all Accessories builder settings for a product, merged with defaults.
+ *
+ * @param int $product_id Product ID.
+ * @return array
+ */
+function woodmart_child_get_accessories_builder_settings( $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$defaults = woodmart_child_get_default_accessories_builder_data();
+	$saved    = get_post_meta( $product_id, '_woodmart_child_accessories_builder', true );
+
+	if ( ! is_array( $saved ) || empty( $saved ) ) {
+		return $defaults;
+	}
+
+	return woodmart_child_merge_builder_settings( $defaults, $saved );
+}
+
+/**
+ * Check if a specific Accessories builder section is enabled.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return bool
+ */
+function woodmart_child_is_accessories_section_enabled( $section_key, $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$settings = woodmart_child_get_accessories_builder_settings( $product_id );
+
+	if ( ! isset( $settings[ $section_key ] ) ) {
+		return false;
+	}
+
+	$section = $settings[ $section_key ];
+
+	if ( ! isset( $section['enabled'] ) || ! in_array( (string) $section['enabled'], array( '1', 'yes', 'true' ), true ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Get section data for a given Accessories product.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return array
+ */
+function woodmart_child_get_accessories_section_data( $section_key, $product_id = 0 ) {
+	$settings = woodmart_child_get_accessories_builder_settings( $product_id );
+	return isset( $settings[ $section_key ] ) ? $settings[ $section_key ] : array();
+}
+
 

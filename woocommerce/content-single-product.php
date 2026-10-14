@@ -12,7 +12,103 @@ defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_is_filament_landing() ) {
+if ( function_exists( 'woodmart_child_is_accessories_landing' ) && woodmart_child_is_accessories_landing() ) {
+	/**
+	 * Hook: woocommerce_before_single_product.
+	 */
+	do_action( 'woocommerce_before_single_product' );
+
+	if ( post_password_required() ) {
+		echo get_the_password_form(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return;
+	}
+	?>
+	<div id="product-<?php the_ID(); ?>" <?php wc_product_class( 'custom-product-landing-root accessories-landing-root landing-page-root', $product ); ?>>
+		<?php
+		// 1. Accessories Hero Section (2-column layout, left vertical thumbnails, variable attributes, live price, AJAX Add to Cart)
+		get_template_part( 'template-parts/product-accessories/hero-section' );
+
+		// 2. Overview / Key Selling Points (Split feature highlights & high-impact visual)
+		get_template_part( 'template-parts/product-accessories/overview-features' );
+
+		// 3. Feature Visuals / Performance Comparison (Layer height finish, 4-column nozzle table, Benchy hull cards, Speed/Strength chart)
+		get_template_part( 'template-parts/product-accessories/visual-showcase' );
+
+		// 4. Filament & Material Compatibility Matrix
+		get_template_part( 'template-parts/product-accessories/compatibility-matrix' );
+
+		// 5. Technical Specifications (Label & Value grid)
+		get_template_part( 'template-parts/product-accessories/specifications' );
+
+		// 6. What's in the Box (Complete Assembly vs Nozzle Only)
+		get_template_part( 'template-parts/product-accessories/box-contents' );
+
+		// 7. FAQ & High-Conversion CTA Banner
+		get_template_part( 'template-parts/product-accessories/faq' );
+
+		// 8. Sticky Bottom Purchase Bar
+		get_template_part( 'template-parts/product-accessories/sticky-bottom-bar' );
+		?>
+	</div>
+	<?php
+	/**
+	 * Hook: woocommerce_after_single_product.
+	 */
+	do_action( 'woocommerce_after_single_product' );
+	return;
+} elseif ( function_exists( 'woodmart_child_is_printer_landing' ) && woodmart_child_is_printer_landing() ) {
+	/**
+	 * Hook: woocommerce_before_single_product.
+	 *
+	 * @hooked woocommerce_output_all_notices - 10
+	 */
+	do_action( 'woocommerce_before_single_product' );
+
+	if ( post_password_required() ) {
+		echo get_the_password_form(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return;
+	}
+	?>
+	<div id="product-<?php the_ID(); ?>" <?php wc_product_class( 'custom-product-landing-root landing-page-root', $product ); ?>>
+		<?php
+		// 1. Hero Section (Gallery + Product Summary + Purchase Options + Service Benefits + Sticky Section Nav)
+		get_template_part( 'template-parts/product/hero-section' );
+
+		// 2. Highlights & Big Numbers
+		get_template_part( 'template-parts/product/highlights' );
+
+		// 3. Features (Main Hero Feature + 4-Grid Cards)
+		get_template_part( 'template-parts/product/features' );
+
+		// 4. Materials (Materials Grid + Combo Promo Banner)
+		get_template_part( 'template-parts/product/materials' );
+
+		// 5. Use Cases (4-Grid Numbered Cards)
+		get_template_part( 'template-parts/product/use-cases' );
+
+		// 6. Packages Comparison (Standalone vs Combo) & Brand Difference
+		get_template_part( 'template-parts/product/pricing-variants' );
+
+		// 7. Technical Specifications & Setup Guide Banner
+		get_template_part( 'template-parts/product/specifications' );
+
+		// 8. What's in the Box (Standalone vs Combo Package Lists)
+		get_template_part( 'template-parts/product/box-contents' );
+
+		// 9. FAQ Accordion & Bottom Orange Call To Action Banner
+		get_template_part( 'template-parts/product/faq' );
+
+		// 10. Sticky Bottom Purchase Bar
+		get_template_part( 'template-parts/product/sticky-bottom-bar' );
+		?>
+	</div>
+	<?php
+	/**
+	 * Hook: woocommerce_after_single_product.
+	 */
+	do_action( 'woocommerce_after_single_product' );
+	return;
+} elseif ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_is_filament_landing() ) {
 	/**
 	 * Hook: woocommerce_before_single_product.
 	 */
@@ -74,58 +170,6 @@ if ( function_exists( 'woodmart_child_is_filament_landing' ) && woodmart_child_i
 		get_template_part( 'template-parts/filament/faq' );
 
 		// 17. Sticky Bottom Purchase Bar
-		get_template_part( 'template-parts/product/sticky-bottom-bar' );
-		?>
-	</div>
-	<?php
-	/**
-	 * Hook: woocommerce_after_single_product.
-	 */
-	do_action( 'woocommerce_after_single_product' );
-	return;
-} elseif ( function_exists( 'woodmart_child_is_custom_landing' ) && woodmart_child_is_custom_landing() ) {
-	/**
-	 * Hook: woocommerce_before_single_product.
-	 *
-	 * @hooked woocommerce_output_all_notices - 10
-	 */
-	do_action( 'woocommerce_before_single_product' );
-
-	if ( post_password_required() ) {
-		echo get_the_password_form(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		return;
-	}
-	?>
-	<div id="product-<?php the_ID(); ?>" <?php wc_product_class( 'custom-product-landing-root landing-page-root', $product ); ?>>
-		<?php
-		// 1. Hero Section (Gallery + Product Summary + Purchase Options + Service Benefits + Sticky Section Nav)
-		get_template_part( 'template-parts/product/hero-section' );
-
-		// 2. Highlights & Big Numbers
-		get_template_part( 'template-parts/product/highlights' );
-
-		// 3. Features (Main Hero Feature + 4-Grid Cards)
-		get_template_part( 'template-parts/product/features' );
-
-		// 4. Materials (Materials Grid + Combo Promo Banner)
-		get_template_part( 'template-parts/product/materials' );
-
-		// 5. Use Cases (4-Grid Numbered Cards)
-		get_template_part( 'template-parts/product/use-cases' );
-
-		// 6. Packages Comparison (Standalone vs Combo) & Brand Difference
-		get_template_part( 'template-parts/product/pricing-variants' );
-
-		// 7. Technical Specifications & Setup Guide Banner
-		get_template_part( 'template-parts/product/specifications' );
-
-		// 8. What's in the Box (Standalone vs Combo Package Lists)
-		get_template_part( 'template-parts/product/box-contents' );
-
-		// 9. FAQ Accordion & Bottom Orange Call To Action Banner
-		get_template_part( 'template-parts/product/faq' );
-
-		// 10. Sticky Bottom Purchase Bar
 		get_template_part( 'template-parts/product/sticky-bottom-bar' );
 		?>
 	</div>

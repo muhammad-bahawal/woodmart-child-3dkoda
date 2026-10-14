@@ -2828,3 +2828,1098 @@ function woodmart_child_save_filament_builder_meta( $post_id, $post ) {
 }
 add_action( 'save_post_product', 'woodmart_child_save_filament_builder_meta', 10, 2 );
 
+/* ==========================================================================
+   ACCESSORIES PRODUCT PAGE BUILDER META BOX
+   ========================================================================== */
+
+/**
+ * Register Product Page Builder Meta Box (Accessories)
+ */
+function woodmart_child_register_accessories_builder_meta_box() {
+	add_meta_box(
+		'woodmart_child_accessories_builder',
+		__( 'Product Page Builder - Accessories', 'woodmart-child' ),
+		'woodmart_child_render_accessories_builder_meta_box',
+		'product',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes', 'woodmart_child_register_accessories_builder_meta_box' );
+
+/**
+ * Render Product Page Builder Meta Box (Accessories)
+ *
+ * @param WP_Post $post Current post object.
+ */
+function woodmart_child_render_accessories_builder_meta_box( $post ) {
+	wp_nonce_field( 'woodmart_child_save_accessories_builder_meta', 'woodmart_child_accessories_builder_nonce' );
+
+	$settings = woodmart_child_get_accessories_builder_settings( $post->ID );
+	$enabled_landing = get_post_meta( $post->ID, '_woodmart_child_accessories_landing_enabled', true );
+	if ( '' === $enabled_landing ) {
+		$enabled_landing = isset( $settings['general']['enable_landing'] ) ? $settings['general']['enable_landing'] : '0';
+	}
+	?>
+	<div class="wc-builder-wrap">
+		<!-- Master Switch Header -->
+		<div class="wc-builder-master-bar">
+			<label class="wc-builder-master-toggle">
+				<input type="checkbox" name="accessories_builder[general][enable_landing]" value="1" <?php checked( $enabled_landing, '1' ); ?>>
+				<span class="wc-toggle-slider"></span>
+				<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Accessories Landing Page', 'woodmart-child' ); ?></strong> (<?php esc_html_e( 'Replaces default WooCommerce layout with custom Accessories canvas while preserving the global Woodmart header and footer', 'woodmart-child' ); ?>)</span>
+			</label>
+		</div>
+
+		<div class="wc-builder-body">
+			<!-- Tab Navigation -->
+			<nav class="wc-builder-tabs-nav" role="tablist">
+				<button type="button" class="wc-tab-btn active" data-tab="tab-acc-hero"><span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Hero & General', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-acc-overview"><span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Overview & Selling Points', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-acc-visuals"><span class="dashicons dashicons-chart-bar"></span> <?php esc_html_e( 'Performance & Comparison', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-acc-compatibility"><span class="dashicons dashicons-grid-view"></span> <?php esc_html_e( 'Compatibility Matrix', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-acc-specs"><span class="dashicons dashicons-clipboard"></span> <?php esc_html_e( 'Technical Specs', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-acc-box"><span class="dashicons dashicons-archive"></span> <?php esc_html_e( "What's in the Box", 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-acc-faq"><span class="dashicons dashicons-format-chat"></span> <?php esc_html_e( 'FAQ & Sticky Bar', 'woodmart-child' ); ?></button>
+			</nav>
+
+			<!-- Tab Panels -->
+			<div class="wc-builder-tabs-content">
+
+				<!-- 1. HERO & GENERAL SETTINGS -->
+				<section class="wc-tab-panel active" id="tab-acc-hero">
+					<div class="wc-panel-head">
+						<h3><?php esc_html_e( 'Hero & General Settings', 'woodmart-child' ); ?></h3>
+						<p class="description"><?php esc_html_e( 'Configure reseller badge, stock badges, rating tagline, and VAT notice for the 2-column hero.', 'woodmart-child' ); ?></p>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Hero Eyebrow Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][eyebrow]" value="<?php echo esc_attr( $settings['general']['eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Brand Name', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][brand_name]" value="<?php echo esc_attr( $settings['general']['brand_name'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Reseller Badge Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][badge_text]" value="<?php echo esc_attr( $settings['general']['badge_text'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Rating Tagline / Review Count', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][rating_text]" value="<?php echo esc_attr( $settings['general']['rating_text'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Stock Location Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][stock_text]" value="<?php echo esc_attr( $settings['general']['stock_text'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Stock Note / Dispatch Timing', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][stock_note]" value="<?php echo esc_attr( $settings['general']['stock_note'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'VAT Note', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][vat_note]" value="<?php echo esc_attr( $settings['general']['vat_note'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Ex-VAT Toggle Link Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[general][ex_vat_text]" value="<?php echo esc_attr( $settings['general']['ex_vat_text'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Team / Bulk Quote Prompt (Under Hero Add to Cart)', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[general][team_quote_text]" rows="2" class="widefat"><?php echo esc_textarea( $settings['general']['team_quote_text'] ); ?></textarea>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Gallery Attribute Badges (Under Left Gallery)', 'woodmart-child' ); ?></h4>
+					<div class="wc-repeater-container" id="acc-badges-repeater">
+						<?php
+						$badges = ! empty( $settings['general']['compatibility_badges'] ) ? $settings['general']['compatibility_badges'] : array();
+						foreach ( $badges as $idx => $bg ) :
+						?>
+							<div class="wc-repeater-row" data-index="<?php echo esc_attr( $idx ); ?>">
+								<span class="wc-row-drag">☰</span>
+								<div class="wc-repeater-fields grid-3">
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Icon Keyword (shield, temp, diamond, zap)', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[general][compatibility_badges][<?php echo esc_attr( $idx ); ?>][icon]" value="<?php echo esc_attr( $bg['icon'] ?? 'shield' ); ?>" class="widefat">
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Badge Title', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[general][compatibility_badges][<?php echo esc_attr( $idx ); ?>][title]" value="<?php echo esc_attr( $bg['title'] ?? '' ); ?>" class="widefat">
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Subtitle / Spec', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[general][compatibility_badges][<?php echo esc_attr( $idx ); ?>][subtitle]" value="<?php echo esc_attr( $bg['subtitle'] ?? '' ); ?>" class="widefat">
+									</div>
+								</div>
+								<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<button type="button" class="button button-secondary wc-btn-add-row" data-target="acc-badges-repeater" data-template="tmpl-acc-badge-row">
+						<span class="dashicons dashicons-plus-alt2"></span> <?php esc_html_e( 'Add Gallery Badge', 'woodmart-child' ); ?>
+					</button>
+
+					<h4 class="wc-subhead" style="margin-top:24px;"><?php esc_html_e( 'Service Benefits Highlights (Hero Strip)', 'woodmart-child' ); ?></h4>
+					<div class="wc-repeater-container" id="acc-benefits-repeater">
+						<?php
+						$benefits = ! empty( $settings['general']['benefits'] ) ? $settings['general']['benefits'] : array();
+						foreach ( $benefits as $idx => $b ) :
+						?>
+							<div class="wc-repeater-row" data-index="<?php echo esc_attr( $idx ); ?>">
+								<span class="wc-row-drag">☰</span>
+								<div class="wc-repeater-fields grid-2">
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Benefit Title', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[general][benefits][<?php echo esc_attr( $idx ); ?>][title]" value="<?php echo esc_attr( $b['title'] ?? '' ); ?>" class="widefat">
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Subtitle', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[general][benefits][<?php echo esc_attr( $idx ); ?>][subtitle]" value="<?php echo esc_attr( $b['subtitle'] ?? '' ); ?>" class="widefat">
+									</div>
+								</div>
+								<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<button type="button" class="button button-secondary wc-btn-add-row" data-target="acc-benefits-repeater" data-template="tmpl-acc-benefit-row">
+						<span class="dashicons dashicons-plus-alt2"></span> <?php esc_html_e( 'Add Service Highlight', 'woodmart-child' ); ?>
+					</button>
+				</section>
+
+				<!-- 2. OVERVIEW / KEY SELLING POINTS -->
+				<section class="wc-tab-panel" id="tab-acc-overview">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="accessories_builder[overview][enabled]" value="1" <?php checked( ! empty( $settings['overview']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Overview & Key Selling Points Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[overview][eyebrow]" value="<?php echo esc_attr( $settings['overview']['eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[overview][title]" value="<?php echo esc_attr( $settings['overview']['title'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Description', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[overview][description]" rows="3" class="widefat"><?php echo esc_textarea( $settings['overview']['description'] ); ?></textarea>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'High-Impact Graphic / Feature Image Upload', 'woodmart-child' ); ?></label>
+						<div class="wc-image-picker">
+							<input type="hidden" name="accessories_builder[overview][image]" value="<?php echo esc_attr( $settings['overview']['image'] ); ?>" class="wc-image-url">
+							<div class="wc-image-preview"><?php if ( ! empty( $settings['overview']['image'] ) ) : ?><img src="<?php echo esc_url( $settings['overview']['image'] ); ?>"><?php endif; ?></div>
+							<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
+							<button type="button" class="button wc-btn-remove-image <?php echo empty( $settings['overview']['image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+						</div>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Side-by-Side Resolution Comparison Showcase (Dark Card Matching Screenshot)', 'woodmart-child' ); ?></h4>
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Showcase Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[overview][showcase_eyebrow]" value="<?php echo esc_attr( $settings['overview']['showcase_eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Showcase Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[overview][showcase_title]" value="<?php echo esc_attr( $settings['overview']['showcase_title'] ); ?>" class="widefat">
+						</div>
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Showcase Description', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[overview][showcase_desc]" rows="2" class="widefat"><?php echo esc_textarea( $settings['overview']['showcase_desc'] ); ?></textarea>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-card-box">
+							<h4><?php esc_html_e( 'Left Card (0.2 mm Nozzle)', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Tag', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[overview][card_02][tag]" value="<?php echo esc_attr( $settings['overview']['card_02']['tag'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[overview][card_02][title]" value="<?php echo esc_attr( $settings['overview']['card_02']['title'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+								<textarea name="accessories_builder[overview][card_02][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['overview']['card_02']['description'] ); ?></textarea>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Badge Text', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[overview][card_02][badge]" value="<?php echo esc_attr( $settings['overview']['card_02']['badge'] ); ?>" class="widefat">
+							</div>
+						</div>
+
+						<div class="wc-card-box">
+							<h4><?php esc_html_e( 'Right Card (0.4 mm Nozzle)', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Tag', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[overview][card_04][tag]" value="<?php echo esc_attr( $settings['overview']['card_04']['tag'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[overview][card_04][title]" value="<?php echo esc_attr( $settings['overview']['card_04']['title'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+								<textarea name="accessories_builder[overview][card_04][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['overview']['card_04']['description'] ); ?></textarea>
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Badge Text', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[overview][card_04][badge]" value="<?php echo esc_attr( $settings['overview']['card_04']['badge'] ); ?>" class="widefat">
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 3. FEATURE VISUALS / PERFORMANCE COMPARISON -->
+				<section class="wc-tab-panel" id="tab-acc-visuals">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="accessories_builder[visual_showcase][enabled]" value="1" <?php checked( ! empty( $settings['visual_showcase']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Feature Visuals & Performance Comparison', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[visual_showcase][eyebrow]" value="<?php echo esc_attr( $settings['visual_showcase']['eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[visual_showcase][title]" value="<?php echo esc_attr( $settings['visual_showcase']['title'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Description', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[visual_showcase][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['visual_showcase']['description'] ); ?></textarea>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Part 1: Layer Height Finish Comparison (3 Green Vases from Screenshot)', 'woodmart-child' ); ?></h4>
+					<div class="wc-field-row grid-3">
+						<?php
+						$vases = ! empty( $settings['visual_showcase']['vase_cards'] ) ? $settings['visual_showcase']['vase_cards'] : array();
+						foreach ( $vases as $v_idx => $vc ) :
+						?>
+							<div class="wc-card-box">
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Layer Height (e.g. 0.10 mm)', 'woodmart-child' ); ?></label>
+									<input type="text" name="accessories_builder[visual_showcase][vase_cards][<?php echo esc_attr( $v_idx ); ?>][layer]" value="<?php echo esc_attr( $vc['layer'] ?? '' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Resolution Label', 'woodmart-child' ); ?></label>
+									<input type="text" name="accessories_builder[visual_showcase][vase_cards][<?php echo esc_attr( $v_idx ); ?>][name]" value="<?php echo esc_attr( $vc['name'] ?? '' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+									<textarea name="accessories_builder[visual_showcase][vase_cards][<?php echo esc_attr( $v_idx ); ?>][desc]" rows="2" class="widefat"><?php echo esc_textarea( $vc['desc'] ?? '' ); ?></textarea>
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Badge', 'woodmart-child' ); ?></label>
+									<input type="text" name="accessories_builder[visual_showcase][vase_cards][<?php echo esc_attr( $v_idx ); ?>][badge]" value="<?php echo esc_attr( $vc['badge'] ?? '' ); ?>" class="widefat">
+								</div>
+							</div>
+						<?php endforeach; ?>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Part 2: Comparison of Different Nozzle Sizes (4 Columns Matching Screenshot)', 'woodmart-child' ); ?></h4>
+					<div class="wc-field-row grid-2">
+						<?php
+						$cols = ! empty( $settings['visual_showcase']['nozzle_columns'] ) ? $settings['visual_showcase']['nozzle_columns'] : array();
+						foreach ( $cols as $c_idx => $nc ) :
+						?>
+							<div class="wc-card-box">
+								<h4><?php echo esc_html( $nc['size'] ?? 'Nozzle' ); ?> <?php esc_html_e( 'Setup', 'woodmart-child' ); ?></h4>
+								<div class="wc-field-row grid-2">
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Nozzle Size', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[visual_showcase][nozzle_columns][<?php echo esc_attr( $c_idx ); ?>][size]" value="<?php echo esc_attr( $nc['size'] ?? '' ); ?>" class="widefat">
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Feature Title', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[visual_showcase][nozzle_columns][<?php echo esc_attr( $c_idx ); ?>][title]" value="<?php echo esc_attr( $nc['title'] ?? '' ); ?>" class="widefat">
+									</div>
+								</div>
+								<div class="wc-field-row grid-2">
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Layer Height Range', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[visual_showcase][nozzle_columns][<?php echo esc_attr( $c_idx ); ?>][layer_range]" value="<?php echo esc_attr( $nc['layer_range'] ?? '' ); ?>" class="widefat">
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Volumetric Flow Rate', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[visual_showcase][nozzle_columns][<?php echo esc_attr( $c_idx ); ?>][flow]" value="<?php echo esc_attr( $nc['flow'] ?? '' ); ?>" class="widefat">
+									</div>
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Abrasive Filament Recommendation', 'woodmart-child' ); ?></label>
+									<input type="text" name="accessories_builder[visual_showcase][nozzle_columns][<?php echo esc_attr( $c_idx ); ?>][abrasive]" value="<?php echo esc_attr( $nc['abrasive'] ?? '' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( '3DBenchy Hull Print Caption (Blue Benchy)', 'woodmart-child' ); ?></label>
+									<input type="text" name="accessories_builder[visual_showcase][nozzle_columns][<?php echo esc_attr( $c_idx ); ?>][benchy_desc]" value="<?php echo esc_attr( $nc['benchy_desc'] ?? '' ); ?>" class="widefat">
+								</div>
+								<div class="wc-field">
+									<label><?php esc_html_e( 'Best For Applications', 'woodmart-child' ); ?></label>
+									<input type="text" name="accessories_builder[visual_showcase][nozzle_columns][<?php echo esc_attr( $c_idx ); ?>][best_for]" value="<?php echo esc_attr( $nc['best_for'] ?? '' ); ?>" class="widefat">
+								</div>
+							</div>
+						<?php endforeach; ?>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Part 3: Flow Rate & Layer Strength Progression Bar Chart', 'woodmart-child' ); ?></h4>
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Chart Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[visual_showcase][progression][title]" value="<?php echo esc_attr( $settings['visual_showcase']['progression']['title'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Chart Test Note', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[visual_showcase][progression][note]" value="<?php echo esc_attr( $settings['visual_showcase']['progression']['note'] ); ?>" class="widefat">
+						</div>
+					</div>
+				</section>
+
+				<!-- 4. FILAMENT & MATERIAL COMPATIBILITY MATRIX -->
+				<section class="wc-tab-panel" id="tab-acc-compatibility">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="accessories_builder[compatibility_matrix][enabled]" value="1" <?php checked( ! empty( $settings['compatibility_matrix']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Compatibility Matrix Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[compatibility_matrix][eyebrow]" value="<?php echo esc_attr( $settings['compatibility_matrix']['eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[compatibility_matrix][title]" value="<?php echo esc_attr( $settings['compatibility_matrix']['title'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Description', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[compatibility_matrix][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['compatibility_matrix']['description'] ); ?></textarea>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Notice / Advisory Note (Bottom of Table)', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[compatibility_matrix][note]" rows="2" class="widefat"><?php echo esc_textarea( $settings['compatibility_matrix']['note'] ); ?></textarea>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Compatibility Matrix Rows (Dynamic Repeater)', 'woodmart-child' ); ?></h4>
+					<div class="wc-repeater-container" id="acc-compat-repeater">
+						<?php
+						$rows = ! empty( $settings['compatibility_matrix']['rows'] ) ? $settings['compatibility_matrix']['rows'] : array();
+						foreach ( $rows as $idx => $r ) :
+						?>
+							<div class="wc-repeater-row" data-index="<?php echo esc_attr( $idx ); ?>">
+								<span class="wc-row-drag">☰</span>
+								<div class="wc-repeater-fields">
+									<div class="wc-field-row grid-2" style="margin-bottom:8px;">
+										<div class="wc-field">
+											<label><?php esc_html_e( 'Category', 'woodmart-child' ); ?></label>
+											<input type="text" name="accessories_builder[compatibility_matrix][rows][<?php echo esc_attr( $idx ); ?>][category]" value="<?php echo esc_attr( $r['category'] ?? '' ); ?>" class="widefat" placeholder="Standard, Engineering, Abrasive...">
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( 'Filament Material Name', 'woodmart-child' ); ?></label>
+											<input type="text" name="accessories_builder[compatibility_matrix][rows][<?php echo esc_attr( $idx ); ?>][filament]" value="<?php echo esc_attr( $r['filament'] ?? '' ); ?>" class="widefat">
+										</div>
+									</div>
+									<div class="wc-field-row grid-4" style="margin-bottom:8px;">
+										<div class="wc-field">
+											<label><?php esc_html_e( '0.2 mm Status', 'woodmart-child' ); ?></label>
+											<select name="accessories_builder[compatibility_matrix][rows][<?php echo esc_attr( $idx ); ?>][nozzle_02]" class="widefat">
+												<option value="yes" <?php selected( $r['nozzle_02'] ?? '', 'yes' ); ?>><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+												<option value="hardened" <?php selected( $r['nozzle_02'] ?? '', 'hardened' ); ?>><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+												<option value="no" <?php selected( $r['nozzle_02'] ?? '', 'no' ); ?>><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+											</select>
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( '0.4 mm Status', 'woodmart-child' ); ?></label>
+											<select name="accessories_builder[compatibility_matrix][rows][<?php echo esc_attr( $idx ); ?>][nozzle_04]" class="widefat">
+												<option value="yes" <?php selected( $r['nozzle_04'] ?? '', 'yes' ); ?>><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+												<option value="hardened" <?php selected( $r['nozzle_04'] ?? '', 'hardened' ); ?>><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+												<option value="no" <?php selected( $r['nozzle_04'] ?? '', 'no' ); ?>><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+											</select>
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( '0.6 mm Status', 'woodmart-child' ); ?></label>
+											<select name="accessories_builder[compatibility_matrix][rows][<?php echo esc_attr( $idx ); ?>][nozzle_06]" class="widefat">
+												<option value="yes" <?php selected( $r['nozzle_06'] ?? '', 'yes' ); ?>><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+												<option value="hardened" <?php selected( $r['nozzle_06'] ?? '', 'hardened' ); ?>><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+												<option value="no" <?php selected( $r['nozzle_06'] ?? '', 'no' ); ?>><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+											</select>
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( '0.8 mm Status', 'woodmart-child' ); ?></label>
+											<select name="accessories_builder[compatibility_matrix][rows][<?php echo esc_attr( $idx ); ?>][nozzle_08]" class="widefat">
+												<option value="yes" <?php selected( $r['nozzle_08'] ?? '', 'yes' ); ?>><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+												<option value="hardened" <?php selected( $r['nozzle_08'] ?? '', 'hardened' ); ?>><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+												<option value="no" <?php selected( $r['nozzle_08'] ?? '', 'no' ); ?>><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+											</select>
+										</div>
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Notes / Recommendation Details', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[compatibility_matrix][rows][<?php echo esc_attr( $idx ); ?>][notes]" value="<?php echo esc_attr( $r['notes'] ?? '' ); ?>" class="widefat">
+									</div>
+								</div>
+								<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<button type="button" class="button button-secondary wc-btn-add-row" data-target="acc-compat-repeater" data-template="tmpl-acc-compat-row">
+						<span class="dashicons dashicons-plus-alt2"></span> <?php esc_html_e( 'Add Material Row', 'woodmart-child' ); ?>
+					</button>
+				</section>
+
+				<!-- 5. TECHNICAL SPECIFICATIONS -->
+				<section class="wc-tab-panel" id="tab-acc-specs">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="accessories_builder[specifications][enabled]" value="1" <?php checked( ! empty( $settings['specifications']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable Technical Specifications Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[specifications][eyebrow]" value="<?php echo esc_attr( $settings['specifications']['eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[specifications][title]" value="<?php echo esc_attr( $settings['specifications']['title'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Description', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[specifications][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['specifications']['description'] ); ?></textarea>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Disclaimer / Verification Note', 'woodmart-child' ); ?></label>
+						<input type="text" name="accessories_builder[specifications][note]" value="<?php echo esc_attr( $settings['specifications']['note'] ); ?>" class="widefat">
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'Specification Items (Label & Value Repeater)', 'woodmart-child' ); ?></h4>
+					<div class="wc-repeater-container" id="acc-specs-repeater">
+						<?php
+						$specs = ! empty( $settings['specifications']['items'] ) ? $settings['specifications']['items'] : array();
+						foreach ( $specs as $idx => $s ) :
+						?>
+							<div class="wc-repeater-row" data-index="<?php echo esc_attr( $idx ); ?>">
+								<span class="wc-row-drag">☰</span>
+								<div class="wc-repeater-fields grid-2">
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Specification Label', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[specifications][items][<?php echo esc_attr( $idx ); ?>][label]" value="<?php echo esc_attr( $s['label'] ?? '' ); ?>" class="widefat">
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Value', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[specifications][items][<?php echo esc_attr( $idx ); ?>][value]" value="<?php echo esc_attr( $s['value'] ?? '' ); ?>" class="widefat">
+									</div>
+								</div>
+								<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<button type="button" class="button button-secondary wc-btn-add-row" data-target="acc-specs-repeater" data-template="tmpl-acc-spec-row">
+						<span class="dashicons dashicons-plus-alt2"></span> <?php esc_html_e( 'Add Specification Row', 'woodmart-child' ); ?>
+					</button>
+				</section>
+
+				<!-- 6. WHAT'S IN THE BOX -->
+				<section class="wc-tab-panel" id="tab-acc-box">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="accessories_builder[box_contents][enabled]" value="1" <?php checked( ! empty( $settings['box_contents']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable What’s in the Box Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[box_contents][eyebrow]" value="<?php echo esc_attr( $settings['box_contents']['eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[box_contents][title]" value="<?php echo esc_attr( $settings['box_contents']['title'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Package Note', 'woodmart-child' ); ?></label>
+						<input type="text" name="accessories_builder[box_contents][note]" value="<?php echo esc_attr( $settings['box_contents']['note'] ); ?>" class="widefat">
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-card-box">
+							<h4><?php esc_html_e( 'Package A: Complete Assembly', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[box_contents][assembly_title]" value="<?php echo esc_attr( $settings['box_contents']['assembly_title'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Badge', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[box_contents][assembly_badge]" value="<?php echo esc_attr( $settings['box_contents']['assembly_badge'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Included Items (One per line)', 'woodmart-child' ); ?></label>
+								<textarea name="accessories_builder[box_contents][assembly_items_text]" rows="6" class="widefat"><?php echo esc_textarea( implode( "\n", $settings['box_contents']['assembly_items'] ?? array() ) ); ?></textarea>
+							</div>
+						</div>
+
+						<div class="wc-card-box">
+							<h4><?php esc_html_e( 'Package B: Core Nozzle Unit', 'woodmart-child' ); ?></h4>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Title', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[box_contents][nozzle_title]" value="<?php echo esc_attr( $settings['box_contents']['nozzle_title'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Badge', 'woodmart-child' ); ?></label>
+								<input type="text" name="accessories_builder[box_contents][nozzle_badge]" value="<?php echo esc_attr( $settings['box_contents']['nozzle_badge'] ); ?>" class="widefat">
+							</div>
+							<div class="wc-field">
+								<label><?php esc_html_e( 'Included Items (One per line)', 'woodmart-child' ); ?></label>
+								<textarea name="accessories_builder[box_contents][nozzle_items_text]" rows="6" class="widefat"><?php echo esc_textarea( implode( "\n", $settings['box_contents']['nozzle_items'] ?? array() ) ); ?></textarea>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- 7. FAQ & STICKY PURCHASE BAR -->
+				<section class="wc-tab-panel" id="tab-acc-faq">
+					<div class="wc-panel-head">
+						<label class="wc-section-toggle">
+							<input type="checkbox" name="accessories_builder[faq][enabled]" value="1" <?php checked( ! empty( $settings['faq']['enabled'] ) ); ?>>
+							<span class="wc-toggle-slider"></span>
+							<span class="wc-toggle-text"><strong><?php esc_html_e( 'Enable FAQ & Sticky Bar Section', 'woodmart-child' ); ?></strong></span>
+						</label>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'FAQ Section Eyebrow', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][eyebrow]" value="<?php echo esc_attr( $settings['faq']['eyebrow'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'FAQ Section Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][title]" value="<?php echo esc_attr( $settings['faq']['title'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Description', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[faq][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['faq']['description'] ); ?></textarea>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Ask Specialist Button Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][ask_text]" value="<?php echo esc_attr( $settings['faq']['ask_text'] ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Ask Specialist Button URL', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][ask_url]" value="<?php echo esc_attr( $settings['faq']['ask_url'] ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<h4 class="wc-subhead"><?php esc_html_e( 'FAQ Items (Repeater)', 'woodmart-child' ); ?></h4>
+					<div class="wc-repeater-container" id="acc-faq-repeater">
+						<?php
+						$faqs = ! empty( $settings['faq']['items'] ) ? $settings['faq']['items'] : array();
+						foreach ( $faqs as $idx => $f ) :
+						?>
+							<div class="wc-repeater-row" data-index="<?php echo esc_attr( $idx ); ?>">
+								<span class="wc-row-drag">☰</span>
+								<div class="wc-repeater-fields">
+									<div class="wc-field" style="margin-bottom:8px;">
+										<label><?php esc_html_e( 'Question', 'woodmart-child' ); ?></label>
+										<input type="text" name="accessories_builder[faq][items][<?php echo esc_attr( $idx ); ?>][question]" value="<?php echo esc_attr( $f['question'] ?? '' ); ?>" class="widefat">
+									</div>
+									<div class="wc-field">
+										<label><?php esc_html_e( 'Answer', 'woodmart-child' ); ?></label>
+										<textarea name="accessories_builder[faq][items][<?php echo esc_attr( $idx ); ?>][answer]" rows="2" class="widefat"><?php echo esc_textarea( $f['answer'] ?? '' ); ?></textarea>
+									</div>
+								</div>
+								<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<button type="button" class="button button-secondary wc-btn-add-row" data-target="acc-faq-repeater" data-template="tmpl-acc-faq-row">
+						<span class="dashicons dashicons-plus-alt2"></span> <?php esc_html_e( 'Add FAQ Item', 'woodmart-child' ); ?>
+					</button>
+
+					<h4 class="wc-subhead" style="margin-top:24px;"><?php esc_html_e( 'Bottom Orange High-Conversion CTA Banner', 'woodmart-child' ); ?></h4>
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Banner Badge Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][cta][badge]" value="<?php echo esc_attr( $settings['faq']['cta']['badge'] ?? '' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Banner Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][cta][title]" value="<?php echo esc_attr( $settings['faq']['cta']['title'] ?? '' ); ?>" class="widefat">
+						</div>
+					</div>
+
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Banner Description', 'woodmart-child' ); ?></label>
+						<textarea name="accessories_builder[faq][cta][description]" rows="2" class="widefat"><?php echo esc_textarea( $settings['faq']['cta']['description'] ?? '' ); ?></textarea>
+					</div>
+
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Button 1 Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][cta][btn_shop_text]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_shop_text'] ?? '' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Button 1 URL', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][cta][btn_shop_url]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_shop_url'] ?? '#accessories-hero' ); ?>" class="widefat">
+						</div>
+					</div>
+					<div class="wc-field-row grid-2">
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Button 2 Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][cta][btn_quote_text]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_quote_text'] ?? '' ); ?>" class="widefat">
+						</div>
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Button 2 URL', 'woodmart-child' ); ?></label>
+							<input type="text" name="accessories_builder[faq][cta][btn_quote_url]" value="<?php echo esc_attr( $settings['faq']['cta']['btn_quote_url'] ?? '#' ); ?>" class="widefat">
+						</div>
+					</div>
+				</section>
+
+			</div><!-- /.wc-builder-tabs-content -->
+		</div><!-- /.wc-builder-body -->
+	</div><!-- /.wc-builder-wrap -->
+
+	<!-- Repeater HTML Templates -->
+	<template id="tmpl-acc-badge-row">
+		<div class="wc-repeater-row" data-index="{{INDEX}}">
+			<span class="wc-row-drag">☰</span>
+			<div class="wc-repeater-fields grid-3">
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Icon Keyword (shield, temp, diamond, zap)', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[general][compatibility_badges][{{INDEX}}][icon]" value="shield" class="widefat">
+				</div>
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Badge Title', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[general][compatibility_badges][{{INDEX}}][title]" class="widefat">
+				</div>
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Subtitle / Spec', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[general][compatibility_badges][{{INDEX}}][subtitle]" class="widefat">
+				</div>
+			</div>
+			<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+		</div>
+	</template>
+
+	<template id="tmpl-acc-benefit-row">
+		<div class="wc-repeater-row" data-index="{{INDEX}}">
+			<span class="wc-row-drag">☰</span>
+			<div class="wc-repeater-fields grid-2">
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Benefit Title', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[general][benefits][{{INDEX}}][title]" class="widefat">
+				</div>
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Subtitle', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[general][benefits][{{INDEX}}][subtitle]" class="widefat">
+				</div>
+			</div>
+			<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+		</div>
+	</template>
+
+	<template id="tmpl-acc-compat-row">
+		<div class="wc-repeater-row" data-index="{{INDEX}}">
+			<span class="wc-row-drag">☰</span>
+			<div class="wc-repeater-fields">
+				<div class="wc-field-row grid-2" style="margin-bottom:8px;">
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Category', 'woodmart-child' ); ?></label>
+						<input type="text" name="accessories_builder[compatibility_matrix][rows][{{INDEX}}][category]" class="widefat" placeholder="Standard, Engineering, Abrasive...">
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Filament Material Name', 'woodmart-child' ); ?></label>
+						<input type="text" name="accessories_builder[compatibility_matrix][rows][{{INDEX}}][filament]" class="widefat">
+					</div>
+				</div>
+				<div class="wc-field-row grid-4" style="margin-bottom:8px;">
+					<div class="wc-field">
+						<label><?php esc_html_e( '0.2 mm Status', 'woodmart-child' ); ?></label>
+						<select name="accessories_builder[compatibility_matrix][rows][{{INDEX}}][nozzle_02]" class="widefat">
+							<option value="yes"><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+							<option value="hardened"><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+							<option value="no"><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+						</select>
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( '0.4 mm Status', 'woodmart-child' ); ?></label>
+						<select name="accessories_builder[compatibility_matrix][rows][{{INDEX}}][nozzle_04]" class="widefat">
+							<option value="yes" selected><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+							<option value="hardened"><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+							<option value="no"><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+						</select>
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( '0.6 mm Status', 'woodmart-child' ); ?></label>
+						<select name="accessories_builder[compatibility_matrix][rows][{{INDEX}}][nozzle_06]" class="widefat">
+							<option value="yes" selected><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+							<option value="hardened"><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+							<option value="no"><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+						</select>
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( '0.8 mm Status', 'woodmart-child' ); ?></label>
+						<select name="accessories_builder[compatibility_matrix][rows][{{INDEX}}][nozzle_08]" class="widefat">
+							<option value="yes" selected><?php esc_html_e( '✓ Recommended', 'woodmart-child' ); ?></option>
+							<option value="hardened"><?php esc_html_e( '▲ Hardened Only', 'woodmart-child' ); ?></option>
+							<option value="no"><?php esc_html_e( '✕ Not Recommended', 'woodmart-child' ); ?></option>
+						</select>
+					</div>
+				</div>
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Notes / Recommendation Details', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[compatibility_matrix][rows][{{INDEX}}][notes]" class="widefat">
+				</div>
+			</div>
+			<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+		</div>
+	</template>
+
+	<template id="tmpl-acc-spec-row">
+		<div class="wc-repeater-row" data-index="{{INDEX}}">
+			<span class="wc-row-drag">☰</span>
+			<div class="wc-repeater-fields grid-2">
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Specification Label', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[specifications][items][{{INDEX}}][label]" class="widefat">
+				</div>
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Value', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[specifications][items][{{INDEX}}][value]" class="widefat">
+				</div>
+			</div>
+			<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+		</div>
+	</template>
+
+	<template id="tmpl-acc-faq-row">
+		<div class="wc-repeater-row" data-index="{{INDEX}}">
+			<span class="wc-row-drag">☰</span>
+			<div class="wc-repeater-fields">
+				<div class="wc-field" style="margin-bottom:8px;">
+					<label><?php esc_html_e( 'Question', 'woodmart-child' ); ?></label>
+					<input type="text" name="accessories_builder[faq][items][{{INDEX}}][question]" class="widefat">
+				</div>
+				<div class="wc-field">
+					<label><?php esc_html_e( 'Answer', 'woodmart-child' ); ?></label>
+					<textarea name="accessories_builder[faq][items][{{INDEX}}][answer]" rows="2" class="widefat"></textarea>
+				</div>
+			</div>
+			<button type="button" class="button wc-btn-remove-row" title="<?php esc_attr_e( 'Remove Row', 'woodmart-child' ); ?>">&times;</button>
+		</div>
+	</template>
+	<?php
+}
+
+/**
+ * Save Product Page Builder Meta Data (Accessories)
+ *
+ * @param int     $post_id Post ID.
+ * @param WP_Post $post    Post object.
+ */
+function woodmart_child_save_accessories_builder_meta( $post_id, $post ) {
+	if ( ! isset( $_POST['woodmart_child_accessories_builder_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woodmart_child_accessories_builder_nonce'] ) ), 'woodmart_child_save_accessories_builder_meta' ) ) {
+		return;
+	}
+
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	if ( 'product' !== $post->post_type ) {
+		return;
+	}
+
+	$raw_data = isset( $_POST['accessories_builder'] ) && is_array( $_POST['accessories_builder'] ) ? wp_unslash( $_POST['accessories_builder'] ) : array();
+
+	// Master switch
+	$is_enabled = ! empty( $raw_data['general']['enable_landing'] ) ? '1' : '0';
+	update_post_meta( $post_id, '_woodmart_child_accessories_landing_enabled', $is_enabled );
+
+	$clean = array();
+
+	// 1. General & Hero
+	$clean['general'] = array(
+		'enable_landing'       => $is_enabled,
+		'badge_text'           => sanitize_text_field( $raw_data['general']['badge_text'] ?? '' ),
+		'eyebrow'              => sanitize_text_field( $raw_data['general']['eyebrow'] ?? '' ),
+		'brand_name'           => sanitize_text_field( $raw_data['general']['brand_name'] ?? '' ),
+		'rating_text'          => sanitize_text_field( $raw_data['general']['rating_text'] ?? '' ),
+		'stock_text'           => sanitize_text_field( $raw_data['general']['stock_text'] ?? '' ),
+		'stock_note'           => sanitize_text_field( $raw_data['general']['stock_note'] ?? '' ),
+		'price_display'        => sanitize_text_field( $raw_data['general']['price_display'] ?? '' ),
+		'price_raw'            => sanitize_text_field( $raw_data['general']['price_raw'] ?? '' ),
+		'vat_note'             => sanitize_text_field( $raw_data['general']['vat_note'] ?? '' ),
+		'ex_vat_text'          => sanitize_text_field( $raw_data['general']['ex_vat_text'] ?? '' ),
+		'warranty_note'        => sanitize_text_field( $raw_data['general']['warranty_note'] ?? '' ),
+		'team_quote_text'      => sanitize_textarea_field( $raw_data['general']['team_quote_text'] ?? '' ),
+		'compatibility_badges' => array(),
+		'benefits'             => array(),
+	);
+
+	if ( ! empty( $raw_data['general']['compatibility_badges'] ) && is_array( $raw_data['general']['compatibility_badges'] ) ) {
+		foreach ( $raw_data['general']['compatibility_badges'] as $bg ) {
+			if ( ! empty( $bg['title'] ) ) {
+				$clean['general']['compatibility_badges'][] = array(
+					'icon'     => sanitize_text_field( $bg['icon'] ?? 'shield' ),
+					'title'    => sanitize_text_field( $bg['title'] ),
+					'subtitle' => sanitize_text_field( $bg['subtitle'] ?? '' ),
+				);
+			}
+		}
+	}
+
+	if ( ! empty( $raw_data['general']['benefits'] ) && is_array( $raw_data['general']['benefits'] ) ) {
+		foreach ( $raw_data['general']['benefits'] as $b ) {
+			if ( ! empty( $b['title'] ) ) {
+				$clean['general']['benefits'][] = array(
+					'title'    => sanitize_text_field( $b['title'] ),
+					'subtitle' => sanitize_text_field( $b['subtitle'] ?? '' ),
+				);
+			}
+		}
+	}
+
+	// 2. Overview / Key Selling Points
+	$clean['overview'] = array(
+		'enabled'          => ! empty( $raw_data['overview']['enabled'] ) ? '1' : '0',
+		'eyebrow'          => sanitize_text_field( $raw_data['overview']['eyebrow'] ?? '' ),
+		'title'            => sanitize_text_field( $raw_data['overview']['title'] ?? '' ),
+		'description'      => sanitize_textarea_field( $raw_data['overview']['description'] ?? '' ),
+		'image'            => esc_url_raw( $raw_data['overview']['image'] ?? '' ),
+		'showcase_eyebrow' => sanitize_text_field( $raw_data['overview']['showcase_eyebrow'] ?? '' ),
+		'showcase_title'   => sanitize_text_field( $raw_data['overview']['showcase_title'] ?? '' ),
+		'showcase_desc'    => sanitize_textarea_field( $raw_data['overview']['showcase_desc'] ?? '' ),
+		'card_02'          => array(
+			'tag'         => sanitize_text_field( $raw_data['overview']['card_02']['tag'] ?? '0.2 mm Nozzle' ),
+			'title'       => sanitize_text_field( $raw_data['overview']['card_02']['title'] ?? 'Ultra-Fine Precision' ),
+			'description' => sanitize_textarea_field( $raw_data['overview']['card_02']['description'] ?? '' ),
+			'badge'       => sanitize_text_field( $raw_data['overview']['card_02']['badge'] ?? '' ),
+		),
+		'card_04'          => array(
+			'tag'         => sanitize_text_field( $raw_data['overview']['card_04']['tag'] ?? '0.4 mm Nozzle' ),
+			'title'       => sanitize_text_field( $raw_data['overview']['card_04']['title'] ?? 'Balanced Production Speed' ),
+			'description' => sanitize_textarea_field( $raw_data['overview']['card_04']['description'] ?? '' ),
+			'badge'       => sanitize_text_field( $raw_data['overview']['card_04']['badge'] ?? '' ),
+		),
+	);
+
+	// 3. Feature Visuals / Performance Comparison
+	$clean['visual_showcase'] = array(
+		'enabled'        => ! empty( $raw_data['visual_showcase']['enabled'] ) ? '1' : '0',
+		'eyebrow'        => sanitize_text_field( $raw_data['visual_showcase']['eyebrow'] ?? '' ),
+		'title'          => sanitize_text_field( $raw_data['visual_showcase']['title'] ?? '' ),
+		'description'    => sanitize_textarea_field( $raw_data['visual_showcase']['description'] ?? '' ),
+		'vase_cards'     => array(),
+		'nozzle_columns' => array(),
+		'progression'    => array(
+			'title' => sanitize_text_field( $raw_data['visual_showcase']['progression']['title'] ?? '' ),
+			'note'  => sanitize_text_field( $raw_data['visual_showcase']['progression']['note'] ?? '' ),
+			'bars'  => array(
+				array(
+					'size'         => '0.2 mm',
+					'flow'         => '10 mm³/s',
+					'strength_pct' => '45%',
+					'label'        => 'Max Detail',
+				),
+				array(
+					'size'         => '0.4 mm',
+					'flow'         => '20 mm³/s',
+					'strength_pct' => '75%',
+					'label'        => 'Standard Flow',
+				),
+				array(
+					'size'         => '0.6 mm',
+					'flow'         => '26 mm³/s',
+					'strength_pct' => '90%',
+					'label'        => '+40% Flow Speed',
+				),
+				array(
+					'size'         => '0.8 mm',
+					'flow'         => '32 mm³/s',
+					'strength_pct' => '100%',
+					'label'        => 'Max Flow & Strength',
+				),
+			),
+		),
+	);
+
+	if ( ! empty( $raw_data['visual_showcase']['vase_cards'] ) && is_array( $raw_data['visual_showcase']['vase_cards'] ) ) {
+		foreach ( $raw_data['visual_showcase']['vase_cards'] as $vc ) {
+			$clean['visual_showcase']['vase_cards'][] = array(
+				'layer' => sanitize_text_field( $vc['layer'] ?? '' ),
+				'name'  => sanitize_text_field( $vc['name'] ?? '' ),
+				'desc'  => sanitize_textarea_field( $vc['desc'] ?? '' ),
+				'badge' => sanitize_text_field( $vc['badge'] ?? '' ),
+			);
+		}
+	}
+
+	if ( ! empty( $raw_data['visual_showcase']['nozzle_columns'] ) && is_array( $raw_data['visual_showcase']['nozzle_columns'] ) ) {
+		foreach ( $raw_data['visual_showcase']['nozzle_columns'] as $nc ) {
+			$clean['visual_showcase']['nozzle_columns'][] = array(
+				'size'        => sanitize_text_field( $nc['size'] ?? '' ),
+				'title'       => sanitize_text_field( $nc['title'] ?? '' ),
+				'layer_range' => sanitize_text_field( $nc['layer_range'] ?? '' ),
+				'flow'        => sanitize_text_field( $nc['flow'] ?? '' ),
+				'abrasive'    => sanitize_text_field( $nc['abrasive'] ?? '' ),
+				'benchy_desc' => sanitize_text_field( $nc['benchy_desc'] ?? '' ),
+				'best_for'    => sanitize_text_field( $nc['best_for'] ?? '' ),
+			);
+		}
+	}
+
+	// 4. Compatibility Matrix
+	$clean['compatibility_matrix'] = array(
+		'enabled'     => ! empty( $raw_data['compatibility_matrix']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['compatibility_matrix']['eyebrow'] ?? '' ),
+		'title'       => sanitize_text_field( $raw_data['compatibility_matrix']['title'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['compatibility_matrix']['description'] ?? '' ),
+		'note'        => sanitize_textarea_field( $raw_data['compatibility_matrix']['note'] ?? '' ),
+		'rows'        => array(),
+	);
+
+	if ( ! empty( $raw_data['compatibility_matrix']['rows'] ) && is_array( $raw_data['compatibility_matrix']['rows'] ) ) {
+		foreach ( $raw_data['compatibility_matrix']['rows'] as $cr ) {
+			if ( ! empty( $cr['filament'] ) ) {
+				$clean['compatibility_matrix']['rows'][] = array(
+					'category'  => sanitize_text_field( $cr['category'] ?? '' ),
+					'filament'  => sanitize_text_field( $cr['filament'] ),
+					'nozzle_02' => sanitize_text_field( $cr['nozzle_02'] ?? 'yes' ),
+					'nozzle_04' => sanitize_text_field( $cr['nozzle_04'] ?? 'yes' ),
+					'nozzle_06' => sanitize_text_field( $cr['nozzle_06'] ?? 'yes' ),
+					'nozzle_08' => sanitize_text_field( $cr['nozzle_08'] ?? 'yes' ),
+					'notes'     => sanitize_text_field( $cr['notes'] ?? '' ),
+				);
+			}
+		}
+	}
+
+	// 5. Technical Specifications
+	$clean['specifications'] = array(
+		'enabled'     => ! empty( $raw_data['specifications']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['specifications']['eyebrow'] ?? '' ),
+		'title'       => sanitize_text_field( $raw_data['specifications']['title'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['specifications']['description'] ?? '' ),
+		'note'        => sanitize_text_field( $raw_data['specifications']['note'] ?? '' ),
+		'items'       => array(),
+	);
+
+	if ( ! empty( $raw_data['specifications']['items'] ) && is_array( $raw_data['specifications']['items'] ) ) {
+		foreach ( $raw_data['specifications']['items'] as $s_item ) {
+			if ( ! empty( $s_item['label'] ) || ! empty( $s_item['value'] ) ) {
+				$clean['specifications']['items'][] = array(
+					'label' => sanitize_text_field( $s_item['label'] ?? '' ),
+					'value' => sanitize_text_field( $s_item['value'] ?? '' ),
+				);
+			}
+		}
+	}
+
+	// 6. What's in the Box
+	$asm_items = array_filter( array_map( 'trim', explode( "\n", sanitize_textarea_field( $raw_data['box_contents']['assembly_items_text'] ?? '' ) ) ) );
+	$noz_items = array_filter( array_map( 'trim', explode( "\n", sanitize_textarea_field( $raw_data['box_contents']['nozzle_items_text'] ?? '' ) ) ) );
+
+	$clean['box_contents'] = array(
+		'enabled'        => ! empty( $raw_data['box_contents']['enabled'] ) ? '1' : '0',
+		'eyebrow'        => sanitize_text_field( $raw_data['box_contents']['eyebrow'] ?? '' ),
+		'title'          => sanitize_text_field( $raw_data['box_contents']['title'] ?? '' ),
+		'note'           => sanitize_text_field( $raw_data['box_contents']['note'] ?? '' ),
+		'assembly_title' => sanitize_text_field( $raw_data['box_contents']['assembly_title'] ?? '' ),
+		'assembly_badge' => sanitize_text_field( $raw_data['box_contents']['assembly_badge'] ?? '' ),
+		'assembly_items' => array_values( $asm_items ),
+		'nozzle_title'   => sanitize_text_field( $raw_data['box_contents']['nozzle_title'] ?? '' ),
+		'nozzle_badge'   => sanitize_text_field( $raw_data['box_contents']['nozzle_badge'] ?? '' ),
+		'nozzle_items'   => array_values( $noz_items ),
+	);
+
+	// 7. FAQ & Bottom CTA
+	$clean['faq'] = array(
+		'enabled'     => ! empty( $raw_data['faq']['enabled'] ) ? '1' : '0',
+		'eyebrow'     => sanitize_text_field( $raw_data['faq']['eyebrow'] ?? '' ),
+		'title'       => sanitize_text_field( $raw_data['faq']['title'] ?? '' ),
+		'description' => sanitize_textarea_field( $raw_data['faq']['description'] ?? '' ),
+		'ask_text'    => sanitize_text_field( $raw_data['faq']['ask_text'] ?? '' ),
+		'ask_url'     => esc_url_raw( $raw_data['faq']['ask_url'] ?? '#' ),
+		'items'       => array(),
+		'cta'         => array(
+			'enabled'        => ! empty( $raw_data['faq']['cta']['enabled'] ) ? '1' : '0',
+			'badge'          => sanitize_text_field( $raw_data['faq']['cta']['badge'] ?? '' ),
+			'title'          => sanitize_text_field( $raw_data['faq']['cta']['title'] ?? '' ),
+			'description'    => sanitize_textarea_field( $raw_data['faq']['cta']['description'] ?? '' ),
+			'btn_shop_text'  => sanitize_text_field( $raw_data['faq']['cta']['btn_shop_text'] ?? '' ),
+			'btn_shop_url'   => esc_url_raw( $raw_data['faq']['cta']['btn_shop_url'] ?? '#accessories-hero' ),
+			'btn_quote_text' => sanitize_text_field( $raw_data['faq']['cta']['btn_quote_text'] ?? '' ),
+			'btn_quote_url'  => esc_url_raw( $raw_data['faq']['cta']['btn_quote_url'] ?? '#' ),
+		),
+	);
+
+	if ( ! empty( $raw_data['faq']['items'] ) && is_array( $raw_data['faq']['items'] ) ) {
+		foreach ( $raw_data['faq']['items'] as $f_item ) {
+			if ( ! empty( $f_item['question'] ) || ! empty( $f_item['answer'] ) ) {
+				$clean['faq']['items'][] = array(
+					'question' => sanitize_text_field( $f_item['question'] ?? '' ),
+					'answer'   => sanitize_textarea_field( $f_item['answer'] ?? '' ),
+				);
+			}
+		}
+	}
+
+	// Save main accessories settings array
+	update_post_meta( $post_id, '_woodmart_child_accessories_builder', $clean );
+}
+add_action( 'save_post_product', 'woodmart_child_save_accessories_builder_meta', 10, 2 );
+
+

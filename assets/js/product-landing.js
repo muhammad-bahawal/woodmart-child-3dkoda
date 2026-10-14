@@ -19,6 +19,7 @@
 		initVariationSync();
 		initAjaxAddToCart();
 		initFilamentInteractions();
+		initAccessoriesInteractions();
 	});
 
 	/* ==========================================================================
@@ -563,6 +564,19 @@
 					formatsBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
 					formatsBlock.classList.add('is-unselected-alert');
 					setTimeout(() => formatsBlock.classList.remove('is-unselected-alert'), 1200);
+				}
+				return;
+			}
+
+			// Check if variation is required but not selected (accessories pill selectors)
+			const accPillGroups = form.querySelectorAll('.accessories-attr-group');
+			if (accPillGroups.length > 0 && !variationId) {
+				showNotice('Please select your preferred specification before adding to basket.', true);
+				const attrContainer = form.querySelector('.accessories-attributes-container');
+				if (attrContainer) {
+					attrContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					attrContainer.classList.add('is-unselected-alert');
+					setTimeout(() => attrContainer.classList.remove('is-unselected-alert'), 1200);
 				}
 				return;
 			}
@@ -1233,6 +1247,239 @@
 			});
 		}
 	})();
+
+	/* ==========================================================================
+	   9. ACCESSORIES LANDING PAGE INTERACTIONS
+	   ========================================================================== */
+	function initAccessoriesInteractions() {
+		const root = document.querySelector('.accessories-landing-root');
+		if (!root) return;
+
+		// 1. FAQ Accordion Toggle
+		const faqHeaders = root.querySelectorAll('.accessories-faq-accordion .faq-accordion-header');
+		faqHeaders.forEach(header => {
+			header.addEventListener('click', function () {
+				const item = this.closest('.faq-accordion-item');
+				if (!item) return;
+
+				const isOpen = item.classList.contains('is-open');
+				const body = item.querySelector('.faq-accordion-body');
+
+				// Close other open items
+				const allItems = root.querySelectorAll('.accessories-faq-accordion .faq-accordion-item');
+				allItems.forEach(otherItem => {
+					if (otherItem !== item && otherItem.classList.contains('is-open')) {
+						otherItem.classList.remove('is-open');
+						const otherBtn = otherItem.querySelector('.faq-accordion-header');
+						if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+						const otherBody = otherItem.querySelector('.faq-accordion-body');
+						if (otherBody) otherBody.style.display = 'none';
+					}
+				});
+
+				if (isOpen) {
+					item.classList.remove('is-open');
+					this.setAttribute('aria-expanded', 'false');
+					if (body) body.style.display = 'none';
+				} else {
+					item.classList.add('is-open');
+					this.setAttribute('aria-expanded', 'true');
+					if (body) body.style.display = 'block';
+				}
+			});
+		});
+
+		// 2. Variations Handling
+		const matrixEl = document.getElementById('accessories-variation-matrix');
+		let matrix = [];
+		if (matrixEl) {
+			try {
+				matrix = JSON.parse(matrixEl.textContent || '[]');
+			} catch (e) {
+				matrix = [];
+			}
+		}
+
+		const pillButtons = root.querySelectorAll('.accessories-pill-btn');
+		const variationIdInput = root.querySelector('#selected-accessories-variation-id') || root.querySelector('input[name="variation_id"]');
+		const summarySpan = root.querySelector('#accessories-variation-summary');
+		const currentPriceEls = root.querySelectorAll('.accessories-current-price');
+		const stockTextEl = root.querySelector('#acc-stock-status-text');
+		const stockNoteEl = root.querySelector('#acc-stock-note-text');
+		const mainImg = root.querySelector('#product-main-image');
+
+		// Sticky bar elements
+		const stickyBar = document.getElementById('accessories-sticky-bar') || root.querySelector('.accessories-sticky-bar');
+		const stickyThumb = document.getElementById('sticky-accessories-thumb');
+		const stickyBadge = document.getElementById('sticky-accessories-var-badge');
+		const stickyCta = root.querySelector('.accessories-sticky-cta');
+
+		function getSelectedAttributes() {
+			const selected = {};
+			const groups = root.querySelectorAll('.accessories-attr-group');
+			groups.forEach(group => {
+				const activeBtn = group.querySelector('.accessories-pill-btn.is-active');
+				const key = group.dataset.attrKey;
+				if (activeBtn && key) {
+					selected[key] = activeBtn.dataset.attrVal;
+				}
+			});
+			return selected;
+		}
+
+		function getSelectedAttributeNames() {
+			const names = [];
+			const groups = root.querySelectorAll('.accessories-attr-group');
+			groups.forEach(group => {
+				const activeBtn = group.querySelector('.accessories-pill-btn.is-active');
+				if (activeBtn && activeBtn.dataset.attrName) {
+					names.push(activeBtn.dataset.attrName);
+				}
+			});
+			return names;
+		}
+
+		function findMatchingVariation(selectedAttrs) {
+			if (!matrix.length) return null;
+
+			return matrix.find(v => {
+				const vAttrs = v.attributes || {};
+				for (const [key, val] of Object.entries(selectedAttrs)) {
+					if (vAttrs[key] && vAttrs[key] !== '' && vAttrs[key].toLowerCase() !== val.toLowerCase()) {
+						return false;
+					}
+				}
+				return true;
+			}) || matrix[0];
+		}
+
+		function syncVariationState() {
+			const selectedAttrs = getSelectedAttributes();
+			const matched = findMatchingVariation(selectedAttrs);
+			const names = getSelectedAttributeNames();
+
+			if (matched) {
+				if (variationIdInput) {
+					variationIdInput.value = matched.id;
+				}
+
+				// Price update
+				currentPriceEls.forEach(el => {
+					if (matched.price_html) {
+						el.innerHTML = matched.price_html;
+					}
+				});
+
+				// Summary indicator
+				if (summarySpan) {
+					const parts = [...names];
+					if (matched.sku) {
+						parts.push('SKU: ' + matched.sku);
+					}
+					summarySpan.textContent = parts.join(' · ') || '—';
+				}
+
+				// Stock update
+				if (stockTextEl) {
+					if (matched.in_stock) {
+						stockTextEl.textContent = 'In Stock — Tallinn';
+						if (stockNoteEl && matched.sku) {
+							stockNoteEl.textContent = 'SKU: ' + matched.sku + ' · Dispatched in 24h';
+						}
+					} else {
+						stockTextEl.textContent = 'Backorder / Out of stock';
+						if (stockNoteEl) {
+							stockNoteEl.textContent = 'Special order item';
+						}
+					}
+				}
+
+				// Image update
+				if (matched.image && mainImg) {
+					mainImg.style.opacity = '0.4';
+					setTimeout(() => {
+						mainImg.src = matched.image;
+						mainImg.style.opacity = '1';
+					}, 150);
+
+					// Sync left gallery active thumb if matching URL
+					const thumbs = root.querySelectorAll('.product-gallery__thumbs li');
+					thumbs.forEach(t => {
+						const tUrl = t.dataset.fullUrl || '';
+						if (tUrl && matched.image.includes(tUrl.split('/').pop())) {
+							thumbs.forEach(th => th.classList.remove('is-active'));
+							t.classList.add('is-active');
+						}
+					});
+				}
+
+				// Sticky Bar update
+				if (stickyBadge) {
+					stickyBadge.textContent = names.join(' · ') || 'Standard';
+				}
+				if (stickyThumb && matched.image) {
+					stickyThumb.src = matched.image;
+				}
+			}
+		}
+
+		pillButtons.forEach(btn => {
+			btn.addEventListener('click', function () {
+				const group = this.closest('.accessories-attr-group');
+				if (!group) return;
+
+				// Toggle active in this group
+				group.querySelectorAll('.accessories-pill-btn').forEach(b => b.classList.remove('is-active'));
+				this.classList.add('is-active');
+
+				// Update selected label
+				const labelVal = group.querySelector('.accessories-attr-selected-value');
+				if (labelVal) {
+					labelVal.textContent = this.dataset.attrName || '';
+				}
+
+				// Update hidden input
+				const hiddenInput = group.querySelector('.accessories-hidden-attr');
+				if (hiddenInput) {
+					hiddenInput.value = this.dataset.attrVal || '';
+				}
+
+				syncVariationState();
+			});
+		});
+
+		// Initial sync
+		if (matrix.length > 0) {
+			syncVariationState();
+		}
+
+		// 3. Sticky Bottom Bar Scroll Visibility & CTA proxy
+		if (stickyBar) {
+			const heroEl = document.getElementById('accessories-hero') || root.querySelector('.accessories-hero');
+			function checkStickyBar() {
+				if (!heroEl) return;
+				const heroBottom = heroEl.getBoundingClientRect().bottom;
+				if (heroBottom < 100) {
+					stickyBar.classList.add('is-visible');
+				} else {
+					stickyBar.classList.remove('is-visible');
+				}
+			}
+
+			window.addEventListener('scroll', checkStickyBar, { passive: true });
+			checkStickyBar();
+
+			if (stickyCta) {
+				stickyCta.addEventListener('click', function (e) {
+					e.preventDefault();
+					const heroAddBtn = root.querySelector('.accessories-btn-add-to-cart');
+					if (heroAddBtn) {
+						heroAddBtn.click();
+					}
+				});
+			}
+		}
+	}
 })();
 
 
