@@ -8,6 +8,43 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Check if the AMS product landing page is enabled for a given product.
+ *
+ * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
+ * @return bool True if AMS landing page is enabled.
+ */
+function woodmart_child_is_ams_landing( $product_or_id = null ) {
+	$product_id = 0;
+
+	if ( $product_or_id instanceof WC_Product ) {
+		$product_id = $product_or_id->get_id();
+	} elseif ( is_numeric( $product_or_id ) && $product_or_id > 0 ) {
+		$product_id = absint( $product_or_id );
+	} elseif ( is_singular( 'product' ) || ( function_exists( 'is_product' ) && is_product() ) ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	} elseif ( is_admin() && isset( $_GET['post'] ) && is_numeric( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_id = absint( $_GET['post'] );
+	}
+
+	if ( ! $product_id ) {
+		return false;
+	}
+
+	$enabled = get_post_meta( $product_id, '_woodmart_child_ams_landing_enabled', true );
+
+	if ( '' === $enabled ) {
+		$settings = get_post_meta( $product_id, '_woodmart_child_ams_builder', true );
+		if ( is_array( $settings ) && isset( $settings['general']['enable_landing'] ) ) {
+			$enabled = $settings['general']['enable_landing'];
+		} else {
+			$enabled = '0';
+		}
+	}
+
+	return ( '1' === (string) $enabled || 'yes' === (string) $enabled || true === $enabled );
+}
+
+/**
  * Check if the Laser & Crafting product landing page is enabled for a given product.
  *
  * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
@@ -27,6 +64,11 @@ function woodmart_child_is_laser_crafting_landing( $product_or_id = null ) {
 	}
 
 	if ( ! $product_id ) {
+		return false;
+	}
+
+	// 0. If AMS landing is enabled, AMS takes highest precedence
+	if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams_landing( $product_id ) ) {
 		return false;
 	}
 
@@ -67,7 +109,12 @@ function woodmart_child_is_accessories_landing( $product_or_id = null ) {
 		return false;
 	}
 
-	// 1. If laser crafting landing is enabled, laser crafting takes highest precedence
+	// 0. If AMS landing is enabled, AMS takes highest precedence
+	if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams_landing( $product_id ) ) {
+		return false;
+	}
+
+	// 1. If laser crafting landing is enabled, laser crafting takes precedence
 	if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing( $product_id ) ) {
 		return false;
 	}
@@ -109,7 +156,12 @@ function woodmart_child_is_filament_landing( $product_or_id = null ) {
 		return false;
 	}
 
-	// 1. If laser crafting landing is enabled, laser crafting takes highest precedence
+	// 0. If AMS landing is enabled, AMS takes highest precedence
+	if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams_landing( $product_id ) ) {
+		return false;
+	}
+
+	// 1. If laser crafting landing is enabled, laser crafting takes precedence
 	if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing( $product_id ) ) {
 		return false;
 	}
@@ -156,7 +208,12 @@ function woodmart_child_is_printer_landing( $product_or_id = null ) {
 		return false;
 	}
 
-	// 1. If laser crafting landing is enabled, laser crafting takes highest precedence
+	// 0. If AMS landing is enabled, AMS takes highest precedence
+	if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams_landing( $product_id ) ) {
+		return false;
+	}
+
+	// 1. If laser crafting landing is enabled, laser crafting takes precedence
 	if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing( $product_id ) ) {
 		return false;
 	}
@@ -199,7 +256,7 @@ function woodmart_child_is_printer_landing( $product_or_id = null ) {
  * @return bool True if custom landing page is enabled.
  */
 function woodmart_child_is_custom_landing( $product_or_id = null ) {
-	return woodmart_child_is_laser_crafting_landing( $product_or_id ) || woodmart_child_is_accessories_landing( $product_or_id ) || woodmart_child_is_printer_landing( $product_or_id ) || woodmart_child_is_filament_landing( $product_or_id );
+	return woodmart_child_is_ams_landing( $product_or_id ) || woodmart_child_is_laser_crafting_landing( $product_or_id ) || woodmart_child_is_accessories_landing( $product_or_id ) || woodmart_child_is_printer_landing( $product_or_id ) || woodmart_child_is_filament_landing( $product_or_id );
 }
 
 /**
@@ -2552,5 +2609,473 @@ function woodmart_child_get_laser_crafting_section_data( $section_key, $product_
 	$settings = woodmart_child_get_laser_crafting_builder_settings( $product_id );
 	return isset( $settings[ $section_key ] ) ? $settings[ $section_key ] : array();
 }
+
+/**
+ * Get default demo data for the AMS (Automatic Material System) builder.
+ *
+ * @return array
+ */
+function woodmart_child_get_default_ams_builder_data() {
+	return array(
+		'general'                 => array(
+			'enable_landing'  => '1',
+			'eyebrow'         => 'Bambu Lab AMS',
+			'brand_name'      => 'Bambu Lab',
+			'badge_text'      => 'Authorized Bambu Lab Reseller',
+			'rating_text'     => 'Multi-Color & Filament Drying System',
+			'stock_text'      => 'In Stock',
+			'stock_note'      => 'SKU: FA008',
+			'warranty_text'   => '2-Year Official Warranty',
+			'vat_note'        => 'Incl. 24% VAT · sample price',
+			'ex_vat_text'     => 'Show ex. VAT',
+			'team_quote_text' => 'Buying for a team or print farm? Request a tailored quote →',
+			'guarantees'      => array(
+				array(
+					'icon'     => 'truck',
+					'title'    => 'Fast Baltic delivery',
+					'subtitle' => 'Dispatched from Tallinn',
+				),
+				array(
+					'icon'     => 'shield',
+					'title'    => 'Local warranty',
+					'subtitle' => 'Official 2-year coverage & EU support',
+				),
+				array(
+					'icon'     => 'user',
+					'title'    => 'Expert support',
+					'subtitle' => 'Guidance from our engineering team',
+				),
+			),
+			'bundle_addons'   => array(
+				array(
+					'id'            => 'ams-hub',
+					'title'         => 'Bambu Lab AMS Hub',
+					'badge'         => '16 Colors',
+					'price'         => '59.00',
+					'regular_price' => '69.00',
+					'description'   => 'Connect up to 4 AMS units together for 16-color multi-spool printing.',
+					'image'         => '',
+				),
+				array(
+					'id'            => 'reusable-spools',
+					'title'         => 'High-Temp Reusable Spools (4-Pack)',
+					'badge'         => 'Eco-Friendly',
+					'price'         => '45.00',
+					'regular_price' => '55.00',
+					'description'   => 'Durable high-temperature polycarbonate spools for refills and drying.',
+					'image'         => '',
+				),
+				array(
+					'id'            => 'desiccant-refill',
+					'title'         => 'High-Capacity Desiccant Packs (4 Pairs)',
+					'badge'         => 'Dry Storage',
+					'price'         => '14.00',
+					'regular_price' => '18.00',
+					'description'   => 'Long-lasting silica gel packs to maintain chamber moisture below 20% RH.',
+					'image'         => '',
+				),
+				array(
+					'id'            => 'ptfe-tube-kit',
+					'title'         => 'Low-Friction PTFE Tube Replacement Kit',
+					'badge'         => 'Original Parts',
+					'price'         => '12.00',
+					'regular_price' => '15.00',
+					'description'   => 'Precision-cut tubing ensuring silky smooth feeding and minimal retraction friction.',
+					'image'         => '',
+				),
+			),
+		),
+		'overview'                => array(
+			'eyebrow'        => 'Next-Gen Automated Material System',
+			'title'          => "Multi-Color 3D Printing.\nEffortless, Airtight & Intelligent.",
+			'subtitle'       => "Color, the ultimate expression of emotion, is brought to you by Bambu Lab's Automatic Material System (AMS). You can now enjoy printing freely in multiple colors and materials.",
+			'banner_image'   => '',
+			'video_url'      => 'https://www.youtube.com/watch?v=kYv9bI3oH6U',
+			'video_btn_text' => 'Watch AMS in Action',
+			'metrics'        => array(
+				array(
+					'value' => '4–16',
+					'label' => 'Spool Capacity',
+					'desc'  => 'Expand up to 16 colors with AMS Hub daisy-chaining',
+				),
+				array(
+					'value' => 'Airtight',
+					'label' => 'Moisture Protection',
+					'desc'  => 'Hermetic silicone seal with dual desiccant bays',
+				),
+				array(
+					'value' => 'RFID',
+					'label' => 'Auto-Detection',
+					'desc'  => 'Zero manual configuration for Bambu Lab filaments',
+				),
+				array(
+					'value' => 'Auto',
+					'label' => 'Backup Switching',
+					'desc'  => 'Seamless runout transition mid-print without pausing',
+				),
+			),
+		),
+		'drying_feeding'          => array(
+			'eyebrow'  => 'Intelligent Care & Feeding',
+			'title'    => 'Keep Filament Dry & Feeds Flawlessly',
+			'subtitle' => 'Moisture causes stringing, bubbling, and nozzle clogs. The AMS keeps your material hermetically sealed and conditions continuously monitored.',
+			'cards'    => array(
+				array(
+					'tag'   => 'Active Hermetic Sealing',
+					'title' => 'Airtight Rubber Seal & Desiccant Bay',
+					'badge' => '< 20% RH Dry Chamber',
+					'desc'  => 'Surrounded by an airtight silicone seal and packed with dual high-capacity desiccant compartments, AMS absorbs ambient humidity and preserves dry filament below 20% RH.',
+					'image' => '',
+				),
+				array(
+					'tag'   => 'Smart Recognition',
+					'title' => 'RFID Auto-Filament Identification',
+					'badge' => 'Instant Parameter Sync',
+					'desc'  => 'Built-in high-frequency RFID reader instantly identifies filament material, color, batch, and temperature profile, synchronizing settings automatically with Bambu Studio.',
+					'image' => '',
+				),
+				array(
+					'tag'   => 'Zero Downtime',
+					'title' => 'Automatic Runout & Spool Backup',
+					'badge' => 'Unattended Printing',
+					'desc'  => 'Never lose a print to an empty spool. When the primary spool runs out, AMS automatically switches to the identical backup spool without interrupting the build.',
+					'image' => '',
+				),
+				array(
+					'tag'   => 'Precision Tensioning',
+					'title' => 'Spring-Loaded Buffer & Odometer Sensor',
+					'badge' => 'Tangle-Free Feeding',
+					'desc'  => 'Dynamic spring buffer dynamically regulates extrusion tension while hall effect odometer accurately measures filament feed speed, preventing tangles and slippage.',
+					'image' => '',
+				),
+			),
+		),
+		'efficiency_metrics'      => array(
+			'eyebrow'      => 'Speed & Waste Reduction',
+			'title'        => 'Engineered for Blazing Speed & Minimal Waste',
+			'subtitle'     => 'Optimized feed kinematics and purge reduction algorithms maximize printer uptime.',
+			'card_speed'   => array(
+				'metric' => '+50%',
+				'label'  => 'Feeding & Retraction Velocity',
+				'desc'   => 'High-torque brushless feed motors and ultra-low friction PTFE routing propel filament at rapid velocity to drastically slash color transition latency.',
+			),
+			'card_waste'   => array(
+				'metric' => '-10min',
+				'label'  => 'Per Multi-Color Layer Overhead',
+				'desc'   => 'Synchronized filament cutting and adaptive purge volume calculation save up to 60% transition waste and cut hours off complex prints.',
+			),
+			'banner_title' => 'Smart Purge Calibration in Bambu Studio',
+			'banner_desc'  => 'Adaptive color transition matrix calculates the precise flush volume required between light and dark shades, reducing purge tower size and filament waste.',
+			'banner_image' => '',
+		),
+		'multicolor_architecture' => array(
+			'eyebrow'       => 'Multi-Color Architecture',
+			'title'         => 'Seamless Multi-Color & Multi-Material Capabilities',
+			'subtitle'      => 'A 4-in-1 multi-channel funnel integrates 4 independent feed motors with optical sensors.',
+			'chain_title'   => 'Scale from 4 to 16 Colors',
+			'chain_badge'   => '16-Color Daisy Chain',
+			'chain_desc'    => 'Connect up to 4 AMS units simultaneously using the Bambu Lab AMS Hub to unlock 16-color capability for rich sculptures, multi-material functional assemblies, and water-soluble supports (PVA/BVOH).',
+			'diagram_image' => '',
+			'features'      => array(
+				array(
+					'title' => 'Support Material Switching',
+					'desc'  => 'Print interface layers with snap-off support or water-soluble PVA for pristine overhangs.',
+				),
+				array(
+					'title' => 'Automated Color Purging',
+					'desc'  => 'Auto-calculated flush volumes ensure zero color bleeding between contrasting hues.',
+				),
+				array(
+					'title' => 'Synchronized Filament Cutter',
+					'desc'  => 'Precision pneumatic cutter trims filament tip before retraction to eliminate jams.',
+				),
+			),
+		),
+		'compatibility_matrix'    => array(
+			'eyebrow'  => 'Ecosystem Integration',
+			'title'    => 'Printer Compatibility Matrix',
+			'subtitle' => 'Designed exclusively for seamless integration with Bambu Lab 3D printers.',
+			'note'     => 'Note: Daisy-chaining 2 to 4 AMS units requires the Bambu Lab AMS Hub and additional bus cables.',
+			'printers' => array(
+				array(
+					'model'        => 'X1-Carbon & X1E Series',
+					'status'       => 'Full Plug & Play',
+					'status_badge' => 'Native Ready',
+					'multi_ams'    => 'Up to 4 AMS (16 Colors)',
+					'buffer_req'   => 'Included with printer',
+					'notes'        => 'Direct bus connection, full touch UI integration & chamber temp sync',
+				),
+				array(
+					'model'        => 'P1S & P1P Series',
+					'status'       => 'Full Plug & Play',
+					'status_badge' => 'Native Ready',
+					'multi_ams'    => 'Up to 4 AMS (16 Colors)',
+					'buffer_req'   => 'Included with AMS combo or standalone buffer',
+					'notes'        => 'Seamless control via Bambu Studio & Bambu Handy mobile app',
+				),
+				array(
+					'model'        => 'A1 & A1 Mini Series',
+					'status'       => 'AMS lite / Dedicated Hub',
+					'status_badge' => 'Compatible',
+					'multi_ams'    => '4 Colors via AMS lite',
+					'buffer_req'   => 'Top mount or side feed adapter',
+					'notes'        => 'Active color management with rotary spool tensioning',
+				),
+			),
+		),
+		'box_contents'            => array(
+			'eyebrow'  => 'Unboxing Experience',
+			'title'    => "What's in the Box",
+			'subtitle' => 'Everything you need to begin multi-color 3D printing right out of the box.',
+			'items'    => array(
+				array(
+					'title' => 'Bambu Lab AMS Unit',
+					'desc'  => '1x Complete enclosed multi-material unit with airtight seal',
+					'icon'  => 'box',
+				),
+				array(
+					'title' => 'Reusable Spools',
+					'desc'  => '4x High-temperature reusable spools included inside',
+					'icon'  => 'disc',
+				),
+				array(
+					'title' => 'Filament Buffer',
+					'desc'  => '1x Spring-loaded dynamic buffer mechanism',
+					'icon'  => 'buffer',
+				),
+				array(
+					'title' => 'Bus Cables',
+					'desc'  => '1x 6-Pin bus cable (1.5m) & 1x 4-Pin bus cable (0.5m)',
+					'icon'  => 'cable',
+				),
+				array(
+					'title' => 'PTFE Tubing',
+					'desc'  => '2x Premium low-friction PTFE tubes (1.5m & 2.0m)',
+					'icon'  => 'tube',
+				),
+				array(
+					'title' => 'Desiccant Refills',
+					'desc'  => '2x High-capacity desiccant packs pre-installed',
+					'icon'  => 'droplet',
+				),
+				array(
+					'title' => 'PTFE Coupler & Mount',
+					'desc'  => '1x Spare PTFE coupler and Allen key set',
+					'icon'  => 'tool',
+				),
+				array(
+					'title' => 'Quick Start Guide',
+					'desc'  => 'Comprehensive multi-language setup guide',
+					'icon'  => 'book',
+				),
+			),
+		),
+		'specifications'          => array(
+			'eyebrow'  => 'Engineering Data',
+			'title'    => 'Technical Specifications',
+			'subtitle' => 'Full mechanical, electrical, and material specifications for Bambu Lab AMS.',
+			'items'    => array(
+				array(
+					'category' => 'Physical & Dimensions',
+					'label'    => 'Product Dimensions',
+					'value'    => '368 × 283 × 224 mm (14.5 × 11.1 × 8.8 in)',
+				),
+				array(
+					'category' => 'Physical & Dimensions',
+					'label'    => 'Net Weight',
+					'value'    => '2.50 kg (5.5 lbs)',
+				),
+				array(
+					'category' => 'Physical & Dimensions',
+					'label'    => 'Chamber Seal',
+					'value'    => 'Hermetic airtight silicone rubber seal ring',
+				),
+				array(
+					'category' => 'Physical & Dimensions',
+					'label'    => 'Spool Capacity',
+					'value'    => '4 spools per AMS unit (daisy-chainable up to 16 spools)',
+				),
+				array(
+					'category' => 'Spool Compatibility',
+					'label'    => 'Supported Spool Width',
+					'value'    => '50 mm – 68 mm',
+				),
+				array(
+					'category' => 'Spool Compatibility',
+					'label'    => 'Supported Spool Diameter',
+					'value'    => '197 mm – 202 mm',
+				),
+				array(
+					'category' => 'Spool Compatibility',
+					'label'    => 'Spool Materials',
+					'value'    => 'Plastic reusable spools, compatible with cardboard spools (adapter recommended)',
+				),
+				array(
+					'category' => 'Electrical & Electronics',
+					'label'    => 'Operating Voltage',
+					'value'    => '24V DC (powered directly via printer bus cable)',
+				),
+				array(
+					'category' => 'Electrical & Electronics',
+					'label'    => 'Power Consumption',
+					'value'    => '12W Max during feed/retraction cycle',
+				),
+				array(
+					'category' => 'Electrical & Electronics',
+					'label'    => 'RFID Frequency',
+					'value'    => '13.56 MHz (ISO 15693 compatible)',
+				),
+				array(
+					'category' => 'Electrical & Electronics',
+					'label'    => 'Sensors',
+					'value'    => 'Hall effect filament odometer, tension buffer sensor, humidity monitor',
+				),
+				array(
+					'category' => 'Material Compatibility',
+					'label'    => 'Recommended Materials',
+					'value'    => 'PLA, PETG, ABS, ASA, PET, PC, PA, PVA, BVOH',
+				),
+				array(
+					'category' => 'Material Compatibility',
+					'label'    => 'Support Materials',
+					'value'    => 'Bambu Support for PLA, Support for PA/PET, Water-soluble PVA',
+				),
+				array(
+					'category' => 'Material Compatibility',
+					'label'    => 'Not Recommended',
+					'value'    => 'TPU, TPE, Damp PVA, abrasive fiber filaments without hardened gears',
+				),
+			),
+		),
+		'faq'                     => array(
+			'eyebrow'    => 'Got Questions?',
+			'title'      => 'Frequently Asked Questions',
+			'items'      => array(
+				array(
+					'question' => 'How does the AMS automatically recognize filaments?',
+					'answer'   => 'Each Bambu Lab filament spool includes an RFID tag on its spool core. The AMS has an integrated RFID reader at each spool bay that reads the tag when loaded, automatically identifying the filament type, color, and temperature settings without manual configuration.',
+				),
+				array(
+					'question' => 'Can I connect multiple AMS units together for 16 colors?',
+					'answer'   => 'Yes! You can connect up to 4 AMS units together to achieve 16-color 3D printing. To do so, you will need the Bambu Lab AMS Hub, which coordinates the filament feeds from all 4 units into the printer toolhead.',
+				),
+				array(
+					'question' => 'Does the AMS dry wet filament or keep it dry?',
+					'answer'   => 'The AMS features an airtight silicone seal and dual high-capacity desiccant bays designed to keep already dry filament dry during storage and printing (typically maintaining below 20% relative humidity). For filaments that have already absorbed moisture from the open air, we recommend pre-drying them in a dedicated filament dryer or on the printer heatbed.',
+				),
+				array(
+					'question' => 'Can I print flexible TPU or carbon-fiber filaments with the AMS?',
+					'answer'   => 'Flexible filaments like TPU and TPE are too soft for the AMS drive gears and retraction mechanism and should be printed directly from the external spool holder. Fiber-reinforced filaments (such as PA-CF or PET-CF) can cause wear on standard funnels over long durations; Bambu Lab recommends using hardened feed funnels for composite printing.',
+				),
+				array(
+					'question' => 'What happens when a filament spool runs out during a print?',
+					'answer'   => 'The AMS has automated spool runout detection. If you have loaded another spool with the same filament type and color, the AMS will seamlessly switch to the backup spool and continue printing without pausing. If no identical backup is available, the printer safely pauses and alerts you via Bambu Studio or the Bambu Handy app.',
+				),
+				array(
+					'question' => 'Can I use 3rd-party spools and filaments with the AMS?',
+					'answer'   => 'Yes, 3rd-party filaments on spools matching the standard dimensions (width 50–68mm, diameter 197–202mm) work seamlessly. For 3rd-party spools, you simply select the material profile manually in Bambu Studio or on the touchscreen. For cardboard spools, we recommend 3D printing a reusable perimeter ring to ensure smooth rotation.',
+				),
+			),
+			'cta'        => array(
+				'badge'    => 'Fast Baltic Delivery · Dispatched from Tallinn',
+				'title'    => 'Ready to Print in Full Color?',
+				'subtitle' => 'Upgrade your 3D printer with the Bambu Lab Automatic Material System today. 2-year official warranty and local Baltic support included.',
+				'btn_text' => 'Order Bambu Lab AMS Now',
+				'btn_url'  => '#ams-hero',
+			),
+			'sticky_bar' => array(
+				'enabled'     => '1',
+				'button_text' => 'Add to basket',
+			),
+		),
+	);
+}
+
+/**
+ * Get all AMS builder settings for a product, merged with defaults.
+ *
+ * @param int $product_id Product ID.
+ * @return array
+ */
+function woodmart_child_get_ams_builder_settings( $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$defaults = woodmart_child_get_default_ams_builder_data();
+	$saved    = get_post_meta( $product_id, '_woodmart_child_ams_builder', true );
+
+	if ( ! is_array( $saved ) || empty( $saved ) ) {
+		return $defaults;
+	}
+
+	return woodmart_child_merge_builder_settings( $defaults, $saved );
+}
+
+/**
+ * Check if a specific AMS builder section is enabled.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return bool
+ */
+function woodmart_child_is_ams_section_enabled( $section_key, $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$aliases = array(
+		'drying'        => 'drying_feeding',
+		'efficiency'    => 'efficiency_metrics',
+		'speed'         => 'efficiency_metrics',
+		'multicolor'    => 'multicolor_architecture',
+		'compatibility' => 'compatibility_matrix',
+		'box'           => 'box_contents',
+		'specs'         => 'specifications',
+	);
+	if ( isset( $aliases[ $section_key ] ) ) {
+		$section_key = $aliases[ $section_key ];
+	}
+
+	$settings = woodmart_child_get_ams_builder_settings( $product_id );
+
+	if ( ! isset( $settings[ $section_key ] ) ) {
+		return false;
+	}
+
+	$section = $settings[ $section_key ];
+
+	if ( isset( $section['enabled'] ) && ! in_array( (string) $section['enabled'], array( '1', 'yes', 'true' ), true ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Get section data for a given AMS product.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return array
+ */
+function woodmart_child_get_ams_section_data( $section_key, $product_id = 0 ) {
+	$aliases = array(
+		'drying'        => 'drying_feeding',
+		'efficiency'    => 'efficiency_metrics',
+		'speed'         => 'efficiency_metrics',
+		'multicolor'    => 'multicolor_architecture',
+		'compatibility' => 'compatibility_matrix',
+		'box'           => 'box_contents',
+		'specs'         => 'specifications',
+	);
+	if ( isset( $aliases[ $section_key ] ) ) {
+		$section_key = $aliases[ $section_key ];
+	}
+
+	$settings = woodmart_child_get_ams_builder_settings( $product_id );
+	return isset( $settings[ $section_key ] ) ? $settings[ $section_key ] : array();
+}
+
 
 

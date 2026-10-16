@@ -11,6 +11,7 @@ defined( 'ABSPATH' ) || exit;
 require_once get_stylesheet_directory() . '/inc/helpers.php';
 require_once get_stylesheet_directory() . '/inc/meta-boxes.php';
 require_once get_stylesheet_directory() . '/inc/laser-crafting-meta-boxes.php';
+require_once get_stylesheet_directory() . '/inc/ams-meta-boxes.php';
 
 /**
  * 2. Enqueue Parent & Child Styles
@@ -86,6 +87,18 @@ function woodmart_child_enqueue_landing_assets() {
 			get_stylesheet_directory_uri() . '/assets/css/laser-crafting-landing.css',
 			array( 'woodmart-child-landing-css' ),
 			$lc_css_ver
+		);
+	}
+
+	// Scoped AMS Landing CSS (Only on AMS Landing Pages)
+	if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams_landing() ) {
+		$ams_css_file = get_stylesheet_directory() . '/assets/css/ams-landing.css';
+		$ams_css_ver  = file_exists( $ams_css_file ) ? (string) filemtime( $ams_css_file ) : '1.0.0';
+		wp_enqueue_style(
+			'woodmart-child-ams-landing-css',
+			get_stylesheet_directory_uri() . '/assets/css/ams-landing.css',
+			array( 'woodmart-child-landing-css' ),
+			$ams_css_ver
 		);
 	}
 
@@ -244,6 +257,10 @@ function woodmart_child_landing_body_classes( $classes ) {
 		if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing() ) {
 			$classes[] = 'laser-crafting-landing-canvas';
 			$classes[] = 'laser-crafting-product-page';
+		}
+		if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams_landing() ) {
+			$classes[] = 'ams-landing-canvas';
+			$classes[] = 'ams-product-page';
 		}
 	}
 	return array_unique( $classes );

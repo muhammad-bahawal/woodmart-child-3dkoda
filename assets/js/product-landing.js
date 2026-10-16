@@ -26,6 +26,7 @@
 		initFilamentInteractions();
 		initAccessoriesInteractions();
 		initLaserCraftingInteractions();
+		initAmsInteractions();
 	});
 
 	/* ==========================================================================
@@ -2245,6 +2246,322 @@
 
 		// 10. Banner Scroll Button
 		const bannerScrollBtn = root.querySelector('#lc-banner-scroll-btn');
+		if (bannerScrollBtn && heroSection) {
+			bannerScrollBtn.addEventListener('click', function (e) {
+				e.preventDefault();
+				heroSection.scrollIntoView({ behavior: 'smooth' });
+			});
+		}
+	}
+
+	/* ==========================================================================
+	   11. AMS (AUTOMATIC MATERIAL SYSTEM) LANDING CONTROLLER
+	   ========================================================================== */
+	function initAmsInteractions() {
+		const root = document.querySelector('.ams-landing-root');
+		if (!root) return;
+
+		// 1. Dynamic Variations Sync (Variable WooCommerce Products)
+		const amsVarRadios = root.querySelectorAll('input[name="ams_variation_choice"]');
+		const amsHiddenVarInput = root.querySelector('#selected-variation-id');
+		const amsSkuDisplay = root.querySelector('#ams-selected-sku');
+		const amsStockText = root.querySelector('#ams-stock-text');
+		const amsStockRow = root.querySelector('#ams-stock-row');
+		const amsStockNote = root.querySelector('#ams-stock-note');
+		const amsPriceDisplay = root.querySelector('.ams-current-price');
+		const amsPriceRow = root.querySelector('.ams-price-row');
+		const amsStickyPrice = root.querySelector('#ams-sticky-price');
+		const amsStickyConfig = root.querySelector('#ams-sticky-config');
+		const amsStickyStock = root.querySelector('#ams-sticky-stock');
+		const amsMainImg = root.querySelector('#product-main-image');
+		const amsStickyThumb = root.querySelector('#ams-sticky-thumb-img');
+		const vatLink = root.querySelector('.vat-link');
+		const priceNote = root.querySelector('.product-price-note');
+
+		let isExVat = false;
+		let currentRawPrice = parseFloat(amsPriceRow ? (amsPriceRow.dataset.priceRaw || 0) : 0) || 0;
+		let currentPriceHtml = amsPriceDisplay ? amsPriceDisplay.innerHTML : '';
+
+		function formatPrice(rawNum) {
+			let symbol = (window.woodmartLandingData && window.woodmartLandingData.currencySymbol) || '€';
+			const formatted = rawNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+			return `<span class="woocommerce-Price-amount amount" style="color:#111827 !important;"><bdi style="color:#111827 !important;"><span class="woocommerce-Price-currencySymbol" style="color:#111827 !important;">${symbol}</span>${formatted}</bdi></span>`;
+		}
+
+		function renderPrice() {
+			let displayHtml = sanitizeCurrencyHtml(currentPriceHtml);
+			if (isExVat && currentRawPrice > 0) {
+				const exVatNum = currentRawPrice / 1.24;
+				displayHtml = formatPrice(exVatNum);
+			}
+			if (amsPriceDisplay) {
+				amsPriceDisplay.innerHTML = displayHtml;
+				amsPriceDisplay.style.color = '#111827';
+			}
+			if (amsStickyPrice) {
+				amsStickyPrice.innerHTML = displayHtml;
+				amsStickyPrice.style.color = '#111827';
+			}
+		}
+
+		if (vatLink) {
+			vatLink.addEventListener('click', function (e) {
+				e.preventDefault();
+				isExVat = !isExVat;
+				this.textContent = isExVat ? 'Show incl. VAT' : 'Show ex. VAT';
+				if (priceNote) {
+					priceNote.textContent = isExVat ? 'excl. 24% VAT · sample price' : 'incl. 24% VAT · sample price';
+				}
+				renderPrice();
+			});
+		}
+
+		amsVarRadios.forEach(radio => {
+			radio.addEventListener('change', function () {
+				const varId = this.value;
+				const title = this.dataset.title || '';
+				const priceHtml = this.dataset.priceHtml || '';
+				const sku = this.dataset.sku || '';
+				const imageUrl = this.dataset.image || '';
+				const stockStatus = this.dataset.stock || 'instock';
+				const rawPrice = parseFloat(this.dataset.priceRaw || 0) || 0;
+
+				// 1. Hidden form field
+				if (amsHiddenVarInput) amsHiddenVarInput.value = varId;
+
+				// 2. Title & attribute labels in sticky bar
+				if (amsStickyConfig && title) {
+					amsStickyConfig.textContent = title;
+				}
+
+				// 3. Dynamic SKU display
+				if (amsSkuDisplay && sku) {
+					amsSkuDisplay.textContent = sku;
+				}
+				if (amsStockNote && sku) {
+					amsStockNote.textContent = 'SKU: ' + sku;
+				}
+
+				// 4. Dynamic Price (Hero & Sticky Bar)
+				currentRawPrice = rawPrice;
+				currentPriceHtml = priceHtml;
+				renderPrice();
+
+				// 5. Live Stock Status: Strictly dynamic "In Stock" / "Out of Stock"
+				const isInStock = (stockStatus !== 'outofstock');
+				if (amsStockText) {
+					amsStockText.textContent = isInStock ? 'In Stock' : 'Out of Stock';
+				}
+				if (amsStockRow) {
+					amsStockRow.classList.toggle('is-instock', isInStock);
+					amsStockRow.classList.toggle('is-outofstock', !isInStock);
+				}
+				if (amsStickyStock) {
+					amsStickyStock.textContent = isInStock ? '● In Stock' : '● Out of Stock';
+					amsStickyStock.classList.toggle('is-instock', isInStock);
+					amsStickyStock.classList.toggle('is-outofstock', !isInStock);
+				}
+
+				// 6. Highlight selected option label
+				amsVarRadios.forEach(r => {
+					const opt = r.closest('.option');
+					if (opt) opt.classList.toggle('is-selected', r === radio);
+				});
+
+				// 7. Swap main gallery image to variation image
+				if (imageUrl && amsMainImg) {
+					amsMainImg.style.transition = 'opacity 0.2s ease';
+					amsMainImg.style.opacity = '0.3';
+					setTimeout(() => {
+						amsMainImg.src = imageUrl;
+						amsMainImg.style.opacity = '1';
+						if (amsStickyThumb) amsStickyThumb.src = imageUrl;
+					}, 150);
+
+					// Highlight corresponding thumb if exists
+					const matchingThumb = root.querySelector(`.product-gallery__thumbs li[data-full-url="${imageUrl}"]`);
+					if (matchingThumb) {
+						root.querySelectorAll('.product-gallery__thumbs li').forEach(t => t.classList.remove('is-active'));
+						matchingThumb.classList.add('is-active');
+					}
+				}
+			});
+		});
+
+		// 2. Essential Additions (Steppers & Add Buttons)
+		const additionCards = root.querySelectorAll('.ams-additions-section .addition-card');
+		additionCards.forEach(card => {
+			const qtyInput = card.querySelector('.addition-card__qty input');
+			const qtyBtns = card.querySelectorAll('.addition-card__qty button[data-step]');
+			const addBtn = card.querySelector('.addition-card__btn-add');
+			const title = card.querySelector('.addition-card__title') ? card.querySelector('.addition-card__title').textContent.trim() : 'Item';
+
+			qtyBtns.forEach(btn => {
+				btn.addEventListener('click', function () {
+					const step = parseInt(this.getAttribute('data-step'), 10) || 0;
+					const current = Math.max(1, parseInt(qtyInput ? qtyInput.value : 1, 10) || 1);
+					if (qtyInput) qtyInput.value = Math.max(1, current + step);
+				});
+			});
+
+			if (addBtn) {
+				addBtn.addEventListener('click', function (e) {
+					e.preventDefault();
+					const origText = this.innerHTML;
+					this.innerHTML = '<span>Added ✓</span>';
+					this.style.background = '#047857';
+					if (typeof showNotice === 'function') {
+						showNotice(`✓ Added ${title} to sample basket!`, false);
+					}
+					setTimeout(() => {
+						this.innerHTML = origText;
+						this.style.background = '';
+					}, 2000);
+				});
+			}
+		});
+
+		// 3. Overview Video Modal ("Watch AMS in Action" button)
+		const videoBtn = root.querySelector('.ams-btn-watch-video');
+		const videoModal = document.getElementById('ams-video-modal');
+		if (videoBtn && videoModal) {
+			const modalIframe = videoModal.querySelector('#ams-modal-iframe');
+			const modalClose = videoModal.querySelector('.ams-video-modal-close');
+			const modalBackdrop = videoModal.querySelector('.ams-video-modal-backdrop');
+
+			function formatVideoEmbed(url) {
+				if (!url) return '';
+				const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+				if (ytMatch && ytMatch[1]) {
+					return 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1&rel=0&modestbranding=1';
+				}
+				const vimeoMatch = url.match(/(?:vimeo\.com\/)(\d+)/i);
+				if (vimeoMatch && vimeoMatch[1]) {
+					return 'https://player.vimeo.com/video/' + vimeoMatch[1] + '?autoplay=1';
+				}
+				return url;
+			}
+
+			function openVideoModal(e) {
+				if (e) e.preventDefault();
+				const url = videoBtn.getAttribute('data-video-url') || videoBtn.getAttribute('href');
+				const embedUrl = formatVideoEmbed(url);
+				if (modalIframe && embedUrl) {
+					modalIframe.setAttribute('src', embedUrl);
+				}
+				videoModal.classList.add('is-open');
+				videoModal.setAttribute('aria-hidden', 'false');
+				document.body.style.overflow = 'hidden';
+			}
+
+			function closeVideoModal() {
+				videoModal.classList.remove('is-open');
+				videoModal.setAttribute('aria-hidden', 'true');
+				if (modalIframe) {
+					modalIframe.setAttribute('src', '');
+				}
+				document.body.style.overflow = '';
+			}
+
+			videoBtn.addEventListener('click', openVideoModal);
+			if (modalClose) modalClose.addEventListener('click', closeVideoModal);
+			if (modalBackdrop) modalBackdrop.addEventListener('click', closeVideoModal);
+
+			window.addEventListener('keydown', function (e) {
+				if (e.key === 'Escape' && videoModal.classList.contains('is-open')) {
+					closeVideoModal();
+				}
+			});
+		}
+
+		// 4. Technical Specifications Collapsible Toggle
+		const specsToggleBtn = root.querySelector('#ams-specs-toggle-btn');
+		const specsCard = root.querySelector('.ams-specs-card');
+		if (specsToggleBtn && specsCard) {
+			specsToggleBtn.addEventListener('click', function () {
+				const isExpanded = specsCard.classList.toggle('is-expanded');
+				const toggleText = this.querySelector('.ams-toggle-text');
+				if (toggleText) {
+					toggleText.textContent = isExpanded ? 'Collapse specifications' : 'Show all specifications';
+				}
+				const svg = this.querySelector('svg');
+				if (svg) {
+					svg.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+				}
+			});
+		}
+
+		// 5. FAQ Accordion
+		const faqQuestions = root.querySelectorAll('.ams-faq-question');
+		faqQuestions.forEach(btn => {
+			btn.addEventListener('click', function () {
+				const item = this.closest('.ams-faq-item');
+				if (!item) return;
+				const isOpen = item.classList.contains('is-open');
+				const answer = item.querySelector('.ams-faq-answer');
+
+				if (isOpen) {
+					item.classList.remove('is-open');
+					this.setAttribute('aria-expanded', 'false');
+					if (answer) answer.style.display = 'none';
+				} else {
+					item.classList.add('is-open');
+					this.setAttribute('aria-expanded', 'true');
+					if (answer) answer.style.display = 'block';
+				}
+			});
+		});
+
+		// 6. Sticky Bottom Bar Scroll Trigger & Proxy Purchase
+		const stickyBar = root.querySelector('#ams-sticky-bar');
+		const heroSection = document.getElementById('ams-hero') || root.querySelector('.ams-product-hero');
+		const heroQtyInput = root.querySelector('.product-hero .product-quantity input');
+		const stickyQtyInput = root.querySelector('.ams-sticky-qty-input');
+		const stickyQtyBtns = root.querySelectorAll('.ams-sticky-qty-btn');
+		const stickyAddBtn = root.querySelector('#ams-sticky-btn-add');
+		const mainAddBtn = root.querySelector('#ams-main-add-btn');
+
+		function syncQty(val) {
+			const clamped = Math.max(1, Math.min(99, parseInt(val, 10) || 1));
+			if (heroQtyInput) heroQtyInput.value = clamped;
+			if (stickyQtyInput) stickyQtyInput.value = clamped;
+		}
+
+		if (heroQtyInput) {
+			heroQtyInput.addEventListener('change', () => syncQty(heroQtyInput.value));
+		}
+
+		stickyQtyBtns.forEach(btn => {
+			btn.addEventListener('click', function () {
+				const dir = parseInt(this.getAttribute('data-dir'), 10) || 1;
+				const current = parseInt(stickyQtyInput ? stickyQtyInput.value : 1, 10) || 1;
+				syncQty(current + dir);
+			});
+		});
+
+		if (stickyBar && heroSection) {
+			function handleStickyScroll() {
+				const rect = heroSection.getBoundingClientRect();
+				if (rect.bottom < 80) {
+					stickyBar.classList.add('is-visible');
+				} else {
+					stickyBar.classList.remove('is-visible');
+				}
+			}
+
+			window.addEventListener('scroll', handleStickyScroll, { passive: true });
+			handleStickyScroll();
+
+			if (stickyAddBtn && mainAddBtn) {
+				stickyAddBtn.addEventListener('click', function (e) {
+					e.preventDefault();
+					mainAddBtn.click();
+				});
+			}
+		}
+
+		// 7. Bottom CTA Banner Scroll Button
+		const bannerScrollBtn = root.querySelector('#ams-banner-scroll-btn');
 		if (bannerScrollBtn && heroSection) {
 			bannerScrollBtn.addEventListener('click', function (e) {
 				e.preventDefault();

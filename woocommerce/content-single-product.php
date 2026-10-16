@@ -12,7 +12,57 @@ defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing() ) {
+if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams_landing() ) {
+	/**
+	 * Hook: woocommerce_before_single_product.
+	 */
+	do_action( 'woocommerce_before_single_product' );
+
+	if ( post_password_required() ) {
+		echo get_the_password_form(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return;
+	}
+	?>
+	<div id="product-<?php the_ID(); ?>" <?php wc_product_class( 'custom-product-landing-root ams-landing-root ams-landing-canvas landing-page-root', $product ); ?>>
+		<?php
+		// 1. Hero Section (Unified 2-Column Hero: Left Sticky Gallery + Right Title, Price, Native Variations, Add-ons)
+		get_template_part( 'template-parts/product-ams/hero-section' );
+
+		// 2. Overview & High-Impact Hero Banner (Dark Band + 4 Metric Pills + Video Popup)
+		get_template_part( 'template-parts/product-ams/overview-banner' );
+
+		// 3. Drying & Intelligent Feeding (4 Feature Cards: Airtight Seal, RFID, Runout Backup, Buffer)
+		get_template_part( 'template-parts/product-ams/drying-feeding' );
+
+		// 4. Speed & Efficiency Metrics (+50% Speed, -10min Overhead + Studio Purge Banner)
+		get_template_part( 'template-parts/product-ams/efficiency-metrics' );
+
+		// 5. Multi-Color Architecture (4 to 16 Spools Hub Daisy-Chain + Distribution Schematic)
+		get_template_part( 'template-parts/product-ams/multicolor-architecture' );
+
+		// 6. Printer Compatibility Matrix (Dynamic Repeater for X1, P1, A1 Series)
+		get_template_part( 'template-parts/product-ams/compatibility-matrix' );
+
+		// 7. What's in the Box (Included components grid)
+		get_template_part( 'template-parts/product-ams/box-contents' );
+
+		// 8. Technical Specifications (Expandable Category/Label/Value matrix)
+		get_template_part( 'template-parts/product-ams/specifications' );
+
+		// 9. FAQ & Call-To-Action Banner (Accordion + Bottom Orange CTA)
+		get_template_part( 'template-parts/product-ams/faq' );
+
+		// 10. Floating Sticky Bottom Purchase Bar
+		get_template_part( 'template-parts/product-ams/sticky-bottom-bar' );
+		?>
+	</div>
+	<?php
+	/**
+	 * Hook: woocommerce_after_single_product.
+	 */
+	do_action( 'woocommerce_after_single_product' );
+	return;
+} elseif ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing() ) {
 	/**
 	 * Hook: woocommerce_before_single_product.
 	 */
