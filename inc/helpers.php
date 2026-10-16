@@ -8,6 +8,43 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Check if the Laser & Crafting product landing page is enabled for a given product.
+ *
+ * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
+ * @return bool True if laser & crafting landing page is enabled.
+ */
+function woodmart_child_is_laser_crafting_landing( $product_or_id = null ) {
+	$product_id = 0;
+
+	if ( $product_or_id instanceof WC_Product ) {
+		$product_id = $product_or_id->get_id();
+	} elseif ( is_numeric( $product_or_id ) && $product_or_id > 0 ) {
+		$product_id = absint( $product_or_id );
+	} elseif ( is_singular( 'product' ) || ( function_exists( 'is_product' ) && is_product() ) ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	} elseif ( is_admin() && isset( $_GET['post'] ) && is_numeric( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$product_id = absint( $_GET['post'] );
+	}
+
+	if ( ! $product_id ) {
+		return false;
+	}
+
+	$enabled = get_post_meta( $product_id, '_woodmart_child_laser_crafting_landing_enabled', true );
+
+	if ( '' === $enabled ) {
+		$settings = get_post_meta( $product_id, '_woodmart_child_laser_crafting_builder', true );
+		if ( is_array( $settings ) && isset( $settings['general']['enable_landing'] ) ) {
+			$enabled = $settings['general']['enable_landing'];
+		} else {
+			$enabled = '0';
+		}
+	}
+
+	return ( '1' === (string) $enabled || 'yes' === (string) $enabled || true === $enabled );
+}
+
+/**
  * Check if the Accessories product landing page is enabled for a given product.
  *
  * @param int|WC_Product|null $product_or_id Product ID or WC_Product object.
@@ -27,6 +64,11 @@ function woodmart_child_is_accessories_landing( $product_or_id = null ) {
 	}
 
 	if ( ! $product_id ) {
+		return false;
+	}
+
+	// 1. If laser crafting landing is enabled, laser crafting takes highest precedence
+	if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing( $product_id ) ) {
 		return false;
 	}
 
@@ -67,7 +109,12 @@ function woodmart_child_is_filament_landing( $product_or_id = null ) {
 		return false;
 	}
 
-	// If accessories landing is enabled, accessories takes precedence
+	// 1. If laser crafting landing is enabled, laser crafting takes highest precedence
+	if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing( $product_id ) ) {
+		return false;
+	}
+
+	// 2. If accessories landing is enabled, accessories takes precedence
 	if ( function_exists( 'woodmart_child_is_accessories_landing' ) && woodmart_child_is_accessories_landing( $product_id ) ) {
 		return false;
 	}
@@ -109,7 +156,12 @@ function woodmart_child_is_printer_landing( $product_or_id = null ) {
 		return false;
 	}
 
-	// 1. If accessories landing is enabled, accessories takes highest precedence
+	// 1. If laser crafting landing is enabled, laser crafting takes highest precedence
+	if ( function_exists( 'woodmart_child_is_laser_crafting_landing' ) && woodmart_child_is_laser_crafting_landing( $product_id ) ) {
+		return false;
+	}
+
+	// 2. If accessories landing is enabled, accessories takes precedence
 	if ( function_exists( 'woodmart_child_is_accessories_landing' ) && woodmart_child_is_accessories_landing( $product_id ) ) {
 		return false;
 	}
@@ -147,7 +199,7 @@ function woodmart_child_is_printer_landing( $product_or_id = null ) {
  * @return bool True if custom landing page is enabled.
  */
 function woodmart_child_is_custom_landing( $product_or_id = null ) {
-	return woodmart_child_is_accessories_landing( $product_or_id ) || woodmart_child_is_printer_landing( $product_or_id ) || woodmart_child_is_filament_landing( $product_or_id );
+	return woodmart_child_is_laser_crafting_landing( $product_or_id ) || woodmart_child_is_accessories_landing( $product_or_id ) || woodmart_child_is_printer_landing( $product_or_id ) || woodmart_child_is_filament_landing( $product_or_id );
 }
 
 /**
@@ -1889,6 +1941,615 @@ function woodmart_child_is_accessories_section_enabled( $section_key, $product_i
  */
 function woodmart_child_get_accessories_section_data( $section_key, $product_id = 0 ) {
 	$settings = woodmart_child_get_accessories_builder_settings( $product_id );
+	return isset( $settings[ $section_key ] ) ? $settings[ $section_key ] : array();
+}
+
+/**
+ * Get default demo data for Laser & Crafting Builder (Bambu Lab A2L multi-tool & crafting).
+ *
+ * @return array
+ */
+function woodmart_child_get_default_laser_crafting_builder_data() {
+	return array(
+		'general'          => array(
+			'enable_landing'   => '0',
+			'eyebrow'          => 'CREATIVE PLAYGROUND · EXTRA LARGE',
+			'brand_name'       => 'Bambu Lab',
+			'badge_text'       => '● Authorized Bambu Lab Reseller',
+			'rating_text'      => '4.9 / 5 (94 reviews) · Trusted Baltic Stock',
+			'stock_text'       => 'In Stock — Tallinn',
+			'stock_note'       => 'Dispatched within 24h · Free Baltic Shipping',
+			'vat_note'         => 'Incl. 24% VAT · sample price',
+			'ex_vat_text'      => 'Show ex. VAT',
+			'warranty_text'    => '2-Year Local Warranty',
+			'team_quote_text'  => 'Need crafting workstations for your studio or lab? Request volume business quote →',
+			'guarantees'       => array(
+				array(
+					'icon'     => 'truck',
+					'title'    => 'Free Baltic Shipping',
+					'subtitle' => 'Dispatched from Tallinn',
+				),
+				array(
+					'icon'     => 'shield',
+					'title'    => '30-Day Price Protection',
+					'subtitle' => 'Guaranteed official pricing',
+				),
+				array(
+					'icon'     => 'refresh',
+					'title'    => '30-Day Returns',
+					'subtitle' => 'Hassle-free return policy',
+				),
+				array(
+					'icon'     => 'award',
+					'title'    => '2-Year Warranty',
+					'subtitle' => 'Local diagnostics & parts',
+				),
+			),
+			'packages'         => array(
+				'standalone' => array(
+					'title'       => 'A2L',
+					'price'       => '€469.00',
+					'price_raw'   => 469.00,
+					'badge'       => '',
+					'description' => 'Complete large-format 330×320×325 mm 3D printer for expansive creations.',
+					'bullets'     => "A2L 3D Printer\nTextured PEI Build Plate\nStainless Steel Toolhead\nBasic Tool & Maintenance Box",
+				),
+				'combo'      => array(
+					'title'       => 'A2L Combo',
+					'price'       => '€569.00',
+					'price_raw'   => 569.00,
+					'badge'       => 'MOST POPULAR',
+					'description' => 'Adds AMS lite for seamless 4-color automatic multi-material and support printing.',
+					'bullets'     => "Everything in A2L\nAutomatic Material System (AMS lite)\n4-Spool automatic filament feeding\nRFID spool detection",
+				),
+				'full_combo' => array(
+					'title'       => 'A2L Cutting Full Combo',
+					'price'       => '€629.00',
+					'price_raw'   => 629.00,
+					'badge'       => 'FULL ECOSYSTEM',
+					'description' => 'Includes 3D printer + AMS lite + modular blade cutting & pen plotting crafting toolhead.',
+					'bullets'     => "Everything in A2L Combo\nBlade Cutting Module (up to 500g force)\nPen Plotting Drawing Clamp & Pens\nCrafting Cutting Mat & Decal Starter Pack",
+				),
+			),
+			'bundle_addons'    => array(
+				array(
+					'id'             => 'print-finishing-kit',
+					'title'          => 'Print Finishing Kit',
+					'badge'          => '15% off',
+					'price'          => '€45.00',
+					'regular_price'  => '€52.95',
+					'description'    => 'The Complete Kit for Print Removal, De-support & Surface Cleanup.',
+					'image'          => '',
+				),
+				array(
+					'id'             => 'timelapse-kit',
+					'title'          => 'CyberBrick Time-lapse Kit',
+					'badge'          => '35% off',
+					'price'          => '€13.60',
+					'regular_price'  => '€20.90',
+					'description'    => 'Specially designed for 3D printers to capture high-framerate time-lapse videos.',
+					'image'          => '',
+				),
+				array(
+					'id'             => 'hardware-kit',
+					'title'          => 'CyberBrick Hardware Kit',
+					'badge'          => '25% off',
+					'price'          => '€59.90',
+					'regular_price'  => '€79.99',
+					'description'    => 'Ultimate Robotics & Hardware Kit — includes 2 vehicles and 2 remote transmitters.',
+					'image'          => '',
+				),
+			),
+		),
+		'overview'         => array(
+			'enabled'        => '1',
+			'brand_title'    => 'Bambu Lab A2L',
+			'title'          => "Creative Playground.\nExtra Large.",
+			'banner_image'   => '',
+			'video_url'      => 'https://www.youtube.com/watch?v=0h9Vp5a8n2Y',
+			'video_btn_text' => 'Watch Video',
+		),
+		'why_choose'       => array(
+			'title' => 'Why choose Bambu Lab A2L',
+			'items' => array(
+				array( 'title' => 'Extra Large Build Volume', 'sub' => 'Oversized build in one go.', 'badge' => '330×320×325 mm³', 'desc' => '', 'image' => '', 'mock' => 'lc-mock-helmet' ),
+				array( 'title' => 'Multi-Color Printing', 'sub' => 'The most reliable multi-color solution.', 'badge' => '19-Color AMS lite', 'desc' => '', 'image' => '', 'mock' => 'lc-mock-parrot' ),
+				array( 'title' => 'Full-Auto Calibration', 'sub' => "You don't have to do ANY manual tuning.", 'badge' => 'Dual Eddy-Current', 'desc' => '', 'image' => '', 'mock' => 'lc-mock-calibration' ),
+				array( 'title' => 'Modular Add-Ons', 'sub' => 'Blade cutting, pen drawing and more.', 'badge' => '500g Force · Quick-Swap', 'desc' => '', 'image' => '', 'mock' => 'lc-mock-toolheads' ),
+				array( 'title' => 'MakerWorld Ecosystem', 'sub' => 'Millions of models, one-click away.', 'badge' => '2M+ Free Models', 'desc' => '', 'image' => '', 'mock' => 'lc-mock-makerworld' ),
+				array( 'title' => 'Intelligent Monitoring', 'sub' => 'AutoPilot your printing process.', 'badge' => 'AutoPilot AI Sensors', 'desc' => '', 'image' => '', 'mock' => 'lc-mock-phone' ),
+			),
+		),
+		'community_slider' => array(
+			'eyebrow' => 'Top Creators | 2M+ Models | One Click Away',
+			'title'   => "Printing Is a Blast When There's Always Something New on the Menu",
+			'items'   => array(
+				array( 'title' => 'Mechanical Board Game & Gears', 'badge' => 'Interactive Kit', 'desc' => 'Multi-color interactive mechanisms printed with high-tolerance interlocking teeth.', 'image' => '', 'class' => 'slide-boardgame' ),
+				array( 'title' => 'Crimson Dragon Greatsword', 'badge' => 'Illuminated Prop', 'desc' => 'Full-scale cosplay prop printed in sections with internal channels for LED glow strips.', 'image' => '', 'class' => 'slide-redsword' ),
+				array( 'title' => 'Azure Energy Claymore', 'badge' => 'Full-Scale Z-Height', 'desc' => 'Translucent blue PETG blade with crystal clear edge glow and high layer rigidity.', 'image' => '', 'class' => 'slide-bluesword' ),
+				array( 'title' => 'Precision Model Kit Sprues', 'badge' => 'Multi-Material', 'desc' => 'Modular snap-together mechanical components organized on injection-molding style sprues.', 'image' => '', 'class' => 'slide-modelkit' ),
+				array( 'title' => 'Topographical 3D Map Diorama', 'badge' => 'Sub-Millimeter', 'desc' => 'High-density architectural contour elevations printed with razor-sharp step precision.', 'image' => '', 'class' => 'slide-diorama' ),
+			),
+		),
+		'build_volume'     => array(
+			'eyebrow'     => 'Oversized Build Volume',
+			'title'       => 'Extra Large Volume for Extra Bold Ideas',
+			'desc'        => "330 × 320 × 325 mm. That's 105% more space than the 256 mm class. A full-scale helmet, in one piece. A batch of 40 fidget toys, in one run. The kind of project that used to mean slicing your model into chunks—or starting over when the seams didn't line up—now just fits.",
+			'dim_w'       => '330 mm',
+			'dim_d'       => '320 mm',
+			'dim_h'       => '325 mm',
+			'machine_tag' => 'BAMBU LAB A2L 330×320×325 mm³ ENVELOPE',
+			'a1_sub'      => '256 × 256 mm · Model must be sliced into parts',
+			'a1_image'    => '',
+			'a2l_sub'     => '330 × 320 mm · Single-piece continuous print',
+			'a2l_image'   => '',
+		),
+		'highlights'       => array(
+			'enabled'         => '1',
+			'eyebrow'         => 'Oversized Build Volume · Modular Multi-Tool',
+			'title'           => "Creative Playground.\nExtra Large.",
+			'description'     => 'Expand your creative boundaries with 330 × 320 × 325 mm³ build volume and modular crafting toolheads for cutting, plotting, and printing.',
+			'banner_image'    => '',
+			'video_title'     => 'Why choose Bambu Lab A2L',
+			'video_url'       => 'https://www.youtube.com/watch?v=0h9Vp5a8n2Y',
+			'video_btn_text'  => 'Watch Video',
+			'items'           => array(
+				array( 'value' => '330³ mm', 'title' => 'Extra Large Build Volume', 'desc' => '105% more volume than 256 mm class. Print full-scale helmets and large props in a single run.', 'image' => '' ),
+				array( 'value' => 'Modular', 'title' => 'Multi-Tool Ecosystem', 'desc' => 'Modular snap-on heads for drag blade cutting, pen plotting, and laser/smartphone alignment.', 'image' => '' ),
+				array( 'value' => 'Full-Auto', 'title' => 'Hands-Free Calibration', 'desc' => 'Zero manual bed leveling or Z-offset adjustments. Bed leveling and vibration calibration run automatically.', 'image' => '' ),
+				array( 'value' => '19 Colors', 'title' => '2nd-Gen AMS Compatibility', 'desc' => 'Stack up to 4 AMS units for 16-color prints + 3 external feeds with active filament drying.', 'image' => '' ),
+				array( 'value' => 'AutoPilot', 'title' => 'Intelligent Monitoring', 'desc' => 'PMSM motor sensors actively detect nozzle clumping, filament grinding, and air-printing in real time.', 'image' => '' ),
+				array( 'value' => 'MakerWorld', 'title' => '2M+ Models One Click Away', 'desc' => 'Access millions of verified printable designs and multi-tool crafting templates with direct mobile slicing.', 'image' => '' ),
+			),
+			'community_title' => "Printing Is a Blast When There's Always Something New on the Menu",
+			'community_sub'   => 'Top Creators · 2M+ Models · One Click Away',
+			'community_items' => array(
+				array( 'title' => 'Full-Scale Helmet', 'tag' => '330mm Single Piece', 'desc' => 'No slicing into chunks, no adhesive seams — print ready to wear directly off the bed.', 'image' => '' ),
+				array( 'title' => 'Master Sword & Props', 'tag' => 'Massive Z-Height', 'desc' => 'Tall rigid structures printed with high layer stability and zero banding.', 'image' => '' ),
+				array( 'title' => 'Miniature Dioramas', 'tag' => 'Sub-Millimeter Detail', 'desc' => 'Complex gaming terrain and topographical maps with sharp overhangs and vivid multi-color accents.', 'image' => '' ),
+				array( 'title' => 'Batch Production Runs', 'tag' => '40+ Parts at Once', 'desc' => 'Maximized bed surface for high-volume makers and low-volume manufacturing.', 'image' => '' ),
+			),
+		),
+		'modular_addons'   => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'Modular Add-ons & 2D Processing',
+			'title'       => 'Add a New Dimension with Blade Cutting & Drawing',
+			'description' => "Swap the toolhead cover for the cutting module, and the A2L isn't just a printer anymore — it cuts stickers, leather, fabric, paper, and plots vector line art.",
+			'tools'       => array(
+				array(
+					'title'    => 'Blade Cutting Module',
+					'subtitle' => 'Decal, vinyl & leather cutting with up to 500g force',
+					'desc'     => 'Swap to the hardened steel drag knife to cut custom liveries for RC planes, leather wraps for sword hilts, precision heat-transfer decals, and bespoke papercraft.',
+					'tag'      => 'Up to 500g Force',
+					'icon'     => 'knife',
+					'image'    => '',
+				),
+				array(
+					'title'    => 'Pen Drawing & Vector Plotter',
+					'subtitle' => 'High-precision sketching with standard gel pens & markers',
+					'desc'     => 'Mount fine-liner pens, metallic inks, or standard markers to plot architectural blueprints, circuit traces, certificates, and generative line art directly onto paper or board.',
+					'tag'      => 'Vector Plotter',
+					'icon'     => 'pen',
+					'image'    => '',
+				),
+				array(
+					'title'    => 'Smartphone Vision Alignment',
+					'subtitle' => 'Camera auto-positioning for 2D print-and-cut jobs',
+					'desc'     => 'Snap a photo of your pre-printed sheet with the Bambu Handy app. Computer vision aligns cut vectors perfectly with physical graphics, eliminating manual registration marks.',
+					'tag'      => 'Vision Alignment',
+					'icon'     => 'camera',
+					'image'    => '',
+				),
+			),
+		),
+		'motion_stability' => array(
+			'enabled'        => '1',
+			'eyebrow'        => 'Engineered for Stability',
+			'title'          => 'A Bed-Slinger As Stable As CoreXY',
+			'description'    => 'Most bed-slingers degrade as prints get taller and heavier. The A2L uses real-time adaptive vibration compensation and tuned granular mass dampers so the last layer comes out as crisp as the first.',
+			'tab1_title'     => 'Adaptive Vibration Compensation',
+			'tab1_desc'      => 'Most printers run input shaping once at startup. The A2L runs a real-time calibration matrix that accounts for toolhead position AND shifting bed weight as the model grows.',
+			'img_off'        => '',
+			'img_on'         => '',
+			'comparison_on'  => 'Active Compensation (ON): Flawless surfaces, crisp 90° corners, and zero ghosting at 500 mm/s.',
+			'comparison_off' => 'Compensation (OFF): High-speed resonance artifacts, corner bulging, and layer ringing.',
+			'tab2_title'     => 'Granular Mass Damper',
+			'tab2_desc'      => 'Internal tuned dampers dissipate gantry resonance and harmonic vibration, enabling high-acceleration movement without ringing.',
+			'img_damper'     => '',
+			'img_silence'    => '',
+			'stats'          => array(
+				array( 'value' => '500 mm/s', 'label' => 'Max Toolhead Speed' ),
+				array( 'value' => '10,000 mm/s²', 'label' => 'Max Acceleration' ),
+				array( 'value' => '<49 dB', 'label' => 'Silent Mode Noise Level' ),
+				array( 'value' => 'UL 2904', 'label' => 'Clean Air Certified' ),
+			),
+		),
+		'ams_multicolor'   => array(
+			'enabled'          => '1',
+			'eyebrow'          => 'Automatic Material System',
+			'title'            => 'Multi-Color Made Easy with 2nd-Gen AMS',
+			'description'      => 'Pair the A2L with the 2nd-Gen AMS, and your filament gets a sealed, climate-controlled home — dried on demand before each print, kept airtight between them.',
+			'hero_title'       => 'Multi-Color Cockatiel Bird',
+			'hero_badge'       => '4-Color Single-Extruder Swap',
+			'hero_img'         => '',
+			'sub1_title'       => 'Nordschleife 3D Miniature',
+			'sub1_img'         => '',
+			'sub2_title'       => 'Relic Rush Board Game',
+			'sub2_img'         => '',
+			'ams_diagram_title'=> 'Support 2nd–Gen AMS',
+			'ams_diagram_desc' => 'Pair the A2L with the 2nd-Gen AMS, and your filament gets a sealed, climate-controlled home—dried on demand before each print, kept airtight between them. Need more colors? Need different material types running side by side? AMS lite and the 2nd-Gen AMS share the same embedded buffer system, so you can stack and mix them: four spools, eight spools, sixteen spools—whatever your project asks for, fed cleanly through one queue.',
+			'ams_diagram_pills'=> '19-Color Printing | Filament Drying | Enclosed Storage',
+			'ams_diagram_img'  => '',
+			'img_clumping'     => '',
+			'img_grinding'     => '',
+			'img_airprint'     => '',
+			'img_connectivity' => '',
+			'autopilot_eyebrow'=> 'INTELLIGENT PRINT MONITORING',
+			'autopilot_title'  => 'Put Your Printing on Autopilot',
+			'autopilot_desc'   => 'Most print failures happen quietly—the nozzle keeps moving, but the part stopped forming hours ago. Sensors along the extrusion path, paired with the PMSM extruder as a feedback node, feed a Bambu-trained algorithm that catches filament tangle, runout, nozzle clumping, and air printing—then pauses A2L and guides you through the fix on Bambu Handy.',
+			'sensors'          => array(
+				array( 'name' => 'Nozzle Clumping Detector', 'desc' => 'Optical eddy sensors monitor the hotend tip and trigger automatic pauses if debris accumulates.' ),
+				array( 'name' => 'Filament Grinding Sensor', 'desc' => 'Monitors extruder gear torque and flags slipping or spool resistance instantly.' ),
+				array( 'name' => 'Air Printing / Runout Sensor', 'desc' => 'Stops immediately if filament snaps or runs out, prompting one-touch spool recovery via Bambu Handy.' ),
+			),
+		),
+		'flow_calibration' => array(
+			'eyebrow'     => 'Auto Flow Dynamics Calibration',
+			'title'       => 'Repeatable Sharp Print Details',
+			'desc'        => 'Most printers calibrate flow once and trust it for every print after. A2L recalibrates every time. Before each job, Flow Dynamics Calibration measures how filament actually flows through this nozzle, with this spool, today—and builds a nonlinear model of the entire extrusion path. Nozzle wear, filament moisture, a fresh roll—all factored in before the first layer goes down. Sharp corners. Clean details. Print after print.',
+			'a2l_image'   => '',
+			'other_image' => '',
+			'status_text' => 'Worn nozzle (20% out-spec) , Damp filament , Nozzle residue',
+		),
+		'clean_air'        => array(
+			'eyebrow'         => 'UL Clean Air Certified',
+			'title'           => 'Print with Confidence, Breathe with Peace of Mind',
+			'desc'            => 'The A2L is certified under the UL 2904 standard for 3D printing indoor air quality when used with official filaments. Testing with our core lineup—including Bambu PLA Basic, PLA Pure, and PETG Basic—confirms ultra-low emissions, making the A2L safe for indoor use.',
+			'lifestyle_image' => '',
+			'badge_title'     => 'GREENGUARD',
+			'badge_sub'       => 'PRODUCT CERTIFIED FOR LOW CHEMICAL EMISSIONS',
+		),
+		'silence'          => array(
+			'eyebrow' => 'Engineered for Silence',
+			'title'   => 'Print Quietly. Work Comfortably.',
+			'desc'    => 'The A2L uses active motor noise cancellation, precision linear rails, and intelligent fan scaling to deliver a seamless experience. In Silent Mode, it operates at just 49dB—as peaceful as a quiet library.',
+			'metric'  => '49 dB · Silent Mode',
+			'image'   => '',
+		),
+		'connectivity'     => array(
+			'eyebrow' => 'Connectivity & Privacy',
+			'title'   => 'Connect Your Way',
+			'desc'    => 'Your printer, your privacy. Use Bambu Cloud for effortless cross-device connectivity, or switch to LAN-only mode for a secure, local-network experience. Total control over how you connect.',
+			'image'   => '',
+		),
+		'unboxing_video'   => array(
+			'title'        => 'Unboxing Video',
+			'video_url'    => 'https://www.youtube.com/watch?v=0h9Vp5a8n2Y',
+			'video_poster' => '',
+		),
+		'box_contents'     => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'Package Comparison Matrix',
+			'title'       => "What's in the Box",
+			'description' => 'Choose the configuration that matches your creative workflow — from standalone 3D printing to the full multi-tool crafting ecosystem.',
+			'packages'    => array( 'A2L', 'A2L Combo', 'A2L Cutting Full Combo' ),
+			'items'       => array(
+				array(
+					'name'       => 'A2L 3D Printer (330×320×325mm)',
+					'standalone' => '1',
+					'combo'      => '1',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'Tool Box & Hex Wrenches',
+					'standalone' => '1',
+					'combo'      => '1',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'Dual-Sided Textured PEI Build Plate',
+					'standalone' => '1',
+					'combo'      => '1',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'Spool Holder & PTFE Tubing',
+					'standalone' => '1',
+					'combo'      => '1',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'Sample PLA Spool & Nozzle Wiper',
+					'standalone' => '1',
+					'combo'      => '1',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'AMS lite (4-Color Automatic Material Feeder)',
+					'standalone' => '0',
+					'combo'      => '1',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'Blade Cutting Module & 45° Drag Knives',
+					'standalone' => '0',
+					'combo'      => '0',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'Pen Plotter Clamp & Dual Drawing Pens',
+					'standalone' => '0',
+					'combo'      => '0',
+					'full_combo' => '1',
+				),
+				array(
+					'name'       => 'Self-Healing Cutting Mat & Vinyl Sample Pack',
+					'standalone' => '0',
+					'combo'      => '0',
+					'full_combo' => '1',
+				),
+			),
+		),
+		'specs'            => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'Verified Engineering Metrics',
+			'title'       => 'Technical Specifications',
+			'description' => 'Comprehensive technical data for the Bambu Lab A2L multi-tool platform.',
+			'pdf_url'     => '#',
+			'items'       => array(
+				array(
+					'category' => 'Body & Physical Dimensions',
+					'label'    => 'Build Volume (W×D×H)',
+					'value'    => '330 × 320 × 325 mm³',
+				),
+				array(
+					'category' => 'Body & Physical Dimensions',
+					'label'    => 'Chassis Material',
+					'value'    => 'Die-Cast Aluminum & High-Tensile Steel',
+				),
+				array(
+					'category' => 'Body & Physical Dimensions',
+					'label'    => 'Outer Frame',
+					'value'    => 'Reinforced Engineered Polymer',
+				),
+				array(
+					'category' => 'Body & Physical Dimensions',
+					'label'    => 'Physical Machine Dimensions',
+					'value'    => '544 × 529 × 505 mm',
+				),
+				array(
+					'category' => 'Body & Physical Dimensions',
+					'label'    => 'Net Weight',
+					'value'    => '12.8 kg (A2L) / 14.9 kg (A2L Combo)',
+				),
+				array(
+					'category' => 'Toolhead & Extrusion',
+					'label'    => 'Extruder Drive Gear',
+					'value'    => 'Hardened Steel Dual-Drive Gears',
+				),
+				array(
+					'category' => 'Toolhead & Extrusion',
+					'label'    => 'Hotend & Nozzle',
+					'value'    => 'Stainless Steel (0.4 mm included, 0.2/0.6/0.8 mm supported)',
+				),
+				array(
+					'category' => 'Toolhead & Extrusion',
+					'label'    => 'Max Nozzle Temperature',
+					'value'    => '300 °C',
+				),
+				array(
+					'category' => 'Toolhead & Extrusion',
+					'label'    => 'Filament Diameter',
+					'value'    => '1.75 mm',
+				),
+				array(
+					'category' => 'Toolhead & Extrusion',
+					'label'    => 'Extruder Motor',
+					'value'    => 'Closed-Loop PMSM Servo Extruder Motor',
+				),
+				array(
+					'category' => 'Crafting & 2D Processing',
+					'label'    => 'Cutting Mechanism',
+					'value'    => 'Quick-Swap Modular Drag Knife Assembly',
+				),
+				array(
+					'category' => 'Crafting & 2D Processing',
+					'label'    => 'Max Cutting Downforce',
+					'value'    => 'Up to 500 g',
+				),
+				array(
+					'category' => 'Crafting & 2D Processing',
+					'label'    => 'Compatible 2D Media',
+					'value'    => 'Adhesive vinyl, heat transfer vinyl, cardstock, leather (<1.0mm)',
+				),
+				array(
+					'category' => 'Crafting & 2D Processing',
+					'label'    => 'Pen Plotter Support',
+					'value'    => 'Universal pen adapter clamp (6 mm to 12 mm barrel)',
+				),
+				array(
+					'category' => 'Crafting & 2D Processing',
+					'label'    => 'Vision Registration',
+					'value'    => 'Optical alignment via Bambu Handy smartphone camera',
+				),
+				array(
+					'category' => 'Heatbed & Motion',
+					'label'    => 'Build Plate System',
+					'value'    => 'Spring Steel Plate with Double-Sided Textured PEI',
+				),
+				array(
+					'category' => 'Heatbed & Motion',
+					'label'    => 'Max Heatbed Temperature',
+					'value'    => '100 °C',
+				),
+				array(
+					'category' => 'Heatbed & Motion',
+					'label'    => 'Max Toolhead Speed',
+					'value'    => '500 mm/s',
+				),
+				array(
+					'category' => 'Heatbed & Motion',
+					'label'    => 'Max Acceleration',
+					'value'    => '10,000 mm/s²',
+				),
+				array(
+					'category' => 'Electronics & Software',
+					'label'    => 'Control Display',
+					'value'    => '3.5-inch Color IPS Touchscreen',
+				),
+				array(
+					'category' => 'Electronics & Software',
+					'label'    => 'Wireless & Connectivity',
+					'value'    => 'Wi-Fi (2.4 GHz), Bluetooth, MicroSD, LAN Mode',
+				),
+				array(
+					'category' => 'Electronics & Software',
+					'label'    => 'Acoustic Noise Level',
+					'value'    => '<49 dB in Silent Mode',
+				),
+				array(
+					'category' => 'Electronics & Software',
+					'label'    => 'Clean Air Certification',
+					'value'    => 'UL 2904 Indoor Air Quality Certified',
+				),
+			),
+		),
+		'faq'              => array(
+			'enabled'     => '1',
+			'eyebrow'     => 'Questions & Answers',
+			'title'       => 'Frequently Asked Questions',
+			'description' => 'Find clear answers regarding the Bambu Lab A2L, multi-tool crafting add-ons, and AMS setup.',
+			'items'       => array(
+				array(
+					'question' => 'What is the required installation space for the A2L?',
+					'answer'   => 'The A2L requires a clear desktop footprint of at least 650 mm (W) × 700 mm (D) × 750 mm (H) to allow full bed traversal and adequate clearance for the top-mounted PTFE tubes.',
+				),
+				array(
+					'question' => 'What are the primary differences between the A2L and the A1 series?',
+					'answer'   => 'The A2L expands the build volume to 330 × 320 × 325 mm³ (over 105% larger volume than A1), introduces the modular crafting ecosystem for blade cutting and pen plotting, and includes tuned granular mass dampers for CoreXY-level stability.',
+				),
+				array(
+					'question' => 'How does the blade-cutting module attach to the A2L?',
+					'answer'   => 'The cutting module replaces the magnetic toolhead front cover in seconds. A single locking lever secures the drag knife assembly with automatic Z-datum referencing.',
+				),
+				array(
+					'question' => 'How many AMS units can be connected to the A2L simultaneously?',
+					'answer'   => 'The A2L supports up to 4 AMS units connected via the AMS Hub, enabling up to 16 colors in a single automated print job, plus 3 external manual feeds.',
+				),
+				array(
+					'question' => 'Does using the AMS drying function require an external power supply?',
+					'answer'   => 'The 2nd-Gen AMS includes an independent high-efficiency AC heating module that plugs into standard wall power, while communication is maintained via the A2L data bus.',
+				),
+				array(
+					'question' => 'How quiet is the A2L during high-speed printing?',
+					'answer'   => 'With active motor noise cancellation and precision linear rails, the A2L operates at under 49 dB in Silent Mode — quiet enough for bedrooms, living rooms, and office desks.',
+				),
+				array(
+					'question' => 'What materials can the blade cutting module cut?',
+					'answer'   => 'The drag knife cuts vinyl decals, heat-transfer vinyl (HTV), paper, cardstock, sticker sheets, stencil film, and thin craft leather (<1.0 mm thick) with up to 500g calibrated downforce.',
+				),
+				array(
+					'question' => 'How does Smartphone Vision Alignment work for 2D crafting?',
+					'answer'   => 'Using the Bambu Handy app on your phone, you photograph your workpiece on the bed. The software recognizes registration borders and aligns your cut or plot job with sub-millimeter precision.',
+				),
+				array(
+					'question' => 'Does the A2L require manual bed leveling or Z-offset calibration?',
+					'answer'   => 'No. The A2L features fully automatic bed leveling with eddy current distance sensing, automated nozzle offset calibration, and dynamic vibration frequency compensation before every print.',
+				),
+				array(
+					'question' => 'Is local warranty and technical support included in the Baltics?',
+					'answer'   => 'Yes. 3DKoda provides an official 2-year warranty for Baltic customers with local diagnostic assistance and genuine spare parts dispatched directly from our Tallinn warehouse.',
+				),
+			),
+			'cta'         => array(
+				'enabled'   => '1',
+				'badge'     => 'READY TO CREATE?',
+				'title'     => 'Transform your workflow from 3D printing to full-spectrum crafting.',
+				'subtitle'  => 'Dispatched from our Tallinn warehouse with fast 1–2 day Baltic delivery and official local warranty.',
+				'btn_text'  => 'Choose Your A2L Package',
+				'btn_url'   => '#laser-crafting-hero',
+			),
+		),
+	);
+}
+
+/**
+ * Get all Laser & Crafting builder settings for a product, merged with defaults.
+ *
+ * @param int $product_id Product ID.
+ * @return array
+ */
+function woodmart_child_get_laser_crafting_builder_settings( $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$defaults = woodmart_child_get_default_laser_crafting_builder_data();
+	$saved    = get_post_meta( $product_id, '_woodmart_child_laser_crafting_builder', true );
+
+	if ( ! is_array( $saved ) || empty( $saved ) ) {
+		return $defaults;
+	}
+
+	return woodmart_child_merge_builder_settings( $defaults, $saved );
+}
+
+/**
+ * Check if a specific Laser & Crafting builder section is enabled.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return bool
+ */
+function woodmart_child_is_laser_crafting_section_enabled( $section_key, $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+
+	$aliases = array(
+		'modular'   => 'modular_addons',
+		'stability' => 'motion_stability',
+		'ams'       => 'ams_multicolor',
+		'box'       => 'box_contents',
+	);
+	if ( isset( $aliases[ $section_key ] ) ) {
+		$section_key = $aliases[ $section_key ];
+	}
+
+	$settings = woodmart_child_get_laser_crafting_builder_settings( $product_id );
+
+	if ( ! isset( $settings[ $section_key ] ) ) {
+		return false;
+	}
+
+	$section = $settings[ $section_key ];
+
+	if ( ! isset( $section['enabled'] ) || ! in_array( (string) $section['enabled'], array( '1', 'yes', 'true' ), true ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Get section data for a given Laser & Crafting product.
+ *
+ * @param string $section_key Section identifier.
+ * @param int    $product_id  Product ID.
+ * @return array
+ */
+function woodmart_child_get_laser_crafting_section_data( $section_key, $product_id = 0 ) {
+	$aliases = array(
+		'modular'   => 'modular_addons',
+		'stability' => 'motion_stability',
+		'ams'       => 'ams_multicolor',
+		'box'       => 'box_contents',
+	);
+	if ( isset( $aliases[ $section_key ] ) ) {
+		$section_key = $aliases[ $section_key ];
+	}
+
+	$settings = woodmart_child_get_laser_crafting_builder_settings( $product_id );
 	return isset( $settings[ $section_key ] ) ? $settings[ $section_key ] : array();
 }
 

@@ -158,7 +158,7 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 		<!-- 2. Product Title & Subtitle (From Default WooCommerce) -->
 		<h1 class="product-title"><?php echo esc_html( $title ); ?></h1>
 		<?php if ( ! empty( $subtitle ) ) : ?>
-			<p class="product-subtitle"><?php echo esc_html( $subtitle ); ?></p>
+			<div class="product-subtitle"><?php echo apply_filters( 'woocommerce_short_description', $subtitle ); ?></div>
 		<?php endif; ?>
 
 		<!-- 3. Star Rating & Tagline -->

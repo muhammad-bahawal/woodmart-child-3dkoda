@@ -25,6 +25,7 @@
 		initAjaxAddToCart();
 		initFilamentInteractions();
 		initAccessoriesInteractions();
+		initLaserCraftingInteractions();
 	});
 
 	/* ==========================================================================
@@ -596,6 +597,19 @@
 					attrContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
 					attrContainer.classList.add('is-unselected-alert');
 					setTimeout(() => attrContainer.classList.remove('is-unselected-alert'), 1200);
+				}
+				return;
+			}
+
+			// Check if variation is required but not selected (laser & crafting choice)
+			const lcRadios = form.querySelectorAll('input[name="lc_variation_choice"]');
+			if (lcRadios.length > 0 && !variationId) {
+				showNotice('Please choose your configuration before adding to basket.', true);
+				const configBox = form.querySelector('.lc-variations-fieldset');
+				if (configBox) {
+					configBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					configBox.classList.add('is-unselected-alert');
+					setTimeout(() => configBox.classList.remove('is-unselected-alert'), 1200);
 				}
 				return;
 			}
@@ -1216,16 +1230,39 @@
 					}
 				}
 
-				const isMobile = window.innerWidth <= 1024;
-				let headerHeight = isMobile ? 60 : 64;
+				// Target the specific sticky row in Woodmart (excluding multi-row wrappers like .whb-header)
+				const stickyRow = document.querySelector('.whb-clone.whb-sticked') ||
+				                  document.querySelector('.whb-clone') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-sticky-row') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-main-header') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-general-header') ||
+				                  document.querySelector('.whb-sticky-row') ||
+				                  document.querySelector('.whb-main-header') ||
+				                  document.querySelector('.whb-general-header');
 
-				// Check visible Woodmart sticky/pinned header height if present
-				const stickyHeader = document.querySelector('.whb-sticked') || document.querySelector('.whb-clone');
-				if (stickyHeader && stickyHeader.offsetHeight > 0) {
-					headerHeight = stickyHeader.offsetHeight;
+				if (stickyRow) {
+					const rect = stickyRow.getBoundingClientRect();
+					const style = window.getComputedStyle(stickyRow);
+					const isFixedOrSticky = style.position === 'fixed' || style.position === 'sticky' ||
+					                        (stickyRow.closest('.whb-sticked') && window.getComputedStyle(stickyRow.closest('.whb-sticked')).position === 'fixed');
+
+					if (isFixedOrSticky && rect.height > 0 && rect.top >= 0 && rect.top <= adminOffset + 15) {
+						return Math.round(rect.bottom);
+					}
+
+					if (rect.height > 0) {
+						return Math.round(adminOffset + rect.height);
+					}
 				}
 
-				return adminOffset + headerHeight;
+				const genericSticky = document.querySelector('.whb-sticked:not(.whb-header)');
+				if (genericSticky && genericSticky.offsetHeight > 0) {
+					return Math.round(adminOffset + genericSticky.offsetHeight);
+				}
+
+				const isMobile = window.innerWidth <= 1024;
+				const defaultHeight = isMobile ? 60 : 64;
+				return Math.round(adminOffset + defaultHeight);
 			}
 
 			function updateStickyTop() {
@@ -1235,6 +1272,9 @@
 			}
 			updateStickyTop();
 			window.addEventListener('resize', updateStickyTop);
+			window.addEventListener('scroll', updateStickyTop, { passive: true });
+			window.addEventListener('wdHeaderBuilderStickyChanged', updateStickyTop);
+			document.addEventListener('wdHeaderBuilderStickyChanged', updateStickyTop);
 
 			function centerActiveTab(activeLink) {
 				if (!activeLink || !subnavLinksUl) return;
@@ -1445,6 +1485,13 @@
 		const stickyBadge = document.getElementById('sticky-accessories-var-badge');
 		const stickyCta = root.querySelector('.accessories-sticky-cta');
 
+		const totalAttrGroups = root.querySelectorAll('.accessories-attr-group').length;
+		const defaultPriceHtml = (currentPriceEls[0] && currentPriceEls[0].innerHTML) ? currentPriceEls[0].innerHTML : '';
+		const stickyPriceEls = document.querySelectorAll('.accessories-sticky-price-val');
+		const defaultMainImgSrc = (mainImg && mainImg.src) ? mainImg.src : '';
+		const defaultStockText = stockTextEl ? stockTextEl.textContent : '';
+		const defaultStockNote = stockNoteEl ? stockNoteEl.textContent : '';
+
 		function getSelectedAttributes() {
 			const selected = {};
 			const groups = root.querySelectorAll('.accessories-attr-group');
@@ -1472,6 +1519,10 @@
 
 		function findMatchingVariation(selectedAttrs) {
 			if (!matrix.length) return null;
+			const selectedKeys = Object.keys(selectedAttrs);
+			if (totalAttrGroups > 0 && selectedKeys.length < totalAttrGroups) {
+				return null;
+			}
 
 			return matrix.find(v => {
 				const vAttrs = v.attributes || {};
@@ -1481,13 +1532,14 @@
 					}
 				}
 				return true;
-			}) || matrix[0];
+			}) || null;
 		}
 
 		function syncVariationState() {
 			const selectedAttrs = getSelectedAttributes();
-			const matched = findMatchingVariation(selectedAttrs);
 			const names = getSelectedAttributeNames();
+			const isComplete = totalAttrGroups > 0 ? (Object.keys(selectedAttrs).length >= totalAttrGroups) : true;
+			const matched = isComplete ? findMatchingVariation(selectedAttrs) : null;
 
 			if (matched) {
 				if (variationIdInput) {
@@ -1496,6 +1548,11 @@
 
 				// Price update
 				currentPriceEls.forEach(el => {
+					if (matched.price_html) {
+						el.innerHTML = matched.price_html;
+					}
+				});
+				stickyPriceEls.forEach(el => {
 					if (matched.price_html) {
 						el.innerHTML = matched.price_html;
 					}
@@ -1546,10 +1603,53 @@
 
 				// Sticky Bar update
 				if (stickyBadge) {
-					stickyBadge.textContent = names.join(' · ') || 'Standard';
+					stickyBadge.textContent = names.join(' · ');
+					stickyBadge.style.display = 'inline-block';
 				}
 				if (stickyThumb && matched.image) {
 					stickyThumb.src = matched.image;
+				}
+			} else {
+				// No variation or incomplete selection
+				if (variationIdInput) {
+					variationIdInput.value = '';
+				}
+
+				// Restore default price
+				if (defaultPriceHtml) {
+					currentPriceEls.forEach(el => {
+						el.innerHTML = defaultPriceHtml;
+					});
+					stickyPriceEls.forEach(el => {
+						el.innerHTML = defaultPriceHtml;
+					});
+				}
+
+				// Summary indicator
+				if (summarySpan) {
+					summarySpan.textContent = names.length > 0 ? names.join(' · ') : '—';
+				}
+
+				// Stock update
+				if (stockTextEl && defaultStockText) {
+					stockTextEl.textContent = defaultStockText;
+				}
+				if (stockNoteEl && defaultStockNote) {
+					stockNoteEl.textContent = defaultStockNote;
+				}
+
+				// Main image
+				if (mainImg && defaultMainImgSrc && !mainImg.src.includes(defaultMainImgSrc.split('/').pop())) {
+					mainImg.src = defaultMainImgSrc;
+				}
+
+				// Sticky bar reset
+				if (stickyBadge) {
+					stickyBadge.textContent = '';
+					stickyBadge.style.display = 'none';
+				}
+				if (stickyThumb && defaultMainImgSrc) {
+					stickyThumb.src = defaultMainImgSrc;
 				}
 			}
 		}
@@ -1609,6 +1709,547 @@
 					}
 				});
 			}
+		}
+	}
+
+	/* ==========================================================================
+	   10. LASER & CRAFTING LANDING CONTROLLER
+	   ========================================================================== */
+	function initLaserCraftingInteractions() {
+		const root = document.querySelector('.laser-crafting-landing-root');
+		if (!root) return;
+
+		// 1. Dynamic Variations Sync (Variable WooCommerce Products)
+		const lcVarRadios = root.querySelectorAll('input[name="lc_variation_choice"]');
+		const lcHiddenVarInput = root.querySelector('#selected-variation-id');
+		const lcSkuDisplay = root.querySelector('#lc-selected-sku');
+		const lcPriceDisplay = root.querySelector('.product-price');
+		const lcStickyPrice = root.querySelector('#lc-sticky-price');
+		const lcStickyConfig = root.querySelector('#lc-sticky-config');
+		const lcMainImg = root.querySelector('#product-main-image');
+		const lcStickyThumb = root.querySelector('#lc-sticky-thumb-img');
+
+		lcVarRadios.forEach(radio => {
+			radio.addEventListener('change', function () {
+				const varId = this.value;
+				const title = this.dataset.title || '';
+				const priceHtml = this.dataset.priceHtml || '';
+				const sku = this.dataset.sku || '';
+				const imageUrl = this.dataset.image || '';
+
+				if (lcHiddenVarInput) lcHiddenVarInput.value = varId;
+				if (lcSkuDisplay && sku) lcSkuDisplay.textContent = sku;
+
+				if (lcPriceDisplay && priceHtml) {
+					lcPriceDisplay.innerHTML = sanitizeCurrencyHtml(priceHtml);
+				}
+				if (lcStickyPrice && priceHtml) {
+					lcStickyPrice.innerHTML = sanitizeCurrencyHtml(priceHtml);
+				}
+				if (lcStickyConfig && title) {
+					lcStickyConfig.textContent = title;
+				}
+
+				// Highlight selected option label
+				lcVarRadios.forEach(r => {
+					const opt = r.closest('.option');
+					if (opt) opt.classList.toggle('is-selected', r === radio);
+				});
+
+				// Swap main gallery image if variation image exists
+				if (imageUrl && lcMainImg) {
+					lcMainImg.style.transition = 'opacity 0.2s ease';
+					lcMainImg.style.opacity = '0.3';
+					setTimeout(() => {
+						lcMainImg.src = imageUrl;
+						lcMainImg.style.opacity = '1';
+						if (lcStickyThumb) lcStickyThumb.src = imageUrl;
+					}, 150);
+				}
+			});
+		});
+
+		// 2. Essential Additions (Steppers & Add Buttons)
+		const additionCards = root.querySelectorAll('.lc-additions-section .addition-card');
+		additionCards.forEach(card => {
+			const qtyInput = card.querySelector('.addition-card__qty input');
+			const qtyBtns = card.querySelectorAll('.addition-card__qty button[data-step]');
+			const addBtn = card.querySelector('.addition-card__btn-add');
+			const title = card.querySelector('.addition-card__title') ? card.querySelector('.addition-card__title').textContent.trim() : 'Item';
+
+			qtyBtns.forEach(btn => {
+				btn.addEventListener('click', function () {
+					const step = parseInt(this.getAttribute('data-step'), 10) || 0;
+					const current = Math.max(1, parseInt(qtyInput ? qtyInput.value : 1, 10) || 1);
+					if (qtyInput) qtyInput.value = Math.max(1, current + step);
+				});
+			});
+
+			if (addBtn) {
+				addBtn.addEventListener('click', function (e) {
+					e.preventDefault();
+					const origText = this.innerHTML;
+					this.innerHTML = '<span>Added ✓</span>';
+					this.style.background = '#047857';
+					showNotice(`✓ Added ${title} to sample basket!`, false);
+					setTimeout(() => {
+						this.innerHTML = origText;
+						this.style.background = '';
+					}, 2000);
+				});
+			}
+		});
+
+		// 3. Sticky In-Page Sub-Navigation & ScrollSpy (Image 2)
+		const subnavBar = root.querySelector('#lc-subnav');
+		if (subnavBar) {
+			const subnavLinks = subnavBar.querySelectorAll('.lc-subnav-link');
+			const sections = [
+				{ id: 'lc-overview', el: document.getElementById('lc-overview') },
+				{ id: 'lc-dive-in', el: document.getElementById('lc-dive-in') },
+				{ id: 'lc-specifications', el: document.getElementById('lc-specifications') },
+				{ id: 'lc-faq', el: document.getElementById('lc-faq') }
+			];
+
+			function getHeaderOffset() {
+				const adminBar = document.getElementById('wpadminbar');
+				let adminOffset = 0;
+				if (adminBar) {
+					const abStyle = window.getComputedStyle(adminBar);
+					if (abStyle.display !== 'none' && abStyle.visibility !== 'hidden' && abStyle.position === 'fixed') {
+						adminOffset = adminBar.offsetHeight || 0;
+					}
+				}
+
+				// Target the specific sticky row in Woodmart (excluding multi-row wrappers like .whb-header which include top-bar)
+				const stickyRow = document.querySelector('.whb-clone.whb-sticked') ||
+				                  document.querySelector('.whb-clone') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-sticky-row') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-main-header') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-general-header') ||
+				                  document.querySelector('.whb-sticky-row') ||
+				                  document.querySelector('.whb-main-header') ||
+				                  document.querySelector('.whb-general-header');
+
+				if (stickyRow) {
+					const rect = stickyRow.getBoundingClientRect();
+					const style = window.getComputedStyle(stickyRow);
+					const isFixedOrSticky = style.position === 'fixed' || style.position === 'sticky' ||
+					                        (stickyRow.closest('.whb-sticked') && window.getComputedStyle(stickyRow.closest('.whb-sticked')).position === 'fixed');
+
+					// When the header row is actively sticky at the top, its viewport bottom is the exact docking coordinate
+					if (isFixedOrSticky && rect.height > 0 && rect.top >= 0 && rect.top <= adminOffset + 15) {
+						return Math.round(rect.bottom);
+					}
+
+					if (rect.height > 0) {
+						return Math.round(adminOffset + rect.height);
+					}
+				}
+
+				const genericSticky = document.querySelector('.whb-sticked:not(.whb-header)');
+				if (genericSticky && genericSticky.offsetHeight > 0) {
+					return Math.round(adminOffset + genericSticky.offsetHeight);
+				}
+
+				const isMobile = window.innerWidth <= 1024;
+				const defaultHeight = isMobile ? 60 : 64;
+				return Math.round(adminOffset + defaultHeight);
+			}
+
+			function updateStickyTop() {
+				const offset = getHeaderOffset();
+				document.documentElement.style.setProperty('--lc-subnav-top', offset + 'px');
+				subnavBar.style.setProperty('top', offset + 'px', 'important');
+			}
+			updateStickyTop();
+			window.addEventListener('resize', updateStickyTop);
+			window.addEventListener('scroll', updateStickyTop, { passive: true });
+			window.addEventListener('wdHeaderBuilderStickyChanged', updateStickyTop);
+			document.addEventListener('wdHeaderBuilderStickyChanged', updateStickyTop);
+
+			function getNavOffset() {
+				const headerH = getHeaderOffset();
+				const subnavH = subnavBar ? subnavBar.offsetHeight : 50;
+				return headerH + subnavH + 16;
+			}
+
+			// Smooth scroll on click
+			subnavLinks.forEach(link => {
+				link.addEventListener('click', function (e) {
+					const href = this.getAttribute('href');
+					if (!href || !href.startsWith('#')) return;
+					const target = document.querySelector(href);
+					if (target) {
+						e.preventDefault();
+						const targetTop = target.getBoundingClientRect().top + window.pageYOffset - getNavOffset();
+						window.scrollTo({
+							top: Math.max(0, targetTop),
+							behavior: 'smooth'
+						});
+						subnavLinks.forEach(l => l.classList.remove('is-active'));
+						this.classList.add('is-active');
+					}
+				});
+			});
+
+			// ScrollSpy
+			function handleSubnavScrollSpy() {
+				const scrollPos = window.pageYOffset + getNavOffset() + 60;
+				let currentSectionId = '';
+
+				sections.forEach(sec => {
+					if (sec.el) {
+						const top = sec.el.offsetTop;
+						const height = sec.el.offsetHeight;
+						if (scrollPos >= top && scrollPos < top + height) {
+							currentSectionId = sec.id;
+						}
+					}
+				});
+
+				if (currentSectionId) {
+					subnavLinks.forEach(link => {
+						const href = link.getAttribute('href');
+						link.classList.toggle('is-active', href === '#' + currentSectionId);
+					});
+				}
+			}
+
+			window.addEventListener('scroll', handleSubnavScrollSpy, { passive: true });
+			handleSubnavScrollSpy();
+		}
+
+		// 3b. Video Popup Modal for Overview Banner ("Watch Video" button)
+		const videoBtn = root.querySelector('.lc-btn-watch-video');
+		const videoModal = document.getElementById('lc-video-modal');
+		if (videoBtn && videoModal) {
+			const modalIframe = videoModal.querySelector('#lc-modal-iframe');
+			const modalClose = videoModal.querySelector('.lc-video-modal-close');
+			const modalBackdrop = videoModal.querySelector('.lc-video-modal-backdrop');
+
+			function formatVideoEmbed(url) {
+				if (!url) return '';
+				// YouTube match
+				const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+				if (ytMatch && ytMatch[1]) {
+					return 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1&rel=0&modestbranding=1';
+				}
+				// Vimeo match
+				const vimeoMatch = url.match(/(?:vimeo\.com\/)(\d+)/i);
+				if (vimeoMatch && vimeoMatch[1]) {
+					return 'https://player.vimeo.com/video/' + vimeoMatch[1] + '?autoplay=1';
+				}
+				return url;
+			}
+
+			function openVideoModal(e) {
+				if (e) e.preventDefault();
+				const url = videoBtn.getAttribute('data-video-url') || videoBtn.getAttribute('href');
+				const embedUrl = formatVideoEmbed(url);
+				if (modalIframe && embedUrl) {
+					modalIframe.setAttribute('src', embedUrl);
+				}
+				videoModal.classList.add('is-open');
+				videoModal.setAttribute('aria-hidden', 'false');
+				document.body.style.overflow = 'hidden';
+			}
+
+			function closeVideoModal() {
+				videoModal.classList.remove('is-open');
+				videoModal.setAttribute('aria-hidden', 'true');
+				if (modalIframe) {
+					modalIframe.setAttribute('src', '');
+				}
+				document.body.style.overflow = '';
+			}
+
+			videoBtn.addEventListener('click', openVideoModal);
+			if (modalClose) modalClose.addEventListener('click', closeVideoModal);
+			if (modalBackdrop) modalBackdrop.addEventListener('click', closeVideoModal);
+
+			window.addEventListener('keydown', function (e) {
+				if (e.key === 'Escape' && videoModal.classList.contains('is-open')) {
+					closeVideoModal();
+				}
+			});
+		}
+
+		// 4. Community Creations Slider (Image 4)
+		const sliderTrack = root.querySelector('#lc-slider-track');
+		const sliderDots = root.querySelectorAll('#lc-slider-dots .lc-dot');
+		const slideItems = root.querySelectorAll('.lc-slide-item');
+
+		if (sliderTrack && sliderDots.length && slideItems.length) {
+			function updateActiveDot(idx) {
+				sliderDots.forEach((dot, i) => {
+					dot.classList.toggle('is-active', i === idx);
+				});
+			}
+
+			sliderDots.forEach(dot => {
+				dot.addEventListener('click', function () {
+					const idx = parseInt(this.getAttribute('data-slide'), 10) || 0;
+					const targetSlide = slideItems[idx];
+					if (targetSlide) {
+						const scrollLeft = targetSlide.offsetLeft - sliderTrack.offsetLeft;
+						sliderTrack.scrollTo({
+							left: scrollLeft,
+							behavior: 'smooth'
+						});
+						updateActiveDot(idx);
+					}
+				});
+			});
+
+			// Update dot on scroll
+			let scrollTimer = null;
+			sliderTrack.addEventListener('scroll', function () {
+				if (scrollTimer) clearTimeout(scrollTimer);
+				scrollTimer = setTimeout(() => {
+					const trackScroll = sliderTrack.scrollLeft;
+					let closestIdx = 0;
+					let minDiff = Infinity;
+					slideItems.forEach((item, i) => {
+						const diff = Math.abs((item.offsetLeft - sliderTrack.offsetLeft) - trackScroll);
+						if (diff < minDiff) {
+							minDiff = diff;
+							closestIdx = i;
+						}
+					});
+					updateActiveDot(closestIdx);
+				}, 60);
+			}, { passive: true });
+
+			// Drag to scroll
+			let isDown = false;
+			let startX = 0;
+			let scrollLeft = 0;
+
+			sliderTrack.addEventListener('mousedown', (e) => {
+				isDown = true;
+				sliderTrack.classList.add('is-dragging');
+				startX = e.pageX - sliderTrack.offsetLeft;
+				scrollLeft = sliderTrack.scrollLeft;
+			});
+			window.addEventListener('mouseup', () => {
+				isDown = false;
+				if (sliderTrack) sliderTrack.classList.remove('is-dragging');
+			});
+			sliderTrack.addEventListener('mousemove', (e) => {
+				if (!isDown) return;
+				e.preventDefault();
+				const x = e.pageX - sliderTrack.offsetLeft;
+				const walk = (x - startX) * 1.5;
+				sliderTrack.scrollLeft = scrollLeft - walk;
+			});
+		}
+
+		// 5. Modular Add-ons Image Accordion (Image 2 Top)
+		const accordionWrap = root.querySelector('#lc-modular-accordion');
+		if (accordionWrap) {
+			const expandCards = accordionWrap.querySelectorAll('.lc-expand-card');
+			expandCards.forEach(card => {
+				card.addEventListener('mouseenter', function () {
+					expandCards.forEach(c => c.classList.remove('is-expanded'));
+					this.classList.add('is-expanded');
+				});
+				card.addEventListener('click', function () {
+					expandCards.forEach(c => c.classList.remove('is-expanded'));
+					this.classList.add('is-expanded');
+				});
+			});
+
+			accordionWrap.addEventListener('mouseleave', function () {
+				expandCards.forEach(c => c.classList.remove('is-expanded'));
+				const defaultCard = accordionWrap.querySelector('[data-card-id="decal-cut"]') || expandCards[1] || expandCards[0];
+				if (defaultCard) defaultCard.classList.add('is-expanded');
+			});
+		}
+
+		// 6. Stability & Motion Tabs (Switches Upper Visuals AND Lower Descriptions)
+		const stabTabBtns = root.querySelectorAll('.lc-stab-tab-btn');
+		const stabPanels = root.querySelectorAll('.lc-stab-panel');
+		const viewVibration = root.querySelector('#lc-stab-view-vibration');
+		const viewDamper = root.querySelector('#lc-stab-view-damper');
+
+		stabTabBtns.forEach(btn => {
+			btn.addEventListener('click', function () {
+				const tabType = this.getAttribute('data-tab') || (this.getAttribute('data-stab-target') && this.getAttribute('data-stab-target').includes('damper') ? 'damper' : 'vibration');
+
+				stabTabBtns.forEach(b => {
+					b.classList.remove('is-active');
+					b.setAttribute('aria-selected', 'false');
+				});
+				this.classList.add('is-active');
+				this.setAttribute('aria-selected', 'true');
+
+				// Switch upper section visual
+				if (tabType === 'damper') {
+					if (viewVibration) {
+						viewVibration.classList.remove('is-active');
+						viewVibration.style.display = 'none';
+					}
+					if (viewDamper) {
+						viewDamper.classList.add('is-active');
+						viewDamper.style.display = 'block';
+					}
+				} else {
+					if (viewDamper) {
+						viewDamper.classList.remove('is-active');
+						viewDamper.style.display = 'none';
+					}
+					if (viewVibration) {
+						viewVibration.classList.add('is-active');
+						viewVibration.style.display = 'block';
+					}
+				}
+
+				// Switch lower description panel
+				stabPanels.forEach(p => {
+					p.classList.remove('is-active');
+					p.style.display = 'none';
+				});
+
+				const targetPanel = root.querySelector(`#lc-stab-panel-${tabType}`);
+				if (targetPanel) {
+					targetPanel.classList.add('is-active');
+					targetPanel.style.display = 'block';
+				}
+			});
+		});
+
+		// 6b. Autopilot Hover-Expanding Image Cards (Item 3)
+		const autoAccordion = root.querySelector('#lc-autopilot-accordion');
+		if (autoAccordion) {
+			const autoCards = autoAccordion.querySelectorAll('.lc-auto-card');
+			autoCards.forEach(card => {
+				card.addEventListener('mouseenter', function () {
+					autoCards.forEach(c => c.classList.remove('is-expanded'));
+					this.classList.add('is-expanded');
+				});
+				card.addEventListener('click', function () {
+					autoCards.forEach(c => c.classList.remove('is-expanded'));
+					this.classList.add('is-expanded');
+				});
+			});
+
+			autoAccordion.addEventListener('mouseleave', function () {
+				autoCards.forEach(c => c.classList.remove('is-expanded'));
+				const defaultCard = autoAccordion.querySelector('[data-card-id="filament-grind"]') || autoCards[1] || autoCards[0];
+				if (defaultCard) defaultCard.classList.add('is-expanded');
+			});
+		}
+
+		// 6c. Unboxing Video Play Button Trigger (Item 5)
+		const videoBox = root.querySelector('#lc-unboxing-video-player');
+		if (videoBox) {
+			const playBtn = videoBox.querySelector('.lc-video-play-btn');
+			const ytBox = videoBox.querySelector('.lc-yt-player-box');
+			if (playBtn && ytBox) {
+				playBtn.addEventListener('click', function (e) {
+					e.preventDefault();
+					const ytId = ytBox.getAttribute('data-yt-id');
+					if (ytId) {
+						ytBox.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border-radius:18px;"></iframe>`;
+					}
+				});
+			}
+		}
+
+		// 7. Technical Specifications Collapsible Toggle
+		const specsToggleBtn = root.querySelector('#lc-specs-toggle-btn');
+		const specsCard = root.querySelector('.lc-specs-card');
+		if (specsToggleBtn && specsCard) {
+			specsToggleBtn.addEventListener('click', function () {
+				const isExpanded = specsCard.classList.toggle('is-expanded');
+				const toggleText = this.querySelector('.lc-toggle-text');
+				if (toggleText) {
+					toggleText.textContent = isExpanded ? 'Collapse specifications' : 'Show all specifications';
+				}
+				const svg = this.querySelector('svg');
+				if (svg) {
+					svg.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+				}
+			});
+		}
+
+		// 8. FAQ Accordion
+		const faqQuestions = root.querySelectorAll('.lc-faq-question');
+		faqQuestions.forEach(btn => {
+			btn.addEventListener('click', function () {
+				const item = this.closest('.lc-faq-item');
+				if (!item) return;
+				const isOpen = item.classList.contains('is-open');
+				const answer = item.querySelector('.lc-faq-answer');
+
+				if (isOpen) {
+					item.classList.remove('is-open');
+					this.setAttribute('aria-expanded', 'false');
+					if (answer) answer.style.display = 'none';
+				} else {
+					item.classList.add('is-open');
+					this.setAttribute('aria-expanded', 'true');
+					if (answer) answer.style.display = 'block';
+				}
+			});
+		});
+
+		// 9. Sticky Bottom Bar Scroll Trigger & Purchase Proxy
+		const stickyBar = root.querySelector('#lc-sticky-bar');
+		const heroSection = document.getElementById('lc-hero') || root.querySelector('.lc-product-hero');
+		const heroQtyInput = root.querySelector('.product-hero .product-quantity input');
+		const stickyQtyInput = root.querySelector('.lc-sticky-qty-input');
+		const stickyQtyBtns = root.querySelectorAll('.lc-sticky-qty-btn');
+		const stickyAddBtn = root.querySelector('#lc-sticky-btn-add');
+		const mainAddBtn = root.querySelector('#lc-main-add-btn') || root.querySelector('.lc-add-btn');
+
+		function syncQty(val) {
+			const clamped = Math.max(1, Math.min(99, parseInt(val, 10) || 1));
+			if (heroQtyInput) heroQtyInput.value = clamped;
+			if (stickyQtyInput) stickyQtyInput.value = clamped;
+		}
+
+		if (heroQtyInput) {
+			heroQtyInput.addEventListener('change', () => syncQty(heroQtyInput.value));
+		}
+
+		stickyQtyBtns.forEach(btn => {
+			btn.addEventListener('click', function () {
+				const dir = parseInt(this.getAttribute('data-dir'), 10) || 1;
+				const current = parseInt(stickyQtyInput ? stickyQtyInput.value : 1, 10) || 1;
+				syncQty(current + dir);
+			});
+		});
+
+		if (stickyBar && heroSection) {
+			function handleStickyScroll() {
+				const rect = heroSection.getBoundingClientRect();
+				if (rect.bottom < 80) {
+					stickyBar.classList.add('is-visible');
+				} else {
+					stickyBar.classList.remove('is-visible');
+				}
+			}
+
+			window.addEventListener('scroll', handleStickyScroll, { passive: true });
+			handleStickyScroll();
+
+			if (stickyAddBtn && mainAddBtn) {
+				stickyAddBtn.addEventListener('click', function (e) {
+					e.preventDefault();
+					mainAddBtn.click();
+				});
+			}
+		}
+
+		// 10. Banner Scroll Button
+		const bannerScrollBtn = root.querySelector('#lc-banner-scroll-btn');
+		if (bannerScrollBtn && heroSection) {
+			bannerScrollBtn.addEventListener('click', function (e) {
+				e.preventDefault();
+				heroSection.scrollIntoView({ behavior: 'smooth' });
+			});
 		}
 	}
 })();

@@ -1,0 +1,5096 @@
+/**
+ * Laser & Crafting Product Page Builder Stylesheet
+ *
+ * Scoped strictly under: .landing-page-root.laser-crafting-canvas and .laser-crafting-landing-root
+ * Design System Tokens:
+ * Primary Accent: #ff5c00 / #f15a24
+ * Dark Bands: #0e1117 / #161b22
+ * Clean Cards / Light Backgrounds: #ffffff / #f8f9fa / #f3f4f6
+ * Typography: 'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif
+ * Currency: Strictly EUR (€)
+ *
+ * @package WoodmartChild
+ */
+
+/* ==========================================================================
+   1. GLOBAL & CONTAINER RESETS
+   ========================================================================== */
+.laser-crafting-landing-root {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	color: #1f2937;
+	background-color: #ffffff;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow: visible !important;
+	line-height: 1.5;
+}
+
+.laser-crafting-landing-root * {
+	box-sizing: border-box;
+}
+
+.laser-crafting-landing-root .container {
+	max-width: 1240px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+/* Breadcrumb Strip */
+.laser-crafting-landing-root .product-breadcrumb-wrap {
+	padding-top: 18px;
+	padding-bottom: 14px;
+}
+
+.laser-crafting-landing-root .product-breadcrumb {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	font-size: 13px;
+	color: #6b7280;
+}
+
+.laser-crafting-landing-root .product-breadcrumb a {
+	color: #6b7280;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.laser-crafting-landing-root .product-breadcrumb a:hover {
+	color: #ff5c00;
+}
+
+.laser-crafting-landing-root .product-breadcrumb .sep {
+	color: #d1d5db;
+}
+
+.laser-crafting-landing-root .product-breadcrumb .current {
+	color: #111827;
+	font-weight: 500;
+}
+
+/* Typography & Headings */
+.laser-crafting-landing-root .lc-section-header {
+	max-width: 760px;
+	margin: 0 auto 48px;
+}
+
+.laser-crafting-landing-root .text-center {
+	text-align: center;
+}
+
+.laser-crafting-landing-root .lc-section-eyebrow {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #ff5c00;
+	margin-bottom: 10px;
+}
+
+.laser-crafting-landing-root .lc-section-title {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 34px;
+	font-weight: 800;
+	line-height: 1.25;
+	color: #0e1117;
+	margin: 0 0 14px;
+	letter-spacing: -0.02em;
+}
+
+.laser-crafting-landing-root .lc-section-subtitle {
+	font-size: 16px;
+	line-height: 1.6;
+	color: #4b5563;
+	margin: 0;
+}
+
+/* Dark Band Global Helpers */
+.laser-crafting-landing-root .dark-band {
+	background-color: #0e1117;
+	color: #f3f4f6;
+	padding: 96px 0;
+}
+
+.laser-crafting-landing-root .text-orange {
+	color: #ff5c00 !important;
+}
+
+.laser-crafting-landing-root .text-white {
+	color: #ffffff !important;
+}
+
+.laser-crafting-landing-root .text-gray {
+	color: #9ca3af !important;
+}
+
+/* ==========================================================================
+   2. HERO SECTION (STRICT 2-COLUMN GRID)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-hero-section {
+	padding-top: 10px;
+	padding-bottom: 72px;
+}
+
+.laser-crafting-landing-root .lc-hero-grid {
+	display: grid;
+	grid-template-columns: 54% 46%;
+	gap: 48px;
+	align-items: flex-start;
+}
+
+/* Left Column: Sticky Gallery */
+.laser-crafting-landing-root .lc-hero-gallery {
+	position: sticky;
+	top: 90px;
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+/* Vertical Thumbnails Strip */
+.laser-crafting-landing-root .lc-gallery-thumbs {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	width: 76px;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .lc-thumb-nav {
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	width: 100%;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: #4b5563;
+	transition: all 0.2s ease;
+	padding: 0;
+}
+
+.laser-crafting-landing-root .lc-thumb-nav:hover {
+	background: #e5e7eb;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-thumb-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	max-height: 480px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #d1d5db transparent;
+	padding-right: 2px;
+}
+
+.laser-crafting-landing-root .lc-thumb-item {
+	width: 72px;
+	height: 72px;
+	border-radius: 10px;
+	border: 2px solid #e5e7eb;
+	background: #f9fafb;
+	padding: 4px;
+	cursor: pointer;
+	overflow: hidden;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-thumb-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	border-radius: 6px;
+}
+
+.laser-crafting-landing-root .lc-thumb-item:hover {
+	border-color: #9ca3af;
+}
+
+.laser-crafting-landing-root .lc-thumb-item.is-active {
+	border-color: #ff5c00;
+	box-shadow: 0 0 0 2px rgba(255, 92, 0, 0.2);
+}
+
+/* Main Featured Image Viewport */
+.laser-crafting-landing-root .lc-gallery-viewport {
+	flex: 1;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 16px;
+	position: relative;
+	padding: 28px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 520px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.laser-crafting-landing-root .lc-gallery-badge {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	background: #0e1117;
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	padding: 5px 10px;
+	border-radius: 6px;
+	text-transform: uppercase;
+	z-index: 2;
+}
+
+.laser-crafting-landing-root .lc-main-image-wrap {
+	width: 100%;
+	height: 440px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-main-image-wrap img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.laser-crafting-landing-root .lc-image-placeholder {
+	width: 100%;
+	height: 100%;
+	background: #f9fafb;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #9ca3af;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 12px;
+}
+
+.laser-crafting-landing-root .lc-btn-change-view {
+	position: absolute;
+	bottom: 16px;
+	right: 16px;
+	background: rgba(255, 255, 255, 0.92);
+	border: 1px solid #d1d5db;
+	border-radius: 8px;
+	padding: 6px 12px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #374151;
+	cursor: pointer;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-btn-change-view:hover {
+	background: #ffffff;
+	border-color: #9ca3af;
+	color: #111827;
+}
+
+/* Right Column: Product Summary & Purchase Box */
+.laser-crafting-landing-root .lc-hero-summary {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+/* Reseller Trust Tag */
+.laser-crafting-landing-root .lc-reseller-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: #ecfdf5;
+	border: 1px solid #a7f3d0;
+	border-radius: 20px;
+	padding: 4px 12px;
+	width: fit-content;
+}
+
+.laser-crafting-landing-root .lc-reseller-label {
+	font-size: 12px;
+	font-weight: 700;
+	color: #065f46;
+	letter-spacing: 0.02em;
+}
+
+/* Product Title & Subtitle */
+.laser-crafting-landing-root .lc-product-title {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 32px;
+	font-weight: 800;
+	line-height: 1.2;
+	color: #0e1117;
+	margin: 0;
+	letter-spacing: -0.02em;
+}
+
+.laser-crafting-landing-root .lc-product-subtitle {
+	font-size: 15px;
+	line-height: 1.6;
+	color: #4b5563;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .lc-product-subtitle p {
+	margin: 0;
+}
+
+/* Rating Line */
+.laser-crafting-landing-root .lc-rating-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+}
+
+.laser-crafting-landing-root .lc-stars {
+	color: #f59e0b;
+	letter-spacing: 2px;
+}
+
+.laser-crafting-landing-root .lc-rating-label {
+	color: #6b7280;
+	font-weight: 500;
+}
+
+/* Stock Pill Row */
+.laser-crafting-landing-root .lc-stock-pill-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: #fff7ed;
+	border: 1px solid #ffedd5;
+	border-radius: 8px;
+	padding: 8px 14px;
+	font-size: 13px;
+}
+
+.laser-crafting-landing-root .lc-stock-status {
+	font-weight: 700;
+	color: #c2410c;
+}
+
+.laser-crafting-landing-root .lc-stock-sep {
+	color: #fdba74;
+}
+
+.laser-crafting-landing-root .lc-stock-note {
+	color: #7c2d12;
+}
+
+/* Dynamic Price Container */
+.laser-crafting-landing-root .lc-price-container {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	padding: 16px 0 10px;
+	border-top: 1px solid #f3f4f6;
+	border-bottom: 1px solid #f3f4f6;
+}
+
+.laser-crafting-landing-root .lc-price-main .lc-live-price,
+.laser-crafting-landing-root .lc-price-main .woocommerce-Price-amount {
+	font-size: 32px;
+	font-weight: 800;
+	color: #111827 !important;
+	letter-spacing: -0.02em;
+}
+
+.laser-crafting-landing-root .lc-price-meta {
+	text-align: right;
+}
+
+.laser-crafting-landing-root .lc-vat-notice {
+	display: block;
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.laser-crafting-landing-root .lc-ex-vat-link {
+	font-size: 12px;
+	color: #ff5c00;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.laser-crafting-landing-root .lc-ex-vat-link:hover {
+	text-decoration: underline;
+}
+
+/* Package Configuration Selector */
+.laser-crafting-landing-root .lc-package-selector {
+	margin-top: 14px;
+}
+
+.laser-crafting-landing-root .lc-package-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.laser-crafting-landing-root .lc-selector-title {
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	color: #374151;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .lc-compare-link {
+	font-size: 12px;
+	color: #ff5c00;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.laser-crafting-landing-root .lc-compare-link:hover {
+	text-decoration: underline;
+}
+
+.laser-crafting-landing-root .lc-package-cards {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.laser-crafting-landing-root .lc-package-card {
+	background: #ffffff;
+	border: 2px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 14px 16px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: block;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-pkg-radio {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.laser-crafting-landing-root .lc-pkg-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 4px;
+}
+
+.laser-crafting-landing-root .lc-pkg-title {
+	font-size: 15px;
+	font-weight: 700;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-pkg-badge {
+	background: #ff5c00;
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 800;
+	padding: 3px 8px;
+	border-radius: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.laser-crafting-landing-root .lc-pkg-desc {
+	font-size: 13px;
+	color: #6b7280;
+	line-height: 1.4;
+	margin-bottom: 8px;
+}
+
+.laser-crafting-landing-root .lc-pkg-bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.laser-crafting-landing-root .lc-pkg-price {
+	font-size: 16px;
+	font-weight: 800;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-pkg-check {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #e5e7eb;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-package-card:hover {
+	border-color: #d1d5db;
+	background: #f9fafb;
+}
+
+.laser-crafting-landing-root .lc-package-card.is-selected {
+	border-color: #ff5c00;
+	background: #fffbf8;
+	box-shadow: 0 0 0 1px #ff5c00;
+}
+
+.laser-crafting-landing-root .lc-package-card.is-selected .lc-pkg-check {
+	background: #ff5c00;
+}
+
+/* Bundle Add-on Kit Cards */
+.laser-crafting-landing-root .lc-addons-section {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 16px;
+	margin-top: 14px;
+}
+
+.laser-crafting-landing-root .lc-addons-title {
+	display: block;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	color: #475569;
+	text-transform: uppercase;
+	margin-bottom: 12px;
+}
+
+.laser-crafting-landing-root .lc-addons-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.laser-crafting-landing-root .lc-addon-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 10px 14px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-addon-item:hover {
+	border-color: #cbd5e1;
+}
+
+.laser-crafting-landing-root .lc-addon-checkbox {
+	margin-top: 3px;
+	accent-color: #ff5c00;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.laser-crafting-landing-root .lc-addon-info {
+	flex: 1;
+}
+
+.laser-crafting-landing-root .lc-addon-name-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 2px;
+}
+
+.laser-crafting-landing-root .lc-addon-name {
+	font-size: 13px;
+	font-weight: 700;
+	color: #1e293b;
+}
+
+.laser-crafting-landing-root .lc-addon-price {
+	font-size: 13px;
+	font-weight: 700;
+	color: #ff5c00;
+}
+
+.laser-crafting-landing-root .lc-addon-desc {
+	font-size: 12px;
+	color: #64748b;
+	margin: 0;
+	line-height: 1.35;
+}
+
+/* Quantity Stepper & CTA Row */
+.laser-crafting-landing-root .lc-cta-row {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+	margin-top: 16px;
+}
+
+.laser-crafting-landing-root .lc-quantity-stepper {
+	display: inline-flex;
+	align-items: center;
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	overflow: hidden;
+	height: 52px;
+	width: 130px;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .lc-qty-btn {
+	background: transparent;
+	border: none;
+	width: 40px;
+	height: 100%;
+	font-size: 18px;
+	font-weight: 600;
+	color: #374151;
+	cursor: pointer;
+	transition: background 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-qty-btn:hover {
+	background: #e5e7eb;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-qty-input {
+	width: 50px;
+	height: 100%;
+	border: none;
+	background: transparent;
+	text-align: center;
+	font-size: 15px;
+	font-weight: 700;
+	color: #111827;
+	-moz-appearance: textfield;
+}
+
+.laser-crafting-landing-root .lc-qty-input::-webkit-outer-spin-button,
+.laser-crafting-landing-root .lc-qty-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .lc-btn-add-to-cart {
+	flex: 1;
+	height: 52px;
+	background: #ff5c00;
+	color: #ffffff;
+	border: none;
+	border-radius: 10px;
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 14px rgba(255, 92, 0, 0.35);
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-btn-add-to-cart:hover {
+	background: #f15a24;
+	box-shadow: 0 6px 18px rgba(255, 92, 0, 0.45);
+	transform: translateY(-1px);
+}
+
+.laser-crafting-landing-root .lc-team-quote-row {
+	font-size: 13px;
+	text-align: center;
+	padding-top: 4px;
+}
+
+.laser-crafting-landing-root .lc-team-link {
+	color: #4b5563;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-team-link:hover {
+	color: #ff5c00;
+}
+
+/* 3 Benefits Strip */
+.laser-crafting-landing-root .lc-benefits-strip {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	background: #f9fafb;
+	border-radius: 10px;
+	padding: 14px 16px;
+	border: 1px solid #f3f4f6;
+	margin-top: 10px;
+}
+
+.laser-crafting-landing-root .lc-benefit-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+	color: #374151;
+}
+
+.laser-crafting-landing-root .lc-benefit-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .lc-benefit-sub {
+	color: #6b7280;
+	font-size: 12px;
+}
+
+.laser-crafting-landing-root .lc-creation-tag-pill {
+	display: inline-block;
+	background: #fff7ed;
+	color: #c2410c;
+	font-size: 10px;
+	font-weight: 700;
+	padding: 2px 8px;
+	border-radius: 4px;
+	margin-bottom: 6px;
+	text-transform: uppercase;
+}
+
+/* ==========================================================================
+   3. HIGHLIGHTS & VIDEO SECTION
+   ========================================================================== */
+.laser-crafting-landing-root .lc-highlights-section {
+	padding: 80px 0;
+	background: #fafafa;
+	border-top: 1px solid #f3f4f6;
+}
+
+.laser-crafting-landing-root .lc-video-banner {
+	max-width: 1080px;
+	margin: 0 auto 54px;
+	border-radius: 20px;
+	overflow: hidden;
+	background: #0e1117;
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+}
+
+.laser-crafting-landing-root .lc-video-wrapper {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-feature-video,
+.laser-crafting-landing-root .lc-video-poster-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.laser-crafting-landing-root .lc-video-overlay {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 40px;
+	background: linear-gradient(to top, rgba(14, 17, 23, 0.95), transparent);
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-overlay-badge {
+	display: inline-block;
+	background: #ff5c00;
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	padding: 4px 10px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.laser-crafting-landing-root .lc-overlay-heading {
+	font-size: 26px;
+	font-weight: 800;
+	color: #ffffff;
+	margin: 0;
+	letter-spacing: -0.01em;
+}
+
+/* 6 Core Highlight Metrics Grid */
+.laser-crafting-landing-root .lc-highlights-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	margin-bottom: 60px;
+}
+
+.laser-crafting-landing-root .lc-highlight-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 16px;
+	padding: 28px 24px;
+	transition: all 0.25s ease;
+	display: flex;
+	flex-direction: column;
+}
+
+.laser-crafting-landing-root .lc-highlight-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+	border-color: #ff5c00;
+}
+
+.laser-crafting-landing-root .lc-highlight-stat {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 34px;
+	font-weight: 800;
+	color: #ff5c00;
+	line-height: 1.1;
+	margin-bottom: 12px;
+}
+
+.laser-crafting-landing-root .lc-highlight-label {
+	font-size: 18px;
+	font-weight: 700;
+	color: #111827;
+	margin: 0 0 8px;
+}
+
+.laser-crafting-landing-root .lc-highlight-desc {
+	font-size: 14px;
+	line-height: 1.55;
+	color: #6b7280;
+	margin: 0;
+}
+
+/* Community Creations Showcase */
+.laser-crafting-landing-root .lc-creations-showcase {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 20px;
+	padding: 36px 32px;
+}
+
+.laser-crafting-landing-root .lc-creations-header {
+	margin-bottom: 24px;
+	text-align: center;
+}
+
+.laser-crafting-landing-root .lc-creations-title {
+	font-size: 22px;
+	font-weight: 800;
+	color: #111827;
+	margin: 0 0 6px;
+}
+
+.laser-crafting-landing-root .lc-creations-tagline {
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.laser-crafting-landing-root .lc-creations-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 20px;
+}
+
+.laser-crafting-landing-root .lc-creation-card {
+	background: #f9fafb;
+	border: 1px solid #f3f4f6;
+	border-radius: 12px;
+	overflow: hidden;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-creation-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.laser-crafting-landing-root .lc-creation-media {
+	width: 100%;
+	height: 160px;
+	background: #e5e7eb;
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .lc-creation-media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.3s ease;
+}
+
+.laser-crafting-landing-root .lc-creation-card:hover .lc-creation-media img {
+	transform: scale(1.05);
+}
+
+.laser-crafting-landing-root .lc-creation-body {
+	padding: 14px;
+}
+
+.laser-crafting-landing-root .lc-creation-name {
+	font-size: 14px;
+	font-weight: 700;
+	color: #111827;
+	margin: 0 0 4px;
+}
+
+.laser-crafting-landing-root .lc-creation-note {
+	font-size: 12px;
+	color: #6b7280;
+	margin: 0;
+	line-height: 1.4;
+}
+
+/* ==========================================================================
+   4. MULTI-TOOL & MODULARITY SHOWCASE
+   ========================================================================== */
+.laser-crafting-landing-root .lc-modular-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-modular-container {
+	margin-top: 36px;
+}
+
+.laser-crafting-landing-root .lc-module-tabs-nav {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	margin-bottom: 36px;
+	flex-wrap: wrap;
+}
+
+.laser-crafting-landing-root .lc-tab-btn {
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 30px;
+	padding: 10px 22px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #4b5563;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-tab-btn:hover {
+	background: #e5e7eb;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-tab-btn.is-active {
+	background: #ff5c00;
+	border-color: #ff5c00;
+	color: #ffffff;
+	box-shadow: 0 4px 12px rgba(255, 92, 0, 0.3);
+}
+
+.laser-crafting-landing-root .lc-module-panel {
+	display: none;
+	animation: lcFadeIn 0.3s ease;
+}
+
+.laser-crafting-landing-root .lc-module-panel.is-active {
+	display: block;
+}
+
+@keyframes lcFadeIn {
+	from { opacity: 0; transform: translateY(6px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.laser-crafting-landing-root .lc-mod-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 48px;
+	align-items: center;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	padding: 44px;
+}
+
+.laser-crafting-landing-root .lc-mod-badge {
+	display: inline-block;
+	background: #ffedd5;
+	color: #c2410c;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	padding: 4px 10px;
+	border-radius: 6px;
+	margin-bottom: 12px;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .lc-mod-title {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 28px;
+	font-weight: 800;
+	color: #0f172a;
+	margin: 0 0 14px;
+}
+
+.laser-crafting-landing-root .lc-mod-desc {
+	font-size: 15px;
+	line-height: 1.6;
+	color: #475569;
+	margin: 0 0 20px;
+}
+
+.laser-crafting-landing-root .lc-mod-stat-callout {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	background: #ffffff;
+	border: 1px solid #cbd5e1;
+	border-radius: 12px;
+	padding: 14px 18px;
+	margin-bottom: 22px;
+}
+
+.laser-crafting-landing-root .lc-stat-number {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 28px;
+	font-weight: 800;
+	color: #ff5c00;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .lc-stat-desc {
+	font-size: 13px;
+	color: #64748b;
+	line-height: 1.4;
+}
+
+.laser-crafting-landing-root .lc-mod-specs-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.laser-crafting-landing-root .lc-spec-bullet {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	color: #334155;
+	font-weight: 500;
+}
+
+.laser-crafting-landing-root .lc-mod-visual {
+	position: relative;
+	border-radius: 16px;
+	overflow: hidden;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	min-height: 380px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+
+.laser-crafting-landing-root .lc-mod-img-wrap {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-mod-img-wrap img {
+	max-width: 100%;
+	max-height: 340px;
+	object-fit: contain;
+}
+
+.laser-crafting-landing-root .lc-mod-tag {
+	position: absolute;
+	bottom: 12px;
+	left: 12px;
+	background: rgba(15, 23, 42, 0.85);
+	color: #ffffff;
+	font-size: 9px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	padding: 4px 8px;
+	border-radius: 4px;
+}
+
+.laser-crafting-landing-root .lc-mod-placeholder {
+	padding: 40px;
+	color: #94a3b8;
+	font-size: 15px;
+	font-weight: 600;
+	text-align: center;
+}
+
+/* ==========================================================================
+   5. STABILITY & MOTION ENGINEERING (BED-SLINGER VS COREXY)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-stability-section {
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-comparison-wrapper {
+	max-width: 960px;
+	margin: 0 auto 54px;
+	background: #161b22;
+	border: 1px solid #30363d;
+	border-radius: 20px;
+	padding: 32px;
+}
+
+.laser-crafting-landing-root .lc-damper-switch-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 16px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid #30363d;
+	margin-bottom: 28px;
+}
+
+.laser-crafting-landing-root .lc-damper-label {
+	font-size: 15px;
+	font-weight: 700;
+	color: #f0f6fc;
+}
+
+.laser-crafting-landing-root .lc-toggle-buttons {
+	display: flex;
+	gap: 10px;
+	background: #0d1117;
+	border: 1px solid #30363d;
+	border-radius: 30px;
+	padding: 4px;
+}
+
+.laser-crafting-landing-root .lc-damper-toggle-btn {
+	background: transparent;
+	border: none;
+	border-radius: 24px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #8b949e;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.laser-crafting-landing-root .lc-damper-toggle-btn:hover {
+	color: #f0f6fc;
+}
+
+.laser-crafting-landing-root .lc-damper-toggle-btn.is-active {
+	background: #ff5c00;
+	color: #ffffff;
+	box-shadow: 0 2px 8px rgba(255, 92, 0, 0.4);
+}
+
+.laser-crafting-landing-root .lc-damper-dot {
+	width: 8px;
+	height: 8px;
+	background: #ffffff;
+	border-radius: 50%;
+	display: inline-block;
+}
+
+.laser-crafting-landing-root .lc-comparison-views {
+	position: relative;
+	min-height: 320px;
+}
+
+.laser-crafting-landing-root .lc-compare-card {
+	display: none;
+	grid-template-columns: 1fr 1fr;
+	gap: 36px;
+	align-items: center;
+	animation: lcFadeIn 0.3s ease;
+}
+
+.laser-crafting-landing-root .lc-compare-card.is-active {
+	display: grid;
+}
+
+.laser-crafting-landing-root .lc-compare-media {
+	height: 280px;
+	border-radius: 14px;
+	overflow: hidden;
+	background: #0d1117;
+	border: 1px solid #30363d;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-compare-media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.laser-crafting-landing-root .lc-compare-mockup {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	padding: 20px;
+}
+
+.laser-crafting-landing-root .mockup-off {
+	background: repeating-linear-gradient(45deg, #161b22, #161b22 10px, #1c2128 10px, #1c2128 20px);
+}
+
+.laser-crafting-landing-root .mockup-on {
+	background: radial-gradient(circle, #21262d 0%, #161b22 100%);
+}
+
+.laser-crafting-landing-root .lc-mockup-badge {
+	position: absolute;
+	bottom: 14px;
+	background: rgba(239, 68, 68, 0.2);
+	border: 1px solid #ef4444;
+	color: #fca5a5;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	padding: 4px 10px;
+	border-radius: 4px;
+}
+
+.laser-crafting-landing-root .lc-mockup-badge.badge-active {
+	background: rgba(16, 185, 129, 0.2);
+	border: 1px solid #10b981;
+	color: #6ee7b7;
+}
+
+.laser-crafting-landing-root .lc-status-tag {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	padding: 4px 10px;
+	border-radius: 4px;
+	margin-bottom: 12px;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .tag-warning {
+	background: #451a03;
+	color: #fdba74;
+	border: 1px solid #9a3412;
+}
+
+.laser-crafting-landing-root .tag-success {
+	background: #064e3b;
+	color: #6ee7b7;
+	border: 1px solid #059669;
+}
+
+.laser-crafting-landing-root .lc-compare-title {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 22px;
+	font-weight: 800;
+	color: #f0f6fc;
+	margin: 0 0 12px;
+}
+
+.laser-crafting-landing-root .lc-compare-desc {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #8b949e;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .lc-pillars-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+}
+
+.laser-crafting-landing-root .lc-pillar-card {
+	background: #161b22;
+	border: 1px solid #30363d;
+	border-radius: 16px;
+	padding: 26px 22px;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-pillar-card:hover {
+	border-color: #ff5c00;
+	transform: translateY(-2px);
+}
+
+.laser-crafting-landing-root .lc-pillar-badge {
+	display: inline-block;
+	background: #21262d;
+	color: #ff5c00;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	padding: 3px 8px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+
+.laser-crafting-landing-root .lc-pillar-title {
+	font-size: 17px;
+	font-weight: 700;
+	color: #f0f6fc;
+	margin: 0 0 8px;
+}
+
+.laser-crafting-landing-root .lc-pillar-desc {
+	font-size: 13px;
+	line-height: 1.55;
+	color: #8b949e;
+	margin: 0;
+}
+
+/* ==========================================================================
+   6. MULTI-COLOR & AMS SUPPORT
+   ========================================================================== */
+.laser-crafting-landing-root .lc-ams-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-ams-grid {
+	display: grid;
+	grid-template-columns: 48% 52%;
+	gap: 48px;
+	align-items: center;
+	margin-top: 36px;
+}
+
+.laser-crafting-landing-root .lc-ams-image-frame {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	padding: 24px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+
+.laser-crafting-landing-root .lc-ams-image-frame img {
+	width: 100%;
+	height: 320px;
+	object-fit: contain;
+}
+
+.laser-crafting-landing-root .lc-ams-mockup-wrap {
+	height: 280px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	text-align: center;
+}
+
+.laser-crafting-landing-root .lc-ams-spools-row {
+	display: flex;
+	gap: 14px;
+}
+
+.laser-crafting-landing-root .lc-spool-dot {
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	border: 3px solid #ffffff;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.laser-crafting-landing-root .spool-c1 { background: #ef4444; }
+.laser-crafting-landing-root .spool-c2 { background: #3b82f6; }
+.laser-crafting-landing-root .spool-c3 { background: #10b981; }
+.laser-crafting-landing-root .spool-c4 { background: #f59e0b; }
+
+.laser-crafting-landing-root .lc-ams-specs-strip {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	border-top: 1px solid #e2e8f0;
+	padding-top: 18px;
+	margin-top: 18px;
+}
+
+.laser-crafting-landing-root .lc-ams-mini-stat {
+	text-align: center;
+}
+
+.laser-crafting-landing-root .lc-ams-mini-stat .stat-num {
+	display: block;
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 20px;
+	font-weight: 800;
+	color: #ff5c00;
+}
+
+.laser-crafting-landing-root .lc-ams-mini-stat .stat-lbl {
+	display: block;
+	font-size: 11px;
+	color: #64748b;
+	font-weight: 600;
+}
+
+.laser-crafting-landing-root .lc-ams-features-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.laser-crafting-landing-root .lc-ams-feature-item {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 14px;
+	padding: 18px 20px;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-ams-feature-item:hover {
+	border-color: #cbd5e1;
+	transform: translateX(4px);
+}
+
+.laser-crafting-landing-root .lc-ams-feature-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 6px;
+}
+
+.laser-crafting-landing-root .lc-ams-feature-num {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 800;
+	color: #ff5c00;
+	background: #fff7ed;
+	border-radius: 6px;
+	padding: 2px 6px;
+}
+
+.laser-crafting-landing-root .lc-ams-feature-title {
+	font-size: 16px;
+	font-weight: 700;
+	color: #0f172a;
+	margin: 0;
+	flex: 1;
+}
+
+.laser-crafting-landing-root .lc-ams-feature-pill {
+	font-size: 11px;
+	font-weight: 700;
+	background: #ecfdf5;
+	color: #065f46;
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+.laser-crafting-landing-root .lc-ams-feature-desc {
+	font-size: 13px;
+	line-height: 1.5;
+	color: #475569;
+	margin: 0;
+	padding-left: 36px;
+}
+
+/* ==========================================================================
+   7. WHAT'S IN THE BOX (MATRIX)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-box-section {
+	padding: 80px 0;
+	background: #f8fafc;
+	border-top: 1px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .lc-matrix-wrapper {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 18px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .lc-matrix-table-responsive {
+	overflow-x: auto;
+}
+
+.laser-crafting-landing-root .lc-matrix-table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
+	font-size: 14px;
+}
+
+.laser-crafting-landing-root .lc-matrix-table th,
+.laser-crafting-landing-root .lc-matrix-table td {
+	padding: 16px 20px;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+.laser-crafting-landing-root .lc-th-item {
+	width: 36%;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-th-title {
+	display: block;
+	font-size: 16px;
+	font-weight: 800;
+	color: #0f172a;
+}
+
+.laser-crafting-landing-root .lc-th-sub {
+	display: block;
+	font-size: 12px;
+	color: #64748b;
+	font-weight: 500;
+}
+
+.laser-crafting-landing-root .lc-th-package {
+	width: 21.3%;
+	text-align: center;
+	background: #f8fafc;
+	border-left: 1px solid #f1f5f9;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-th-package.is-highlighted {
+	background: #fffbf8;
+	border-left: 1px solid #ffedd5;
+	border-right: 1px solid #ffedd5;
+}
+
+.laser-crafting-landing-root .lc-th-badge {
+	display: inline-block;
+	background: #ff5c00;
+	color: #ffffff;
+	font-size: 9px;
+	font-weight: 800;
+	padding: 2px 6px;
+	border-radius: 4px;
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+.laser-crafting-landing-root .lc-pkg-col-title {
+	display: block;
+	font-size: 15px;
+	font-weight: 800;
+	color: #0f172a;
+	margin-bottom: 2px;
+}
+
+.laser-crafting-landing-root .lc-pkg-col-price {
+	display: block;
+	font-size: 17px;
+	font-weight: 800;
+	color: #ff5c00;
+	margin-bottom: 10px;
+}
+
+.laser-crafting-landing-root .lc-matrix-select-btn {
+	background: #ffffff;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	padding: 6px 12px;
+	font-size: 12px;
+	font-weight: 700;
+	color: #334155;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-matrix-select-btn:hover {
+	border-color: #ff5c00;
+	color: #ff5c00;
+	background: #fffbf8;
+}
+
+.laser-crafting-landing-root .lc-td-name {
+	color: #1e293b;
+	font-size: 14px;
+}
+
+.laser-crafting-landing-root .lc-td-val {
+	text-align: center;
+	border-left: 1px solid #f1f5f9;
+}
+
+.laser-crafting-landing-root .lc-td-val.is-highlighted {
+	background: #fffbf8;
+	border-left: 1px solid #ffedd5;
+	border-right: 1px solid #ffedd5;
+}
+
+.laser-crafting-landing-root .lc-icon-check {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-icon-dash {
+	color: #cbd5e1;
+	font-size: 18px;
+}
+
+/* ==========================================================================
+   8. SPECIFICATIONS
+   ========================================================================== */
+.laser-crafting-landing-root .lc-specs-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-specs-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 18px;
+	overflow: hidden;
+	box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+}
+
+.laser-crafting-landing-root .lc-specs-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.laser-crafting-landing-root .lc-spec-row {
+	border-bottom: 1px solid #f1f5f9;
+	transition: background 0.15s ease;
+}
+
+.laser-crafting-landing-root .lc-spec-row:hover {
+	background: #f8fafc;
+}
+
+.laser-crafting-landing-root .lc-spec-row-collapsible {
+	display: none;
+}
+
+.laser-crafting-landing-root .lc-specs-card.is-expanded .lc-spec-row-collapsible {
+	display: table-row;
+}
+
+.laser-crafting-landing-root .lc-spec-cat {
+	width: 22%;
+	padding: 16px 24px;
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #ff5c00;
+	background: #fffbf8;
+	border-right: 1px solid #f1f5f9;
+}
+
+.laser-crafting-landing-root .lc-spec-label {
+	width: 34%;
+	padding: 16px 24px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1e293b;
+	border-right: 1px solid #f1f5f9;
+}
+
+.laser-crafting-landing-root .lc-spec-val {
+	width: 44%;
+	padding: 16px 24px;
+	font-size: 14px;
+	color: #475569;
+}
+
+.laser-crafting-landing-root .lc-specs-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 24px;
+	background: #f8fafc;
+	border-top: 1px solid #e2e8f0;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.laser-crafting-landing-root .lc-specs-toggle-btn {
+	background: #ffffff;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #334155;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-specs-toggle-btn:hover {
+	border-color: #94a3b8;
+	color: #0f172a;
+}
+
+.laser-crafting-landing-root .lc-specs-pdf-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: #ff5c00;
+	text-decoration: none;
+	font-size: 13px;
+	font-weight: 700;
+	transition: color 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-specs-pdf-btn:hover {
+	color: #f15a24;
+	text-decoration: underline;
+}
+
+/* ==========================================================================
+   9. FAQ & BOTTOM CONVERSION CTA BANNER
+   ========================================================================== */
+.laser-crafting-landing-root .lc-faq-section {
+	padding: 80px 0;
+	background: #f9fafb;
+}
+
+.laser-crafting-landing-root .lc-faq-accordion {
+	max-width: 860px;
+	margin: 0 auto 60px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.laser-crafting-landing-root .lc-faq-item {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	overflow: hidden;
+	transition: border-color 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-faq-item.is-open {
+	border-color: #ff5c00;
+}
+
+.laser-crafting-landing-root .lc-faq-question {
+	width: 100%;
+	padding: 18px 22px;
+	background: transparent;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
+	text-align: left;
+	gap: 16px;
+}
+
+.laser-crafting-landing-root .lc-faq-q-text {
+	font-size: 16px;
+	font-weight: 700;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-faq-icon {
+	color: #6b7280;
+	transition: transform 0.2s ease;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .lc-faq-item.is-open .lc-faq-icon {
+	transform: rotate(180deg);
+	color: #ff5c00;
+}
+
+.laser-crafting-landing-root .lc-faq-answer {
+	padding: 0 22px 20px;
+}
+
+.laser-crafting-landing-root .lc-faq-answer-inner {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #4b5563;
+	border-top: 1px solid #f3f4f6;
+	padding-top: 14px;
+}
+
+.laser-crafting-landing-root .lc-faq-answer-inner p {
+	margin: 0 0 10px;
+}
+
+.laser-crafting-landing-root .lc-faq-answer-inner p:last-child {
+	margin-bottom: 0;
+}
+
+/* Bottom CTA Banner */
+.laser-crafting-landing-root .lc-bottom-cta-banner {
+	background: #0e1117;
+	border: 1px solid #1f2937;
+	border-radius: 20px;
+	padding: 44px 48px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.laser-crafting-landing-root .lc-banner-title {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 26px;
+	font-weight: 800;
+	color: #ffffff;
+	margin: 0 0 8px;
+}
+
+.laser-crafting-landing-root .lc-banner-desc {
+	font-size: 15px;
+	color: #9ca3af;
+	margin: 0;
+	max-width: 600px;
+}
+
+.laser-crafting-landing-root .lc-banner-btn {
+	background: #ff5c00;
+	color: #ffffff;
+	padding: 16px 32px;
+	border-radius: 10px;
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 15px;
+	font-weight: 700;
+	text-decoration: none;
+	display: inline-block;
+	white-space: nowrap;
+	box-shadow: 0 4px 14px rgba(255, 92, 0, 0.4);
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-banner-btn:hover {
+	background: #f15a24;
+	transform: translateY(-2px);
+	box-shadow: 0 6px 18px rgba(255, 92, 0, 0.5);
+	color: #ffffff;
+}
+
+/* ==========================================================================
+   10. STICKY BOTTOM PURCHASE BAR
+   ========================================================================== */
+.laser-crafting-landing-root .lc-sticky-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(255, 255, 255, 0.96);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-top: 1px solid #e5e7eb;
+	box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+	z-index: 9999;
+	padding: 12px 0;
+	transform: translateY(100%);
+	opacity: 0;
+	visibility: hidden;
+	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, visibility 0.2s;
+}
+
+.laser-crafting-landing-root .lc-sticky-bar.is-visible {
+	transform: translateY(0);
+	opacity: 1;
+	visibility: visible;
+}
+
+.laser-crafting-landing-root .lc-sticky-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.laser-crafting-landing-root .lc-sticky-info {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	min-width: 0;
+}
+
+.laser-crafting-landing-root .lc-sticky-thumb {
+	width: 44px;
+	height: 44px;
+	border-radius: 6px;
+	border: 1px solid #e5e7eb;
+	background: #f9fafb;
+	overflow: hidden;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-sticky-thumb img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.laser-crafting-landing-root .lc-sticky-details {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.laser-crafting-landing-root .lc-sticky-title {
+	font-size: 14px;
+	font-weight: 700;
+	color: #111827;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.laser-crafting-landing-root .lc-sticky-config {
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.laser-crafting-landing-root .lc-sticky-price-wrap {
+	text-align: right;
+}
+
+.laser-crafting-landing-root .lc-sticky-price {
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 20px;
+	font-weight: 800;
+	color: #111827;
+	display: block;
+	line-height: 1.1;
+}
+
+.laser-crafting-landing-root .lc-sticky-vat {
+	font-size: 11px;
+	color: #6b7280;
+	display: block;
+}
+
+.laser-crafting-landing-root .lc-sticky-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.laser-crafting-landing-root .lc-sticky-quantity {
+	display: inline-flex;
+	align-items: center;
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	overflow: hidden;
+	height: 42px;
+	width: 110px;
+}
+
+.laser-crafting-landing-root .lc-sticky-qty-btn {
+	background: transparent;
+	border: none;
+	width: 34px;
+	height: 100%;
+	font-size: 16px;
+	font-weight: 600;
+	color: #374151;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-sticky-qty-input {
+	width: 42px;
+	height: 100%;
+	border: none;
+	background: transparent;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 700;
+	color: #111827;
+	-moz-appearance: textfield;
+}
+
+.laser-crafting-landing-root .lc-sticky-qty-input::-webkit-outer-spin-button,
+.laser-crafting-landing-root .lc-sticky-qty-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .lc-sticky-btn-add {
+	height: 42px;
+	padding: 0 24px;
+	background: #ff5c00;
+	color: #ffffff;
+	border: none;
+	border-radius: 8px;
+	font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	box-shadow: 0 2px 8px rgba(255, 92, 0, 0.3);
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-sticky-btn-add:hover {
+	background: #f15a24;
+	box-shadow: 0 4px 12px rgba(255, 92, 0, 0.4);
+}
+
+/* ==========================================================================
+   11. RESPONSIVE BREAKPOINTS (DESKTOP / TABLET / MOBILE)
+   ========================================================================== */
+
+/* Tablet Breakpoint (<= 1024px) */
+@media screen and (max-width: 1024px) {
+	.laser-crafting-landing-root .lc-hero-grid {
+		grid-template-columns: 1fr;
+		gap: 36px;
+	}
+
+	.laser-crafting-landing-root .lc-hero-gallery {
+		position: static;
+		width: 100%;
+	}
+
+	.laser-crafting-landing-root .lc-highlights-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.laser-crafting-landing-root .lc-creations-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.laser-crafting-landing-root .lc-mod-grid {
+		grid-template-columns: 1fr;
+		gap: 32px;
+	}
+
+	.laser-crafting-landing-root .lc-ams-grid {
+		grid-template-columns: 1fr;
+		gap: 36px;
+	}
+
+	.laser-crafting-landing-root .lc-pillars-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Mobile Breakpoint (<= 767px) */
+@media screen and (max-width: 767px) {
+	.laser-crafting-landing-root .lc-hero-section {
+		padding-bottom: 48px;
+	}
+
+	.laser-crafting-landing-root .lc-section-title {
+		font-size: 26px;
+	}
+
+	.laser-crafting-landing-root .lc-product-title {
+		font-size: 24px;
+	}
+
+	/* Hero Gallery Mobile: Main Image Full Row, Horizontal Thumbnails Below */
+	.laser-crafting-landing-root .lc-hero-gallery {
+		flex-direction: column-reverse;
+		gap: 12px;
+	}
+
+	.laser-crafting-landing-root .lc-gallery-thumbs {
+		flex-direction: row;
+		width: 100%;
+		justify-content: flex-start;
+		overflow-x: auto;
+		scrollbar-width: none;
+		padding: 4px 0;
+	}
+
+	.laser-crafting-landing-root .lc-gallery-thumbs::-webkit-scrollbar {
+		display: none;
+	}
+
+	.laser-crafting-landing-root .lc-thumb-nav {
+		display: none;
+	}
+
+	.laser-crafting-landing-root .lc-thumb-list {
+		flex-direction: row;
+		max-height: none;
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	.laser-crafting-landing-root .lc-thumb-item {
+		width: 60px;
+		height: 60px;
+		flex-shrink: 0;
+	}
+
+	.laser-crafting-landing-root .lc-gallery-viewport {
+		min-height: 340px;
+		padding: 16px;
+		width: 100%;
+	}
+
+	.laser-crafting-landing-root .lc-main-image-wrap {
+		height: 280px;
+	}
+
+	.laser-crafting-landing-root .lc-highlights-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.laser-crafting-landing-root .lc-creations-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.laser-crafting-landing-root .lc-mod-grid {
+		padding: 24px;
+	}
+
+	.laser-crafting-landing-root .lc-compare-card {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	.laser-crafting-landing-root .lc-bottom-cta-banner {
+		flex-direction: column;
+		text-align: center;
+		padding: 32px 24px;
+	}
+
+	.laser-crafting-landing-root .lc-banner-btn {
+		width: 100%;
+		text-align: center;
+	}
+
+	/* Sticky bar on mobile */
+	.laser-crafting-landing-root .lc-sticky-quantity {
+		display: none;
+	}
+
+	.laser-crafting-landing-root .lc-sticky-config {
+		display: none;
+	}
+
+	.laser-crafting-landing-root .lc-sticky-thumb {
+		display: none;
+	}
+
+	.laser-crafting-landing-root .lc-sticky-price {
+		font-size: 16px;
+	}
+
+	.laser-crafting-landing-root .lc-sticky-btn-add {
+		padding: 0 16px;
+		font-size: 13px;
+	}
+}
+
+/* ==========================================================================
+   12. EXACT 3DKODA HERO & ESSENTIAL ADDITIONS (IMAGE 1 SPEC)
+   ========================================================================== */
+.laser-crafting-landing-root .product-hero.lc-product-hero {
+	display: grid;
+	grid-template-columns: 54% 46%;
+	gap: 48px;
+	align-items: flex-start;
+	padding-top: 10px;
+	padding-bottom: 56px;
+}
+
+.laser-crafting-landing-root .lc-product-gallery {
+	position: sticky;
+	top: 90px;
+	display: flex;
+	gap: 16px;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	width: 76px;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .gallery-nav-btn {
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	width: 100%;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: #4b5563;
+	transition: all 0.2s ease;
+	padding: 0;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .gallery-nav-btn:hover {
+	background: #e5e7eb;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	max-height: 480px;
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs::-webkit-scrollbar {
+	display: none;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs li {
+	width: 72px;
+	height: 72px;
+	border-radius: 10px;
+	border: 2px solid #e5e7eb;
+	background: #f9fafb;
+	padding: 4px;
+	cursor: pointer;
+	overflow: hidden;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs li.is-active {
+	border-color: #ff5c00;
+	box-shadow: 0 0 0 2px rgba(255, 92, 0, 0.2);
+}
+
+.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs li img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.laser-crafting-landing-root .lc-product-gallery .product-gallery__main {
+	flex: 1;
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 16px;
+	position: relative;
+	padding: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 520px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.laser-crafting-landing-root .hero-rfid-badge {
+	position: absolute;
+	top: 18px;
+	left: 18px;
+	background: #ffffff;
+	border: 1.5px solid #111827;
+	border-radius: 6px;
+	padding: 4px 8px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+}
+
+.laser-crafting-landing-root .btn-change-view {
+	position: absolute;
+	bottom: 16px;
+	right: 16px;
+	background: rgba(255, 255, 255, 0.95);
+	border: 1px solid #d1d5db;
+	border-radius: 8px;
+	padding: 6px 12px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #374151;
+	cursor: pointer;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .btn-change-view:hover {
+	background: #ffffff;
+	border-color: #9ca3af;
+	color: #111827;
+}
+
+/* Summary Column Elements */
+.laser-crafting-landing-root .product-reseller-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: #ecfdf5;
+	border: 1px solid #a7f3d0;
+	border-radius: 20px;
+	padding: 4px 12px;
+	width: fit-content;
+	margin-bottom: 12px;
+}
+
+.laser-crafting-landing-root .reseller-text {
+	font-size: 12px;
+	font-weight: 700;
+	color: #065f46;
+}
+
+.laser-crafting-landing-root .product-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 34px;
+	font-weight: 800;
+	color: #111827;
+	margin: 0 0 10px;
+	line-height: 1.2;
+}
+
+.laser-crafting-landing-root .product-subtitle {
+	font-size: 15px;
+	line-height: 1.6;
+	color: #4b5563;
+	margin-bottom: 14px;
+}
+
+.laser-crafting-landing-root .product-rating-line {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	margin-bottom: 14px;
+}
+
+.laser-crafting-landing-root .product-rating-line .stars {
+	color: #f59e0b;
+	letter-spacing: 2px;
+}
+
+.laser-crafting-landing-root .product-rating-line .rating-quote {
+	color: #6b7280;
+	font-weight: 500;
+}
+
+.laser-crafting-landing-root .product-stock-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 8px 14px;
+	font-size: 13px;
+	margin-bottom: 16px;
+}
+
+.laser-crafting-landing-root .product-stock-row.is-instock .stock-text {
+	color: #059669;
+	font-weight: 700;
+}
+
+.laser-crafting-landing-root .product-stock-row.is-instock .stock-icon {
+	color: #059669;
+}
+
+.laser-crafting-landing-root .product-stock-row .stock-sep {
+	color: #cbd5e1;
+}
+
+.laser-crafting-landing-root .product-stock-row .stock-note {
+	color: #64748b;
+}
+
+.laser-crafting-landing-root .product-price-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	padding: 16px 0;
+	border-top: 1px solid #f3f4f6;
+	border-bottom: 1px solid #f3f4f6;
+	margin-bottom: 16px;
+}
+
+.laser-crafting-landing-root .product-price-main .product-price {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 32px;
+	font-weight: 800;
+	color: #111827 !important;
+}
+
+.laser-crafting-landing-root .product-price-meta {
+	text-align: right;
+}
+
+.laser-crafting-landing-root .product-price-note {
+	display: block;
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.laser-crafting-landing-root .vat-link {
+	font-size: 12px;
+	color: #ff5c00;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.laser-crafting-landing-root .product-configuration {
+	border: none;
+	padding: 0;
+	margin: 0 0 18px;
+}
+
+.laser-crafting-landing-root .product-configuration__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.laser-crafting-landing-root .product-configuration__label {
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	color: #374151;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .compare-packages-link {
+	font-size: 12px;
+	color: #ff5c00;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.laser-crafting-landing-root .product-configuration__options {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.laser-crafting-landing-root .product-configuration__options .option {
+	display: block;
+	background: #ffffff;
+	border: 2px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 12px 16px;
+	cursor: pointer;
+	position: relative;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .product-configuration__options .option input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.laser-crafting-landing-root .product-configuration__options .option.is-selected {
+	border-color: #ff5c00;
+	background: #fffbf8;
+}
+
+.laser-crafting-landing-root .option-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 15px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 2px;
+}
+
+.laser-crafting-landing-root .option-desc {
+	display: block;
+	font-size: 13px;
+	color: #6b7280;
+	margin-bottom: 6px;
+}
+
+.laser-crafting-landing-root .option-price {
+	font-size: 15px;
+	font-weight: 800;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .product-add-to-cart {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.laser-crafting-landing-root .product-quantity {
+	display: inline-flex;
+	align-items: center;
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	overflow: hidden;
+	height: 52px;
+	width: 120px;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .product-quantity button {
+	background: transparent;
+	border: none;
+	width: 36px;
+	height: 100%;
+	font-size: 18px;
+	color: #374151;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .product-quantity button:hover {
+	background: #e5e7eb;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .product-quantity input {
+	width: 48px;
+	height: 100%;
+	border: none;
+	background: transparent;
+	text-align: center;
+	font-size: 15px;
+	font-weight: 700;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .btn-add-to-cart {
+	flex: 1;
+	height: 52px;
+	background: #ff5c00;
+	color: #ffffff;
+	border: none;
+	border-radius: 10px;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	cursor: pointer;
+	box-shadow: 0 4px 14px rgba(255, 92, 0, 0.35);
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .btn-add-to-cart:hover {
+	background: #f15a24;
+	box-shadow: 0 6px 18px rgba(255, 92, 0, 0.45);
+	transform: translateY(-1px);
+}
+
+.laser-crafting-landing-root .product-team-quote {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	padding: 12px 16px;
+	text-align: center;
+	margin-bottom: 16px;
+}
+
+.laser-crafting-landing-root .product-team-quote .quote-link {
+	font-size: 13px;
+	font-weight: 600;
+	color: #374151;
+	text-decoration: none;
+}
+
+.laser-crafting-landing-root .product-team-quote .quote-link:hover {
+	color: #ff5c00;
+}
+
+.laser-crafting-landing-root .lc-service-highlights {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 0 0;
+	border-top: 1px solid #f3f4f6;
+	gap: 14px;
+}
+
+.laser-crafting-landing-root .lc-service-highlights .service-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.laser-crafting-landing-root .lc-service-highlights .service-text strong {
+	display: block;
+	font-size: 13px;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .lc-service-highlights .service-text span {
+	font-size: 11px;
+	color: #6b7280;
+}
+
+/* Essential Additions Section (Image 1) */
+.laser-crafting-landing-root .lc-additions-section {
+	padding: 60px 0 40px;
+	border-top: 1px solid #f3f4f6;
+}
+
+.laser-crafting-landing-root .filament-additions__header {
+	margin-bottom: 24px;
+}
+
+.laser-crafting-landing-root .filament-additions__header .eyebrow {
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	color: #ff5c00;
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: 6px;
+}
+
+.laser-crafting-landing-root .filament-additions__title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 26px;
+	font-weight: 800;
+	color: #0e1117;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .filament-additions__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	margin-bottom: 32px;
+}
+
+.laser-crafting-landing-root .addition-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 16px;
+	padding: 24px;
+	display: flex;
+	flex-direction: column;
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .addition-card:hover {
+	border-color: #cbd5e1;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.laser-crafting-landing-root .addition-card__icon-box {
+	width: 44px;
+	height: 44px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 14px;
+}
+
+.laser-crafting-landing-root .addition-card__title {
+	font-size: 16px;
+	font-weight: 700;
+	color: #111827;
+	margin: 0 0 6px;
+}
+
+.laser-crafting-landing-root .addition-card__pricing {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.laser-crafting-landing-root .addition-card__pricing .price-current {
+	font-size: 18px;
+	font-weight: 800;
+	color: #ff5c00;
+}
+
+.laser-crafting-landing-root .addition-card__pricing .price-old {
+	font-size: 13px;
+	color: #9ca3af;
+	text-decoration: line-through;
+}
+
+.laser-crafting-landing-root .addition-card__desc {
+	font-size: 13px;
+	color: #64748b;
+	line-height: 1.4;
+	margin: 0 0 16px;
+	flex: 1;
+}
+
+.laser-crafting-landing-root .addition-card__select {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	font-size: 13px;
+	color: #334155;
+	background: #ffffff;
+	margin-bottom: 16px;
+}
+
+.laser-crafting-landing-root .addition-card__footer {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.laser-crafting-landing-root .addition-card__qty {
+	display: inline-flex;
+	align-items: center;
+	background: #f1f5f9;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	height: 38px;
+	width: 90px;
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .addition-card__qty button {
+	background: transparent;
+	border: none;
+	width: 28px;
+	height: 100%;
+	font-size: 16px;
+	color: #334155;
+	cursor: pointer;
+}
+
+.laser-crafting-landing-root .addition-card__qty input {
+	width: 34px;
+	height: 100%;
+	border: none;
+	background: transparent;
+	text-align: center;
+	font-size: 13px;
+	font-weight: 700;
+	color: #111827;
+}
+
+.laser-crafting-landing-root .addition-card__btn-add {
+	flex: 1;
+	height: 38px;
+	background: #059669;
+	color: #ffffff;
+	border: none;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+.laser-crafting-landing-root .addition-card__btn-add:hover {
+	background: #047857;
+}
+
+.laser-crafting-landing-root .filament-additions__trust-strip {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-top: 20px;
+	border-top: 1px solid #f1f5f9;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.laser-crafting-landing-root .trust-bullets {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: 12px;
+	color: #64748b;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.laser-crafting-landing-root .trust-payment-pills {
+	display: flex;
+	gap: 8px;
+}
+
+.laser-crafting-landing-root .payment-pill {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 4px;
+	padding: 4px 10px;
+	font-size: 11px;
+	color: #475569;
+	font-weight: 600;
+}
+
+/* ==========================================================================
+   13. STICKY IN-PAGE NAVIGATION BAR (IMAGE 2)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-subnav-bar {
+	position: sticky;
+	top: var(--lc-subnav-top, 64px);
+	z-index: 998;
+	background: #0e1117;
+	border-bottom: 1px solid #1f2937;
+	padding: 0;
+}
+
+body.admin-bar .laser-crafting-landing-root .lc-subnav-bar {
+	top: var(--lc-subnav-top, 96px);
+}
+
+@media (max-width: 782px) {
+	body.admin-bar .laser-crafting-landing-root .lc-subnav-bar {
+		top: var(--lc-subnav-top, 60px);
+	}
+}
+
+.laser-crafting-landing-root .lc-subnav-inner {
+	display: flex;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-subnav-links {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 36px;
+}
+
+.laser-crafting-landing-root .lc-subnav-link {
+	display: inline-block;
+	padding: 16px 4px;
+	color: #9ca3af;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	position: relative;
+	transition: color 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-subnav-link:hover,
+.laser-crafting-landing-root .lc-subnav-link.is-active {
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-subnav-link.is-active::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background: #ffffff;
+}
+
+/* ==========================================================================
+   14. OVERVIEW BANNER (IMAGE 2)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-overview-banner {
+	background: #f3f4f6;
+	padding: 80px 0;
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .lc-overview-inner {
+	display: grid;
+	grid-template-columns: 42% 58%;
+	gap: 36px;
+	align-items: center;
+}
+
+.laser-crafting-landing-root .lc-overview-sub {
+	display: block;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 26px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 10px;
+}
+
+.laser-crafting-landing-root .lc-overview-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 48px;
+	font-weight: 800;
+	color: #0e1117;
+	line-height: 1.15;
+	margin: 0 0 28px;
+	letter-spacing: -0.02em;
+}
+
+.laser-crafting-landing-root .lc-btn-watch-video {
+	display: inline-block;
+	background: #111827;
+	color: #ffffff;
+	padding: 12px 28px;
+	border-radius: 30px;
+	font-size: 14px;
+	font-weight: 700;
+	text-decoration: none;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+	transition: all 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-btn-watch-video:hover {
+	background: #000000;
+	transform: translateY(-1px);
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-overview-media {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-overview-img {
+	max-width: 100%;
+	height: auto;
+	object-fit: contain;
+}
+
+/* Video Popup Modal */
+.lc-video-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 999999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.lc-video-modal.is-open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.lc-video-modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.85);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+.lc-video-modal-dialog {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	max-width: 920px;
+	background: #000000;
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+	transform: scale(0.95);
+	transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lc-video-modal.is-open .lc-video-modal-dialog {
+	transform: scale(1);
+}
+
+.lc-video-modal-close {
+	position: absolute;
+	top: 14px;
+	right: 14px;
+	z-index: 10;
+	background: rgba(0, 0, 0, 0.6);
+	color: #ffffff;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 22px;
+	line-height: 1;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.lc-video-modal-close:hover {
+	background: #ff5c00;
+	border-color: #ff5c00;
+	transform: scale(1.1);
+}
+
+.lc-video-modal-body {
+	position: relative;
+	width: 100%;
+	padding-bottom: 56.25%; /* 16:9 ratio */
+	height: 0;
+	background: #000000;
+}
+
+.lc-video-modal-body iframe,
+.lc-video-modal-body video {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+/* ==========================================================================
+   15. WHY CHOOSE BAMBU LAB A2L (IMAGE 3)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-why-choose-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-why-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 38px;
+	font-weight: 800;
+	color: #0e1117;
+	margin: 0 auto 56px;
+}
+
+.laser-crafting-landing-root .lc-why-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 28px;
+}
+
+.laser-crafting-landing-root .lc-why-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 18px;
+	padding: 28px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 320px;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+	transition: all 0.25s ease;
+}
+
+.laser-crafting-landing-root .lc-why-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+	border-color: #cbd5e1;
+}
+
+.laser-crafting-landing-root .lc-why-card__title {
+	font-size: 20px;
+	font-weight: 800;
+	color: #111827;
+	margin: 0 0 6px;
+}
+
+.laser-crafting-landing-root .lc-why-card__sub {
+	font-size: 14px;
+	color: #64748b;
+	margin: 0;
+	line-height: 1.4;
+}
+
+.laser-crafting-landing-root .lc-why-card__media {
+	height: 160px;
+	border-radius: 12px;
+	background: #f8fafc;
+	border: 1px solid #f1f5f9;
+	margin-top: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .lc-mock-badge {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	background: rgba(17, 24, 39, 0.85);
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 700;
+	padding: 3px 8px;
+	border-radius: 4px;
+}
+
+.laser-crafting-landing-root .lc-mock-helmet {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+}
+
+.laser-crafting-landing-root .lc-mock-parrot {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #fef3c7, #fed7aa);
+}
+
+.laser-crafting-landing-root .lc-mock-calibration {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+}
+
+.laser-crafting-landing-root .lc-mock-toolheads {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+}
+
+.laser-crafting-landing-root .lc-mock-makerworld {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #fff7ed, #ffedd5);
+}
+
+.laser-crafting-landing-root .lc-mock-phone {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+/* ==========================================================================
+   16. COMMUNITY SHOWCASE SLIDER (IMAGE 4)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-community-section {
+	padding: 80px 0;
+	background: #ffffff;
+	border-top: 1px solid #f3f4f6;
+}
+
+.laser-crafting-landing-root .lc-community-header {
+	max-width: 820px;
+	margin: 0 auto 40px;
+}
+
+.laser-crafting-landing-root .lc-community-eyebrow {
+	font-size: 13px;
+	font-weight: 800;
+	color: #10b981;
+	letter-spacing: 0.08em;
+	display: block;
+	margin-bottom: 10px;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .lc-community-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 36px;
+	font-weight: 800;
+	color: #0e1117;
+	line-height: 1.25;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .lc-slider-wrapper {
+	position: relative;
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .lc-slider-track {
+	display: flex;
+	gap: 20px;
+	overflow-x: auto;
+	scroll-behavior: smooth;
+	padding: 10px 4px 24px;
+	scrollbar-width: none;
+}
+
+.laser-crafting-landing-root .lc-slider-track::-webkit-scrollbar {
+	display: none;
+}
+
+.laser-crafting-landing-root .lc-slide-item {
+	flex: 0 0 calc(25% - 15px);
+	min-width: 260px;
+}
+
+.laser-crafting-landing-root .lc-slide-card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 18px;
+	overflow: hidden;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+	transition: all 0.25s ease;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.laser-crafting-landing-root .lc-slide-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+}
+
+.laser-crafting-landing-root .lc-slide-media {
+	height: 280px;
+	background: #f1f5f9;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .slide-boardgame .lc-slide-media {
+	background: linear-gradient(135deg, #0f172a, #334155);
+}
+
+.laser-crafting-landing-root .slide-redsword .lc-slide-media {
+	background: linear-gradient(135deg, #450a0a, #7f1d1d);
+}
+
+.laser-crafting-landing-root .slide-bluesword .lc-slide-media {
+	background: linear-gradient(135deg, #082f49, #0369a1);
+}
+
+.laser-crafting-landing-root .slide-modelkit .lc-slide-media {
+	background: linear-gradient(135deg, #064e3b, #047857);
+}
+
+.laser-crafting-landing-root .slide-diorama .lc-slide-media {
+	background: linear-gradient(135deg, #312e81, #4338ca);
+}
+
+.laser-crafting-landing-root .lc-slide-badge {
+	position: absolute;
+	top: 14px;
+	left: 14px;
+	background: rgba(0,0,0,0.7);
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: 20px;
+}
+
+.laser-crafting-landing-root .lc-slide-info {
+	padding: 18px;
+}
+
+.laser-crafting-landing-root .lc-slide-title {
+	font-size: 15px;
+	font-weight: 700;
+	color: #111827;
+	margin: 0 0 6px;
+}
+
+.laser-crafting-landing-root .lc-slide-desc {
+	font-size: 12px;
+	color: #64748b;
+	margin: 0;
+	line-height: 1.45;
+}
+
+.laser-crafting-landing-root .lc-slider-dots {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	margin-top: 24px;
+}
+
+.laser-crafting-landing-root .lc-dot {
+	width: 9px;
+	height: 9px;
+	min-width: 9px;
+	min-height: 9px;
+	border-radius: 50%;
+	background: #d1d5db;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	transition: all 0.25s ease;
+	display: inline-block;
+	flex-shrink: 0;
+}
+
+.laser-crafting-landing-root .lc-dot:hover {
+	background: #9ca3af;
+}
+
+.laser-crafting-landing-root .lc-dot.is-active {
+	background: #111827;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	transform: scale(1.25);
+}
+
+/* ==========================================================================
+   17. OVERSIZED BUILD VOLUME SHOWCASE (IMAGE 5)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-build-volume-section {
+	padding: 80px 0;
+	background: #ffffff;
+	border-top: 1px solid #f3f4f6;
+}
+
+.laser-crafting-landing-root .lc-volume-header {
+	max-width: 820px;
+	margin: 0 auto 48px;
+}
+
+.laser-crafting-landing-root .lc-volume-eyebrow {
+	font-size: 13px;
+	font-weight: 800;
+	color: #10b981;
+	letter-spacing: 0.08em;
+	display: block;
+	margin-bottom: 8px;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .lc-volume-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 38px;
+	font-weight: 800;
+	color: #0e1117;
+	line-height: 1.2;
+	margin: 0 0 16px;
+}
+
+.laser-crafting-landing-root .lc-volume-desc {
+	font-size: 15px;
+	line-height: 1.6;
+	color: #4b5563;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .lc-volume-hero-card {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	padding: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 32px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.laser-crafting-landing-root .lc-cube-mockup {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+}
+
+.laser-crafting-landing-root .lc-cube-3d {
+	width: 260px;
+	height: 260px;
+	background: rgba(34, 197, 94, 0.15);
+	border: 3px solid #22c55e;
+	border-radius: 8px;
+	position: relative;
+	box-shadow: 0 0 40px rgba(34, 197, 94, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-cube-dim-w {
+	position: absolute;
+	bottom: -24px;
+	font-size: 13px;
+	font-weight: 800;
+	color: #15803d;
+}
+
+.laser-crafting-landing-root .lc-cube-dim-h {
+	position: absolute;
+	right: -60px;
+	font-size: 13px;
+	font-weight: 800;
+	color: #15803d;
+}
+
+.laser-crafting-landing-root .lc-cube-dim-d {
+	position: absolute;
+	top: -24px;
+	font-size: 13px;
+	font-weight: 800;
+	color: #15803d;
+}
+
+.laser-crafting-landing-root .lc-machine-tag {
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	color: #475569;
+	background: #ffffff;
+	padding: 4px 12px;
+	border-radius: 20px;
+	border: 1px solid #cbd5e1;
+}
+
+/* Comparison Grid (Image 5 Bottom) */
+.laser-crafting-landing-root .lc-bed-comparison-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 28px;
+}
+
+.laser-crafting-landing-root .lc-bed-card {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 18px;
+	padding: 32px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.laser-crafting-landing-root .lc-bed-viewport {
+	width: 280px;
+	height: 280px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 24px;
+}
+
+.laser-crafting-landing-root .lc-bed-plate {
+	width: 220px;
+	height: 220px;
+	border-radius: 8px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .plate-a1 {
+	background: #d4a373;
+	border: 2px dashed #9a3412;
+}
+
+.laser-crafting-landing-root .plate-a2l {
+	width: 260px;
+	height: 260px;
+	background: #86efac;
+	border: 2px solid #16a34a;
+}
+
+.laser-crafting-landing-root .lc-sword-model {
+	width: 180px;
+	height: 28px;
+	background: #38bdf8;
+	transform: rotate(45deg);
+	position: relative;
+	border: 2px solid #0284c7;
+	border-radius: 4px;
+}
+
+.laser-crafting-landing-root .sword-overflow .tip-overflow {
+	position: absolute;
+	right: -30px;
+	top: -6px;
+	width: 36px;
+	height: 36px;
+	background: rgba(239, 68, 68, 0.3);
+	border: 2px dashed #ef4444;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-overflow-warning {
+	color: #ef4444;
+	font-weight: 900;
+	font-size: 18px;
+}
+
+.laser-crafting-landing-root .sword-fits {
+	width: 170px;
+}
+
+.laser-crafting-landing-root .lc-safe-zone-indicators {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	color: #16a34a;
+	font-weight: 900;
+}
+
+.laser-crafting-landing-root .lc-bed-badge {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 800;
+	padding: 4px 14px;
+	border-radius: 20px;
+	margin-bottom: 6px;
+}
+
+.laser-crafting-landing-root .badge-grey {
+	background: #6b7280;
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .badge-green {
+	background: #22c55e;
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-bed-sub {
+	display: block;
+	font-size: 13px;
+	color: #64748b;
+}
+
+@media screen and (max-width: 1024px) {
+	.laser-crafting-landing-root .product-hero.lc-product-hero {
+		grid-template-columns: 1fr;
+	}
+	.laser-crafting-landing-root .lc-overview-inner {
+		grid-template-columns: 1fr;
+		text-align: center;
+	}
+	.laser-crafting-landing-root .lc-why-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.laser-crafting-landing-root .filament-additions__grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.laser-crafting-landing-root .lc-slide-item {
+		flex: 0 0 calc(50% - 10px);
+	}
+	.laser-crafting-landing-root .lc-bed-comparison-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	.laser-crafting-landing-root .lc-product-gallery {
+		flex-direction: column-reverse;
+	}
+	.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs-wrap {
+		width: 100%;
+		flex-direction: row;
+	}
+	.laser-crafting-landing-root .lc-product-gallery .product-gallery__thumbs {
+		flex-direction: row;
+	}
+	.laser-crafting-landing-root .lc-why-grid {
+		grid-template-columns: 1fr;
+	}
+	.laser-crafting-landing-root .filament-additions__grid {
+		grid-template-columns: 1fr;
+	}
+	.laser-crafting-landing-root .lc-slide-item {
+		flex: 0 0 85%;
+	}
+	.laser-crafting-landing-root .lc-overview-title {
+		font-size: 32px;
+	}
+}
+
+/* ==========================================================================
+   COMMON ACCENT TOKENS
+   ========================================================================== */
+.laser-crafting-landing-root .lc-green-eyebrow {
+	font-size: 13px;
+	font-weight: 800;
+	color: #10b981;
+	letter-spacing: 0.08em;
+	display: inline-block;
+	margin-bottom: 8px;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .lc-section-desc {
+	max-width: 820px;
+	margin: 0 auto;
+	font-size: 15px;
+	line-height: 1.6;
+	color: #4b5563;
+}
+
+/* ==========================================================================
+   18. MODULAR ADD-ONS: HOVER-EXPANDING CARDS ACCORDION (IMAGE 2 TOP)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-modular-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-modular-header {
+	margin-bottom: 36px;
+}
+
+.laser-crafting-landing-root .lc-accordion-cards-wrap {
+	display: flex;
+	gap: 16px;
+	height: 440px;
+	width: 100%;
+}
+
+.laser-crafting-landing-root .lc-expand-card {
+	flex: 1;
+	border-radius: 16px;
+	overflow: hidden;
+	position: relative;
+	cursor: pointer;
+	box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+	transition: flex 0.45s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s ease;
+	outline: none;
+}
+
+/* Middle card default expanded state */
+.laser-crafting-landing-root .lc-expand-card.is-expanded {
+	flex: 2.2;
+}
+
+/* On hover of accordion container, reset default expanded and expand hovered card */
+.laser-crafting-landing-root .lc-accordion-cards-wrap:hover .lc-expand-card {
+	flex: 1;
+}
+
+.laser-crafting-landing-root .lc-accordion-cards-wrap .lc-expand-card:hover,
+.laser-crafting-landing-root .lc-accordion-cards-wrap .lc-expand-card:focus {
+	flex: 2.2;
+}
+
+.laser-crafting-landing-root .lc-expand-card-bg {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background: #111827;
+}
+
+.laser-crafting-landing-root .lc-card-visual-layer {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background-size: cover;
+	background-position: center;
+	transition: transform 0.4s ease;
+}
+
+.laser-crafting-landing-root .lc-expand-card:hover .lc-card-visual-layer {
+	transform: scale(1.03);
+}
+
+.laser-crafting-landing-root .visual-align-phone {
+	background: linear-gradient(145deg, #1f2937, #374151);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-phone-mockup-layer {
+	width: 150px;
+	height: 290px;
+	background: #000000;
+	border: 3px solid #4b5563;
+	border-radius: 28px;
+	padding: 10px;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-phone-notch {
+	width: 48px;
+	height: 12px;
+	background: #000000;
+	border-radius: 8px;
+	margin: 0 auto 6px;
+}
+
+.laser-crafting-landing-root .lc-phone-screen {
+	width: 100%;
+	height: calc(100% - 20px);
+	background: #111827;
+	border-radius: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .lc-viewfinder-grid {
+	width: 80px;
+	height: 80px;
+	border: 2px dashed #10b981;
+	border-radius: 8px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-align-dot {
+	width: 12px;
+	height: 12px;
+	background: #10b981;
+	border-radius: 50%;
+	box-shadow: 0 0 12px #10b981;
+}
+
+.laser-crafting-landing-root .visual-decal-cut {
+	background: linear-gradient(145deg, #2a2d34, #1e2024);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-cutter-mockup-layer {
+	width: 200px;
+	height: 240px;
+	background: #374151;
+	border-radius: 16px;
+	border: 2px solid #4b5563;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+
+.laser-crafting-landing-root .lc-blade-tip {
+	width: 24px;
+	height: 36px;
+	background: #f59e0b;
+	border-radius: 4px;
+	margin-top: 14px;
+	box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+}
+
+.laser-crafting-landing-root .visual-pen-draw {
+	background: linear-gradient(145deg, #0f172a, #1e293b);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-pen-mockup-layer {
+	width: 160px;
+	height: 250px;
+	background: #1e293b;
+	border: 2px solid #334155;
+	border-radius: 16px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-pen-tip {
+	width: 10px;
+	height: 48px;
+	background: #38bdf8;
+	border-radius: 6px;
+	margin-top: 20px;
+	box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
+}
+
+.laser-crafting-landing-root .lc-expand-card-gradient {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0) 100%);
+	pointer-events: none;
+}
+
+.laser-crafting-landing-root .lc-expand-card-caption {
+	position: absolute;
+	bottom: 24px;
+	left: 24px;
+	right: 24px;
+	z-index: 2;
+}
+
+.laser-crafting-landing-root .lc-expand-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 20px;
+	font-weight: 800;
+	color: #ffffff;
+	margin: 0;
+	line-height: 1.25;
+	text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+/* ==========================================================================
+   19. STABILITY & MOTION ENGINEERING (IMAGE 2 BOTTOM)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-stability-section {
+	padding: 80px 0;
+	background: #f8fafc;
+	border-top: 1px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .lc-stability-visual-box {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	padding: 48px 24px;
+	margin: 36px auto;
+	max-width: 960px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.laser-crafting-landing-root .lc-stability-split-stage {
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+	gap: 80px;
+	height: 380px;
+}
+
+.laser-crafting-landing-root .lc-tower-col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+}
+
+.laser-crafting-landing-root .lc-tower-model {
+	width: 140px;
+	height: 310px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-faceted-tower {
+	width: 90px;
+	height: 290px;
+	border-radius: 20px 20px 8px 8px;
+	position: relative;
+}
+
+.laser-crafting-landing-root .tower-ripples {
+	background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+	box-shadow: 0 0 16px rgba(0,0,0,0.25);
+	border-left: 2px dashed rgba(239, 68, 68, 0.4);
+	border-right: 2px dashed rgba(239, 68, 68, 0.4);
+}
+
+.laser-crafting-landing-root .tower-crisp {
+	background: linear-gradient(180deg, #1f2937 0%, #030712 100%);
+	box-shadow: 0 0 20px rgba(0,0,0,0.3);
+	border-left: 1.5px solid rgba(34, 197, 94, 0.6);
+	border-right: 1.5px solid rgba(34, 197, 94, 0.6);
+}
+
+.laser-crafting-landing-root .lc-tower-pill {
+	display: inline-block;
+	padding: 5px 18px;
+	font-size: 13px;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	border-radius: 20px;
+	text-transform: uppercase;
+}
+
+.laser-crafting-landing-root .pill-off {
+	background: #4b5563;
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .pill-on {
+	background: #22c55e;
+	color: #ffffff;
+	box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+.laser-crafting-landing-root .lc-stability-tabs-nav {
+	display: flex;
+	justify-content: center;
+	gap: 40px;
+	margin: 32px 0 16px;
+	border-bottom: 1px solid #e5e7eb;
+	padding-bottom: 2px;
+}
+
+.laser-crafting-landing-root .lc-stab-tab-btn {
+	background: none;
+	border: none;
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 15px;
+	font-weight: 600;
+	color: #6b7280;
+	padding: 10px 4px;
+	cursor: pointer;
+	position: relative;
+	transition: color 0.2s ease;
+}
+
+.laser-crafting-landing-root .lc-stab-tab-btn.is-active {
+	color: #111827;
+	font-weight: 800;
+}
+
+.laser-crafting-landing-root .lc-stab-tab-btn.is-active::after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background: #111827;
+}
+
+.laser-crafting-landing-root .lc-stab-desc {
+	max-width: 840px;
+	margin: 0 auto;
+	font-size: 14.5px;
+	line-height: 1.7;
+	color: #4b5563;
+}
+
+/* ==========================================================================
+   20. MULTI-COLOR MADE EASY (IMAGE 3)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-multicolor-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-multicolor-grid {
+	margin-top: 40px;
+}
+
+.laser-crafting-landing-root .lc-mc-card-hero {
+	height: 440px;
+	border-radius: 20px;
+	overflow: hidden;
+	position: relative;
+	background: #f1f5f9;
+	box-shadow: 0 6px 24px rgba(0,0,0,0.04);
+}
+
+.laser-crafting-landing-root .lc-mc-bird-scene {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 50%, #64748b 100%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-bird-body {
+	width: 180px;
+	height: 240px;
+	background: #ffffff;
+	border-radius: 90px 90px 40px 40px;
+	position: relative;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+	border: 3px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .lc-bird-crest {
+	position: absolute;
+	top: -24px;
+	left: 30px;
+	width: 32px;
+	height: 32px;
+	background: #ffffff;
+	border-radius: 50% 50% 0 0;
+	transform: rotate(-15deg);
+}
+
+.laser-crafting-landing-root .lc-bird-beak {
+	position: absolute;
+	top: 40px;
+	left: -14px;
+	width: 24px;
+	height: 20px;
+	background: #f59e0b;
+	border-radius: 4px;
+	transform: rotate(35deg);
+}
+
+.laser-crafting-landing-root .lc-bird-wing {
+	position: absolute;
+	top: 50px;
+	right: 10px;
+	width: 90px;
+	height: 130px;
+	background: #38bdf8;
+	border-radius: 40px 20px 80px 20px;
+	border: 2px solid #0284c7;
+}
+
+.laser-crafting-landing-root .lc-bird-feet {
+	position: absolute;
+	bottom: -16px;
+	left: 50px;
+	width: 70px;
+	height: 18px;
+	background: #f59e0b;
+	border-radius: 6px;
+}
+
+.laser-crafting-landing-root .lc-mc-badge-overlay {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+}
+
+.laser-crafting-landing-root .lc-mc-badge {
+	background: rgba(17, 24, 39, 0.8);
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 700;
+	padding: 5px 12px;
+	border-radius: 20px;
+	backdrop-filter: blur(4px);
+}
+
+.laser-crafting-landing-root .lc-mc-bottom-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	margin-top: 24px;
+}
+
+.laser-crafting-landing-root .lc-mc-card-sub {
+	height: 300px;
+	border-radius: 18px;
+	overflow: hidden;
+	position: relative;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+
+.laser-crafting-landing-root .lc-mc-track-scene {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #1e293b, #0f172a);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-map-contour {
+	width: 220px;
+	height: 180px;
+	background: #334155;
+	border: 2px solid #475569;
+	border-radius: 8px;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-map-track-line {
+	position: absolute;
+	inset: 20px;
+	border: 3px solid #ef4444;
+	border-radius: 30px;
+}
+
+.laser-crafting-landing-root .lc-mc-game-scene {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #1e3a29, #0f2316);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-crystal-torches {
+	display: flex;
+	gap: 14px;
+}
+
+.laser-crafting-landing-root .torch-flame {
+	width: 18px;
+	height: 28px;
+	background: #f97316;
+	border-radius: 50% 50% 20% 20%;
+	box-shadow: 0 0 14px #ea580c;
+}
+
+.laser-crafting-landing-root .lc-mc-caption {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	z-index: 2;
+}
+
+.laser-crafting-landing-root .lc-mc-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 18px;
+	font-weight: 800;
+	color: #ffffff;
+	margin: 0;
+	text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+}
+
+/* ==========================================================================
+   21. SUPPORT 2ND-GEN AMS (IMAGE 4 TOP)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-support-ams-section {
+	padding: 80px 0;
+	background: #f8fafc;
+	border-top: 1px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .lc-ams-highlight-pills {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 16px;
+	margin-top: 24px;
+}
+
+.laser-crafting-landing-root .lc-green-pill-text {
+	font-size: 16px;
+	font-weight: 800;
+	color: #10b981;
+}
+
+.laser-crafting-landing-root .lc-pill-sep {
+	color: #d1d5db;
+	font-weight: 300;
+}
+
+.laser-crafting-landing-root .lc-ams-diagram-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	padding: 48px;
+	margin-top: 40px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.laser-crafting-landing-root .lc-diagram-grid {
+	display: grid;
+	grid-template-columns: 1fr 100px 1.2fr;
+	align-items: center;
+	gap: 20px;
+}
+
+.laser-crafting-landing-root .lc-diagram-printer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+}
+
+.laser-crafting-landing-root .lc-printer-mockup {
+	width: 200px;
+	height: 180px;
+	background: #f1f5f9;
+	border: 2px solid #cbd5e1;
+	border-radius: 12px;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-diagram-label {
+	font-size: 13px;
+	font-weight: 700;
+	color: #4b5563;
+}
+
+.laser-crafting-landing-root .lc-diagram-connector {
+	display: flex;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-connector-arrow {
+	width: 80px;
+	height: 60px;
+}
+
+.laser-crafting-landing-root .lc-diagram-feeds {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.laser-crafting-landing-root .lc-feed-box {
+	background: #f8fafc;
+	border: 1.5px solid #cbd5e1;
+	border-radius: 14px;
+	padding: 16px 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.laser-crafting-landing-root .feed-box-3 .lc-feed-visual {
+	width: 48px;
+	height: 48px;
+	background: #0ea5e9;
+	border-radius: 50%;
+	border: 3px solid #0284c7;
+}
+
+.laser-crafting-landing-root .ams-quad-row {
+	display: flex;
+	gap: 8px;
+}
+
+.laser-crafting-landing-root .lc-ams-unit {
+	width: 38px;
+	height: 44px;
+	background: #e2e8f0;
+	border: 1px solid #94a3b8;
+	border-radius: 6px;
+}
+
+.laser-crafting-landing-root .lc-feed-tag {
+	font-size: 13px;
+	font-weight: 800;
+	color: #4b5563;
+	background: #ffffff;
+	padding: 4px 12px;
+	border-radius: 20px;
+	border: 1px solid #cbd5e1;
+}
+
+/* ==========================================================================
+   22. INTELLIGENT PRINT MONITORING (IMAGE 4 BOTTOM)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-autopilot-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-autopilot-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	margin-top: 40px;
+}
+
+.laser-crafting-landing-root .lc-auto-card {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 18px;
+	overflow: hidden;
+	height: 360px;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+	position: relative;
+	transition: transform 0.25s ease;
+}
+
+.laser-crafting-landing-root .lc-auto-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+}
+
+.laser-crafting-landing-root .lc-auto-media {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .media-dark {
+	background: #000000;
+}
+
+.laser-crafting-landing-root .lc-bambu-brand {
+	position: absolute;
+	top: 18px;
+	left: 18px;
+	font-size: 16px;
+	font-weight: 800;
+	color: #64748b;
+	letter-spacing: -0.02em;
+}
+
+.laser-crafting-landing-root .lc-clumping-sock {
+	width: 44px;
+	height: 34px;
+	background: #3b82f6;
+	border-radius: 8px 8px 18px 18px;
+	margin: 10px auto 0;
+	box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+}
+
+.laser-crafting-landing-root .lc-motor-gear {
+	width: 80px;
+	height: 80px;
+	border: 4px dashed #eab308;
+	border-radius: 50%;
+	box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+}
+
+.laser-crafting-landing-root .lc-air-infill-block {
+	width: 140px;
+	height: 70px;
+	background: #38bdf8;
+	border-radius: 6px;
+	margin-top: 30px;
+	opacity: 0.8;
+}
+
+.laser-crafting-landing-root .lc-auto-caption {
+	position: absolute;
+	bottom: 20px;
+	left: 20px;
+	right: 20px;
+	z-index: 2;
+}
+
+.laser-crafting-landing-root .lc-auto-title {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 16px;
+	font-weight: 800;
+	color: #111827;
+	margin: 0;
+}
+
+.laser-crafting-landing-root .media-dark .lc-auto-title {
+	color: #ffffff;
+}
+
+/* ==========================================================================
+   23. AUTO FLOW DYNAMICS CALIBRATION (IMAGE 5 TOP)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-flow-section {
+	padding: 80px 0;
+	background: #f8fafc;
+	border-top: 1px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .lc-flow-comparison-box {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	overflow: hidden;
+	margin-top: 40px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.laser-crafting-landing-root .lc-flow-images-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.laser-crafting-landing-root .lc-flow-card {
+	height: 380px;
+	position: relative;
+	overflow: hidden;
+}
+
+.laser-crafting-landing-root .flow-card-a2l {
+	background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+	border-right: 1px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .flow-card-other {
+	background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+}
+
+.laser-crafting-landing-root .lc-flow-media {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-flow-badge {
+	position: absolute;
+	top: 20px;
+	font-size: 12px;
+	font-weight: 800;
+	padding: 5px 16px;
+	border-radius: 20px;
+	z-index: 2;
+}
+
+.laser-crafting-landing-root .badge-green-pill {
+	left: 20px;
+	background: #22c55e;
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .badge-gray-pill {
+	right: 20px;
+	background: #6b7280;
+	color: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-flow-status-strip {
+	background: #f1f5f9;
+	padding: 24px;
+	border-top: 1px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .lc-flow-bullets {
+	font-size: 13.5px;
+	font-weight: 700;
+	margin: 0 0 4px;
+}
+
+.laser-crafting-landing-root .lc-highlight-green {
+	color: #16a34a;
+}
+
+.laser-crafting-landing-root .lc-flow-sublabel {
+	font-size: 12px;
+	color: #64748b;
+	margin: 0;
+}
+
+/* ==========================================================================
+   24. UL CLEAN AIR CERTIFIED (IMAGE 5 BOTTOM)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-clean-air-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-clean-air-card {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	overflow: hidden;
+	height: 480px;
+	position: relative;
+	margin-top: 40px;
+	box-shadow: 0 6px 24px rgba(0,0,0,0.03);
+}
+
+.laser-crafting-landing-root .lc-lifestyle-scene {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #fef3c7 0%, #e2e8f0 50%, #cbd5e1 100%);
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-greenguard-badge {
+	position: absolute;
+	bottom: 24px;
+	right: 24px;
+	background: #84cc16;
+	color: #ffffff;
+	border-radius: 12px;
+	padding: 14px 18px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	box-shadow: 0 8px 20px rgba(132, 204, 22, 0.4);
+}
+
+.laser-crafting-landing-root .lc-ul-logo-circle {
+	width: 38px;
+	height: 38px;
+	background: #ffffff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-ul-text {
+	font-size: 18px;
+	font-weight: 900;
+	color: #84cc16;
+}
+
+.laser-crafting-landing-root .lc-greenguard-label {
+	display: flex;
+	flex-direction: column;
+}
+
+.laser-crafting-landing-root .lc-greenguard-label strong {
+	font-size: 14px;
+	letter-spacing: 0.05em;
+}
+
+.laser-crafting-landing-root .lc-greenguard-sub {
+	font-size: 8px;
+	opacity: 0.9;
+}
+
+.laser-crafting-landing-root .lc-greenguard-std {
+	font-size: 8px;
+	font-weight: 700;
+	margin-top: 2px;
+}
+
+/* Responsive Overrides */
+@media screen and (max-width: 1024px) {
+	.laser-crafting-landing-root .lc-accordion-cards-wrap {
+		height: 380px;
+	}
+	.laser-crafting-landing-root .lc-mc-bottom-row {
+		grid-template-columns: 1fr;
+	}
+	.laser-crafting-landing-root .lc-diagram-grid {
+		grid-template-columns: 1fr;
+		text-align: center;
+	}
+	.laser-crafting-landing-root .lc-diagram-connector {
+		display: none;
+	}
+	.laser-crafting-landing-root .lc-autopilot-grid {
+		grid-template-columns: 1fr;
+	}
+	.laser-crafting-landing-root .lc-flow-images-grid {
+		grid-template-columns: 1fr;
+	}
+	.laser-crafting-landing-root .lc-silence-card {
+		height: 380px;
+	}
+	.laser-crafting-landing-root .lc-unboxing-card {
+		height: 400px;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	.laser-crafting-landing-root .lc-accordion-cards-wrap {
+		flex-direction: column;
+		height: auto;
+	}
+	.laser-crafting-landing-root .lc-expand-card {
+		height: 220px;
+		flex: none !important;
+	}
+	.laser-crafting-landing-root .lc-stability-split-stage {
+		gap: 30px;
+		height: 280px;
+	}
+	.laser-crafting-landing-root .lc-tower-model {
+		width: 100px;
+		height: 220px;
+	}
+	.laser-crafting-landing-root .lc-faceted-tower {
+		width: 70px;
+		height: 200px;
+	}
+	.laser-crafting-landing-root .lc-clean-air-card {
+		height: 360px;
+	}
+	.laser-crafting-landing-root .lc-silence-card {
+		height: 280px;
+	}
+	.laser-crafting-landing-root .lc-unboxing-card {
+		height: 260px;
+	}
+}
+
+/* ==========================================================================
+   25. GRANULAR DAMPER SINGLE COLUMN STAGE (ITEM 1)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-damper-single-stage {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 380px;
+	width: 100%;
+}
+
+.laser-crafting-landing-root .lc-damper-model {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-damper-graphic {
+	width: 280px;
+	height: 260px;
+	background: #111827;
+	border: 3px solid #374151;
+	border-radius: 20px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+}
+
+.laser-crafting-landing-root .lc-damper-housing {
+	width: 140px;
+	height: 140px;
+	border: 2px solid #22c55e;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	box-shadow: 0 0 24px rgba(34, 197, 94, 0.3);
+}
+
+.laser-crafting-landing-root .lc-damper-granules {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+	width: 80px;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .granule-dot {
+	width: 12px;
+	height: 12px;
+	background: #22c55e;
+	border-radius: 50%;
+	box-shadow: 0 0 8px #22c55e;
+}
+
+.laser-crafting-landing-root .lc-damper-badge {
+	margin-top: 18px;
+	background: rgba(34, 197, 94, 0.15);
+	color: #22c55e;
+	border: 1px solid #22c55e;
+	font-size: 12px;
+	font-weight: 800;
+	padding: 4px 14px;
+	border-radius: 20px;
+	text-transform: uppercase;
+}
+
+/* ==========================================================================
+   26. AMS DIAGRAM IMAGE WRAPPER (ITEM 2)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-ams-diagram-img-wrap {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-ams-diagram-image {
+	max-width: 100%;
+	height: auto;
+	border-radius: 12px;
+}
+
+/* ==========================================================================
+   27. AUTOPILOT ACCORDION HOVER EXPANSION (ITEM 3)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-autopilot-accordion .lc-auto-card {
+	flex: 1;
+	border-radius: 16px;
+	overflow: hidden;
+	position: relative;
+	cursor: pointer;
+	box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+	transition: flex 0.45s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s ease;
+	outline: none;
+}
+
+.laser-crafting-landing-root .lc-autopilot-accordion .lc-auto-card.is-expanded {
+	flex: 2.2;
+}
+
+.laser-crafting-landing-root .lc-autopilot-accordion:hover .lc-auto-card {
+	flex: 1;
+}
+
+.laser-crafting-landing-root .lc-autopilot-accordion .lc-auto-card:hover,
+.laser-crafting-landing-root .lc-autopilot-accordion .lc-auto-card:focus {
+	flex: 2.2;
+}
+
+.laser-crafting-landing-root .lc-auto-card-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* ==========================================================================
+   28. ENGINEERED FOR SILENCE (ITEM 4 TOP)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-silence-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-silence-card {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	overflow: hidden;
+	height: 480px;
+	position: relative;
+	margin-top: 40px;
+	box-shadow: 0 6px 24px rgba(0,0,0,0.03);
+}
+
+.laser-crafting-landing-root .lc-silence-img-wrap {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-silence-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.laser-crafting-landing-root .lc-silence-mockup-scene {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #fefce8 0%, #f1f5f9 60%, #e2e8f0 100%);
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-silence-table {
+	width: 600px;
+	height: 320px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-around;
+	padding-bottom: 20px;
+}
+
+.laser-crafting-landing-root .lc-printer-silence-unit {
+	width: 220px;
+	height: 260px;
+	background: #e2e8f0;
+	border: 2px solid #cbd5e1;
+	border-radius: 12px;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-sleeping-cat-graphic {
+	width: 120px;
+	height: 60px;
+	background: #fdba74;
+	border-radius: 40px 40px 10px 10px;
+	box-shadow: 0 4px 14px rgba(251, 146, 60, 0.3);
+}
+
+.laser-crafting-landing-root .lc-decibel-badge {
+	position: absolute;
+	bottom: 24px;
+	right: 24px;
+	background: rgba(17, 24, 39, 0.85);
+	color: #ffffff;
+	font-size: 13px;
+	font-weight: 800;
+	padding: 6px 18px;
+	border-radius: 20px;
+	backdrop-filter: blur(4px);
+}
+
+/* ==========================================================================
+   29. CONNECTIVITY & PRIVACY (ITEM 4 BOTTOM)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-connect-section {
+	padding: 80px 0;
+	background: #f8fafc;
+	border-top: 1px solid #e2e8f0;
+}
+
+.laser-crafting-landing-root .lc-connect-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	padding: 44px;
+	margin-top: 40px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.laser-crafting-landing-root .lc-connect-img-wrap {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-connect-img {
+	max-width: 100%;
+	height: auto;
+}
+
+.laser-crafting-landing-root .lc-connect-diagram-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 28px;
+	width: 100%;
+	max-width: 820px;
+}
+
+.laser-crafting-landing-root .lc-node-cloud {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: #0284c7;
+	color: #ffffff;
+	padding: 12px 28px;
+	border-radius: 30px;
+	font-weight: 800;
+	font-size: 14px;
+	box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3);
+}
+
+.laser-crafting-landing-root .lc-connect-mid-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	gap: 16px;
+}
+
+.laser-crafting-landing-root .lc-node-client,
+.laser-crafting-landing-root .lc-node-printer,
+.laser-crafting-landing-root .lc-node-storage {
+	background: #f8fafc;
+	border: 1.5px solid #cbd5e1;
+	border-radius: 14px;
+	padding: 14px 18px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	font-weight: 700;
+	color: #334155;
+}
+
+.laser-crafting-landing-root .lc-node-printer {
+	border-color: #22c55e;
+	background: #f0fdf4;
+	color: #166534;
+}
+
+.laser-crafting-landing-root .lc-lan-badge {
+	background: #3b82f6;
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 800;
+	padding: 6px 14px;
+	border-radius: 6px;
+}
+
+.laser-crafting-landing-root .lc-node-3rdparty {
+	background: #f8fafc;
+	border: 1.5px dashed #94a3b8;
+	border-radius: 14px;
+	padding: 12px 24px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+	font-weight: 700;
+	color: #475569;
+}
+
+/* ==========================================================================
+   30. UNBOXING VIDEO SECTION (ITEM 5)
+   ========================================================================== */
+.laser-crafting-landing-root .lc-unboxing-section {
+	padding: 80px 0;
+	background: #ffffff;
+}
+
+.laser-crafting-landing-root .lc-unboxing-card {
+	max-width: 960px;
+	margin: 36px auto 0;
+	height: 520px;
+	border-radius: 20px;
+	overflow: hidden;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+	background: #d8c3b2;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-video-wrapper {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-yt-player-box {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.laser-crafting-landing-root .lc-video-poster {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(145deg, #dfcbbd, #caa995);
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laser-crafting-landing-root .lc-carton-mockup {
+	position: absolute;
+	left: 80px;
+	top: 80px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.laser-crafting-landing-root .lc-carton-text {
+	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-size: 36px;
+	font-weight: 900;
+	color: #2a2826;
+	letter-spacing: -0.02em;
+}
+
+.laser-crafting-landing-root .lc-carton-model {
+	font-size: 20px;
+	font-weight: 800;
+	color: #3b3734;
+}
+
+.laser-crafting-landing-root .lc-video-play-btn {
+	width: 76px;
+	height: 76px;
+	background: rgba(255, 255, 255, 0.95);
+	border: none;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+	transition: all 0.25s ease;
+	z-index: 5;
+}
+
+.laser-crafting-landing-root .lc-video-play-btn:hover {
+	transform: scale(1.1);
+	background: #ffffff;
+	box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+}
+
+.laser-crafting-landing-root .lc-play-icon {
+	color: #111827;
+	font-size: 26px;
+	margin-left: 4px;
+}
+
+.laser-crafting-landing-root .lc-player-control-bar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(17, 24, 39, 0.85);
+	backdrop-filter: blur(6px);
+	padding: 12px 24px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	color: #ffffff;
+	font-size: 12px;
+	z-index: 4;
+}
+
+.laser-crafting-landing-root .lc-ctrl-progress-bar {
+	flex: 1;
+	height: 4px;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 2px;
+	position: relative;
+	cursor: pointer;
+}
+
+.laser-crafting-landing-root .lc-ctrl-progress-fill {
+	width: 0%;
+	height: 100%;
+	background: #ff5c00;
+	border-radius: 2px;
+}
+
+.laser-crafting-landing-root .lc-native-video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+

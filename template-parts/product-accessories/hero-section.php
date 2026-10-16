@@ -131,7 +131,7 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 		<!-- 2. Product Title & Short Description -->
 		<h1 class="product-title"><?php echo esc_html( $title ); ?></h1>
 		<?php if ( ! empty( $subtitle ) ) : ?>
-			<p class="product-subtitle"><?php echo esc_html( $subtitle ); ?></p>
+			<div class="product-subtitle"><?php echo apply_filters( 'woocommerce_short_description', $subtitle ); ?></div>
 		<?php endif; ?>
 
 		<!-- 3. Star Rating & Tagline -->
@@ -267,15 +267,13 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 						<div class="accessories-attr-group" data-attr-key="<?php echo esc_attr( $attr_key_field ); ?>">
 							<div class="accessories-attr-header">
 								<span class="accessories-attr-label"><?php echo esc_html( strtoupper( $attr_label ) ); ?>:</span>
-								<span class="accessories-attr-selected-value" id="val-<?php echo esc_attr( sanitize_title( $attr_label ) ); ?>"><?php echo esc_html( $options[0]['name'] ?? '' ); ?></span>
+								<span class="accessories-attr-selected-value" id="val-<?php echo esc_attr( sanitize_title( $attr_label ) ); ?>"></span>
 							</div>
 
 							<div class="accessories-pills-grid" role="radiogroup" aria-label="<?php echo esc_attr( $attr_label ); ?>">
-								<?php foreach ( $options as $opt_idx => $opt ) :
-									$is_sel = ( 0 === $opt_idx );
-								?>
+								<?php foreach ( $options as $opt_idx => $opt ) : ?>
 									<button type="button" 
-											class="accessories-pill-btn <?php echo $is_sel ? 'is-active' : ''; ?>"
+											class="accessories-pill-btn"
 											data-attr-key="<?php echo esc_attr( $attr_key_field ); ?>"
 											data-attr-val="<?php echo esc_attr( $opt['slug'] ); ?>"
 											data-attr-name="<?php echo esc_attr( $opt['name'] ); ?>">
@@ -284,7 +282,7 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 									</button>
 								<?php endforeach; ?>
 							</div>
-							<input type="hidden" name="<?php echo esc_attr( $attr_key_field ); ?>" value="<?php echo esc_attr( $options[0]['slug'] ?? '' ); ?>" class="accessories-hidden-attr">
+							<input type="hidden" name="<?php echo esc_attr( $attr_key_field ); ?>" value="" class="accessories-hidden-attr">
 						</div>
 					<?php endforeach; ?>
 				</div>

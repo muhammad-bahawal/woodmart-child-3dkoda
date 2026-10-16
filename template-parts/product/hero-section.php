@@ -116,7 +116,7 @@ $default_var = array();
 
 		<h1 class="product-title"><?php echo esc_html( $core['title'] ); ?></h1>
 
-		<p class="product-subtitle"><?php echo esc_html( $core['short_desc'] ); ?></p>
+		<div class="product-subtitle"><?php echo apply_filters( 'woocommerce_short_description', $core['short_desc'] ); ?></div>
 
 		<div class="product-rating-line">
 			<span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
