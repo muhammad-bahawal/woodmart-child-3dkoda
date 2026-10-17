@@ -57,7 +57,7 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 				<button type="button" class="wc-tab-btn" data-tab="tab-ams-overview"><span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Overview & Banner', 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-ams-drying"><span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Drying & Feeding', 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-ams-efficiency"><span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Speed & Metrics', 'woodmart-child' ); ?></button>
-				<button type="button" class="wc-tab-btn" data-tab="tab-ams-multicolor"><span class="dashicons dashicons-art"></span> <?php esc_html_e( 'Multi-Color Architecture', 'woodmart-child' ); ?></button>
+				<button type="button" class="wc-tab-btn" data-tab="tab-ams-design"><span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Design Details', 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-ams-compatibility"><span class="dashicons dashicons-grid-view"></span> <?php esc_html_e( 'Compatibility Matrix', 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-ams-box"><span class="dashicons dashicons-archive"></span> <?php esc_html_e( "What's in the Box", 'woodmart-child' ); ?></button>
 				<button type="button" class="wc-tab-btn" data-tab="tab-ams-specs"><span class="dashicons dashicons-clipboard"></span> <?php esc_html_e( 'Technical Specs', 'woodmart-child' ); ?></button>
@@ -216,11 +216,11 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 					<div class="wc-field-row grid-2">
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Eyebrow Text', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[overview][eyebrow]" value="<?php echo esc_attr( $ov['eyebrow'] ?? 'Next-Gen Automated Material System' ); ?>" class="widefat">
+							<input type="text" name="ams_builder[overview][eyebrow]" value="<?php echo esc_attr( $ov['eyebrow'] ?? 'Bambu Lab AMS 2 Pro' ); ?>" class="widefat">
 						</div>
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Main Headline', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[overview][title]" value="<?php echo esc_attr( $ov['title'] ?? "Multi-Color 3D Printing.\nEffortless, Airtight & Intelligent." ); ?>" class="widefat">
+							<input type="text" name="ams_builder[overview][title]" value="<?php echo esc_attr( $ov['title'] ?? 'AMS, Evolved.' ); ?>" class="widefat">
 						</div>
 					</div>
 
@@ -232,7 +232,7 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 					<div class="wc-field-row grid-2">
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Video URL (YouTube or MP4 - Opens in in-page popup modal)', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[overview][video_url]" value="<?php echo esc_attr( $ov['video_url'] ?? 'https://www.youtube.com/watch?v=kYv9bI3oH6U' ); ?>" class="widefat">
+							<input type="text" name="ams_builder[overview][video_url]" value="<?php echo esc_attr( $ov['video_url'] ?? '' ); ?>" class="widefat">
 						</div>
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Watch Video Button Text', 'woodmart-child' ); ?></label>
@@ -260,11 +260,11 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 								<span class="wc-row-drag">☰</span>
 								<div class="wc-repeater-fields grid-3">
 									<div class="wc-field">
-										<label><?php esc_html_e( 'Metric Value (e.g. 4–16, RFID, Airtight)', 'woodmart-child' ); ?></label>
+										<label><?php esc_html_e( 'Metric Value (optional)', 'woodmart-child' ); ?></label>
 										<input type="text" name="ams_builder[overview][metrics][<?php echo esc_attr( $idx ); ?>][value]" value="<?php echo esc_attr( $m['value'] ?? '' ); ?>" class="widefat">
 									</div>
 									<div class="wc-field">
-										<label><?php esc_html_e( 'Metric Label', 'woodmart-child' ); ?></label>
+										<label><?php esc_html_e( 'Metric Label / Title', 'woodmart-child' ); ?></label>
 										<input type="text" name="ams_builder[overview][metrics][<?php echo esc_attr( $idx ); ?>][label]" value="<?php echo esc_attr( $m['label'] ?? '' ); ?>" class="widefat">
 									</div>
 									<div class="wc-field">
@@ -290,11 +290,11 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 					<div class="wc-field-row grid-2">
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[drying_feeding][eyebrow]" value="<?php echo esc_attr( $df['eyebrow'] ?? 'Intelligent Care & Feeding' ); ?>" class="widefat">
+							<input type="text" name="ams_builder[drying_feeding][eyebrow]" value="<?php echo esc_attr( $df['eyebrow'] ?? '' ); ?>" class="widefat">
 						</div>
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[drying_feeding][title]" value="<?php echo esc_attr( $df['title'] ?? 'Keep Filament Dry & Feeds Flawlessly' ); ?>" class="widefat">
+							<input type="text" name="ams_builder[drying_feeding][title]" value="<?php echo esc_attr( $df['title'] ?? 'Dry Filament Quickly and Intelligently' ); ?>" class="widefat">
 						</div>
 					</div>
 
@@ -345,78 +345,95 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 					<button type="button" class="button button-secondary wc-btn-add-row" data-target="ams-drying-repeater" data-template="tmpl-ams-drying-row"><?php esc_html_e( '+ Add Feature Card', 'woodmart-child' ); ?></button>
 				</section>
 
-				<!-- 4. SPEED & EFFICIENCY METRICS -->
+				<!-- 4. SPEED & EFFICIENCY METRICS (IMAGE 3) -->
 				<section class="wc-tab-panel" id="tab-ams-efficiency">
 					<div class="wc-panel-head">
-						<h3><?php esc_html_e( 'Speed & Efficiency Metrics', 'woodmart-child' ); ?></h3>
-						<p class="description"><?php esc_html_e( 'Section 4 on frontend: High-contrast metric cards (+50% Feeding Speed, -10min Changeover) with visual graphic card.', 'woodmart-child' ); ?></p>
+						<h3><?php esc_html_e( 'Quality Comparison & Speed Metrics', 'woodmart-child' ); ?></h3>
+						<p class="description"><?php esc_html_e( 'Section 4 on frontend (Image 3): Honeycomb print comparison (Dry vs Moist) + Speed metrics (+60%, -10min) + Showcase Car Banner.', 'woodmart-child' ); ?></p>
 					</div>
 
 					<?php $eff = ! empty( $settings['efficiency_metrics'] ) ? $settings['efficiency_metrics'] : array(); ?>
-					<div class="wc-field-row grid-2">
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][eyebrow]" value="<?php echo esc_attr( $eff['eyebrow'] ?? 'Speed & Waste Reduction' ); ?>" class="widefat">
-						</div>
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][title]" value="<?php echo esc_attr( $eff['title'] ?? 'Engineered for Blazing Speed & Minimal Waste' ); ?>" class="widefat">
-						</div>
-					</div>
 
+					<!-- Part 1: Honeycomb Print Quality Comparison -->
+					<h4 class="wc-subhead"><?php esc_html_e( '1. Honeycomb Print Quality Comparison (Image 3 Top)', 'woodmart-child' ); ?></h4>
 					<div class="wc-field">
-						<label><?php esc_html_e( 'Section Subtitle Description', 'woodmart-child' ); ?></label>
-						<textarea name="ams_builder[efficiency_metrics][subtitle]" rows="2" class="widefat"><?php echo esc_textarea( $eff['subtitle'] ?? '' ); ?></textarea>
+						<label><?php esc_html_e( 'Comparison Caption (Centered below images)', 'woodmart-child' ); ?></label>
+						<input type="text" name="ams_builder[efficiency_metrics][comparison_caption]" value="<?php echo esc_attr( $eff['comparison_caption'] ?? 'Bambu PETG Basic' ); ?>" class="widefat">
 					</div>
 
-					<!-- Metric Card 1: Speed -->
-					<h4 class="wc-subhead"><?php esc_html_e( 'Card 1: Speed Metric (Green Accent)', 'woodmart-child' ); ?></h4>
-					<div class="wc-field-row grid-3">
+					<div class="wc-field-row grid-2" style="margin-top: 12px;">
 						<div class="wc-field">
-							<label><?php esc_html_e( 'Metric Highlight (e.g. +50%)', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][card_speed][metric]" value="<?php echo esc_attr( $eff['card_speed']['metric'] ?? '+50%' ); ?>" class="widefat">
+							<label><?php esc_html_e( 'Dry Side Badge Label', 'woodmart-child' ); ?></label>
+							<input type="text" name="ams_builder[efficiency_metrics][dry_label]" value="<?php echo esc_attr( $eff['dry_label'] ?? 'Dry' ); ?>" class="widefat">
+							<div class="wc-image-picker" style="margin-top: 8px;">
+								<input type="hidden" name="ams_builder[efficiency_metrics][dry_image]" value="<?php echo esc_attr( $eff['dry_image'] ?? '' ); ?>" class="wc-image-url">
+								<div class="wc-image-preview"><?php if ( ! empty( $eff['dry_image'] ) ) : ?><img src="<?php echo esc_url( $eff['dry_image'] ); ?>"><?php endif; ?></div>
+								<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Upload Dry Print Image', 'woodmart-child' ); ?></button>
+								<button type="button" class="button wc-btn-remove-image <?php echo empty( $eff['dry_image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+							</div>
 						</div>
 						<div class="wc-field">
-							<label><?php esc_html_e( 'Metric Label', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][card_speed][label]" value="<?php echo esc_attr( $eff['card_speed']['label'] ?? 'Feeding & Retraction Velocity' ); ?>" class="widefat">
-						</div>
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][card_speed][desc]" value="<?php echo esc_attr( $eff['card_speed']['desc'] ?? 'High-torque feed motors and optimized PTFE path cut changeover latency.' ); ?>" class="widefat">
+							<label><?php esc_html_e( 'Moist Side Badge Label', 'woodmart-child' ); ?></label>
+							<input type="text" name="ams_builder[efficiency_metrics][moist_label]" value="<?php echo esc_attr( $eff['moist_label'] ?? 'Moist' ); ?>" class="widefat">
+							<div class="wc-image-picker" style="margin-top: 8px;">
+								<input type="hidden" name="ams_builder[efficiency_metrics][moist_image]" value="<?php echo esc_attr( $eff['moist_image'] ?? '' ); ?>" class="wc-image-url">
+								<div class="wc-image-preview"><?php if ( ! empty( $eff['moist_image'] ) ) : ?><img src="<?php echo esc_url( $eff['moist_image'] ); ?>"><?php endif; ?></div>
+								<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Upload Moist Print Image', 'woodmart-child' ); ?></button>
+								<button type="button" class="button wc-btn-remove-image <?php echo empty( $eff['moist_image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+							</div>
 						</div>
 					</div>
 
-					<!-- Metric Card 2: Waste -->
-					<h4 class="wc-subhead"><?php esc_html_e( 'Card 2: Overhead Reduction Metric', 'woodmart-child' ); ?></h4>
-					<div class="wc-field-row grid-3">
+					<div class="wc-field" style="margin-top: 12px;">
+						<label><?php esc_html_e( 'Or Single Combined Comparison Image (Optional - overrides separate Dry/Moist images)', 'woodmart-child' ); ?></label>
+						<div class="wc-image-picker">
+							<input type="hidden" name="ams_builder[efficiency_metrics][comparison_image]" value="<?php echo esc_attr( $eff['comparison_image'] ?? '' ); ?>" class="wc-image-url">
+							<div class="wc-image-preview"><?php if ( ! empty( $eff['comparison_image'] ) ) : ?><img src="<?php echo esc_url( $eff['comparison_image'] ); ?>"><?php endif; ?></div>
+							<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Combined Image', 'woodmart-child' ); ?></button>
+							<button type="button" class="button wc-btn-remove-image <?php echo empty( $eff['comparison_image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+						</div>
+					</div>
+
+					<!-- Part 2: Speed Up! Faster Multi-material Printing! -->
+					<h4 class="wc-subhead" style="margin-top: 24px;"><?php esc_html_e( '2. Speed Up & Multi-Material Printing (Image 3 Bottom)', 'woodmart-child' ); ?></h4>
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Section Headline', 'woodmart-child' ); ?></label>
+						<input type="text" name="ams_builder[efficiency_metrics][title]" value="<?php echo esc_attr( $eff['title'] ?? 'Speed Up! Faster Multi-material Printing!' ); ?>" class="widefat">
+					</div>
+
+					<!-- Metric Cards -->
+					<div class="wc-field-row grid-2" style="margin-top: 12px;">
+						<!-- Card 1 -->
 						<div class="wc-field">
-							<label><?php esc_html_e( 'Metric Highlight (e.g. -10min)', 'woodmart-child' ); ?></label>
+							<label><?php esc_html_e( 'Metric 1 Highlight (e.g. +60%)', 'woodmart-child' ); ?></label>
+							<input type="text" name="ams_builder[efficiency_metrics][card_speed][metric]" value="<?php echo esc_attr( $eff['card_speed']['metric'] ?? '+60%' ); ?>" class="widefat">
+							<label style="margin-top: 8px;"><?php esc_html_e( 'Metric 1 Description', 'woodmart-child' ); ?></label>
+							<textarea name="ams_builder[efficiency_metrics][card_speed][desc]" rows="3" class="widefat"><?php echo esc_textarea( $eff['card_speed']['desc'] ?? 'The powerful Bambu permanent magnet synchronous servo motor accelerates filament feeding by 60% for enhanced efficiency.' ); ?></textarea>
+						</div>
+
+						<!-- Card 2 -->
+						<div class="wc-field">
+							<label><?php esc_html_e( 'Metric 2 Highlight (e.g. -10min)', 'woodmart-child' ); ?></label>
 							<input type="text" name="ams_builder[efficiency_metrics][card_waste][metric]" value="<?php echo esc_attr( $eff['card_waste']['metric'] ?? '-10min' ); ?>" class="widefat">
-						</div>
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Metric Label', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][card_waste][label]" value="<?php echo esc_attr( $eff['card_waste']['label'] ?? 'Per Multi-Color Layer Overhead' ); ?>" class="widefat">
-						</div>
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][card_waste][desc]" value="<?php echo esc_attr( $eff['card_waste']['desc'] ?? 'Synchronized filament cutting saves up to 60% transition waste.' ); ?>" class="widefat">
+							<label style="margin-top: 8px;"><?php esc_html_e( 'Metric 2 Description', 'woodmart-child' ); ?></label>
+							<textarea name="ams_builder[efficiency_metrics][card_waste][desc]" rows="3" class="widefat"><?php echo esc_textarea( $eff['card_waste']['desc'] ?? 'Saves an average of 10 minutes per 100 filament changes.' ); ?></textarea>
 						</div>
 					</div>
 
-					<!-- Visual Graphic Banner Underneath -->
-					<h4 class="wc-subhead"><?php esc_html_e( 'Wide Visual Graphic Showcase Card', 'woodmart-child' ); ?></h4>
+					<!-- Showcase Car Banner -->
+					<h4 class="wc-subhead" style="margin-top: 20px;"><?php esc_html_e( '3. Full-Width Showcase Car Banner', 'woodmart-child' ); ?></h4>
 					<div class="wc-field-row grid-2">
 						<div class="wc-field">
-							<label><?php esc_html_e( 'Banner Title', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][banner_title]" value="<?php echo esc_attr( $eff['banner_title'] ?? 'Smart Purge Calibration in Bambu Studio' ); ?>" class="widefat">
+							<label><?php esc_html_e( 'Banner Overlay Title', 'woodmart-child' ); ?></label>
+							<input type="text" name="ams_builder[efficiency_metrics][banner_title]" value="<?php echo esc_attr( $eff['banner_title'] ?? 'Faster multi-color printing' ); ?>" class="widefat">
 						</div>
 						<div class="wc-field">
-							<label><?php esc_html_e( 'Banner Description', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[efficiency_metrics][banner_desc]" value="<?php echo esc_attr( $eff['banner_desc'] ?? 'Adaptive color transition matrix calculates precise flush volume required.' ); ?>" class="widefat">
+							<label><?php esc_html_e( 'Banner Attribution / Credit Text', 'woodmart-child' ); ?></label>
+							<input type="text" name="ams_builder[efficiency_metrics][banner_credit]" value="<?php echo esc_attr( $eff['banner_credit'] ?? 'Xiaomi SU7 Ultra Prototype by @大匠' ); ?>" class="widefat">
 						</div>
 					</div>
 					<div class="wc-field" style="margin-top: 8px;">
-						<label><?php esc_html_e( 'Banner Graphic Image (Fallback displays stylized high-speed transition render)', 'woodmart-child' ); ?></label>
+						<label><?php esc_html_e( 'Showcase Banner Image Upload', 'woodmart-child' ); ?></label>
 						<div class="wc-image-picker">
 							<input type="hidden" name="ams_builder[efficiency_metrics][banner_image]" value="<?php echo esc_attr( $eff['banner_image'] ?? '' ); ?>" class="wc-image-url">
 							<div class="wc-image-preview"><?php if ( ! empty( $eff['banner_image'] ) ) : ?><img src="<?php echo esc_url( $eff['banner_image'] ); ?>"><?php endif; ?></div>
@@ -426,78 +443,62 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 					</div>
 				</section>
 
-				<!-- 5. MULTI-COLOR ARCHITECTURE -->
-				<section class="wc-tab-panel" id="tab-ams-multicolor">
+				<!-- 5. EVOLVED, POLISHED DESIGN DETAILS (IMAGE 4) -->
+				<section class="wc-tab-panel" id="tab-ams-design">
 					<div class="wc-panel-head">
-						<h3><?php esc_html_e( 'Multi-Color Architecture (4 to 16 Spools)', 'woodmart-child' ); ?></h3>
-						<p class="description"><?php esc_html_e( 'Section 5 on frontend: Showcase for 4-spool up to 16-spool feeding chains and automatic backup switching.', 'woodmart-child' ); ?></p>
+						<h3><?php esc_html_e( 'Evolved, Polished Design Details', 'woodmart-child' ); ?></h3>
+						<p class="description"><?php esc_html_e( 'Section 5 on frontend (Image 4): Zig-zag feature cards for Tool-Free Filament Tubes Access, Ceramic Inlet, etc.', 'woodmart-child' ); ?></p>
 					</div>
 
-					<?php $mc = ! empty( $settings['multicolor_architecture'] ) ? $settings['multicolor_architecture'] : array(); ?>
+					<?php $dd = ! empty( $settings['design_details'] ) ? $settings['design_details'] : array(); ?>
 					<div class="wc-field-row grid-2">
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Section Eyebrow', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[multicolor_architecture][eyebrow]" value="<?php echo esc_attr( $mc['eyebrow'] ?? 'Multi-Color Architecture' ); ?>" class="widefat">
+							<input type="text" name="ams_builder[design_details][eyebrow]" value="<?php echo esc_attr( $dd['eyebrow'] ?? '' ); ?>" class="widefat">
 						</div>
 						<div class="wc-field">
 							<label><?php esc_html_e( 'Section Title', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[multicolor_architecture][title]" value="<?php echo esc_attr( $mc['title'] ?? 'Seamless Multi-Color & Multi-Material Capabilities' ); ?>" class="widefat">
+							<input type="text" name="ams_builder[design_details][title]" value="<?php echo esc_attr( $dd['title'] ?? 'Evolved, Polished Design Details' ); ?>" class="widefat">
 						</div>
 					</div>
 
 					<div class="wc-field">
-						<label><?php esc_html_e( 'Subtitle Description', 'woodmart-child' ); ?></label>
-						<textarea name="ams_builder[multicolor_architecture][subtitle]" rows="2" class="widefat"><?php echo esc_textarea( $mc['subtitle'] ?? '' ); ?></textarea>
+						<label><?php esc_html_e( 'Section Subtitle Description', 'woodmart-child' ); ?></label>
+						<textarea name="ams_builder[design_details][subtitle]" rows="2" class="widefat"><?php echo esc_textarea( $dd['subtitle'] ?? '' ); ?></textarea>
 					</div>
 
-					<div class="wc-field-row grid-3">
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Chain Title (e.g. Scale from 4 to 16 Colors)', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[multicolor_architecture][chain_title]" value="<?php echo esc_attr( $mc['chain_title'] ?? 'Scale from 4 to 16 Colors' ); ?>" class="widefat">
-						</div>
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Chain Badge', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[multicolor_architecture][chain_badge]" value="<?php echo esc_attr( $mc['chain_badge'] ?? '16-Color Daisy Chain' ); ?>" class="widefat">
-						</div>
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Chain Description', 'woodmart-child' ); ?></label>
-							<input type="text" name="ams_builder[multicolor_architecture][chain_desc]" value="<?php echo esc_attr( $mc['chain_desc'] ?? 'Connect up to 4 AMS units with the Bambu AMS Hub to unlock 16-color printing capability.' ); ?>" class="widefat">
-						</div>
-					</div>
-
-					<div class="wc-field" style="margin-top: 8px;">
-						<label><?php esc_html_e( 'Hub & Funnel Architecture Diagram Image', 'woodmart-child' ); ?></label>
-						<div class="wc-image-picker">
-							<input type="hidden" name="ams_builder[multicolor_architecture][diagram_image]" value="<?php echo esc_attr( $mc['diagram_image'] ?? '' ); ?>" class="wc-image-url">
-							<div class="wc-image-preview"><?php if ( ! empty( $mc['diagram_image'] ) ) : ?><img src="<?php echo esc_url( $mc['diagram_image'] ); ?>"><?php endif; ?></div>
-							<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
-							<button type="button" class="button wc-btn-remove-image <?php echo empty( $mc['diagram_image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
-						</div>
-					</div>
-
-					<h4 class="wc-subhead"><?php esc_html_e( 'Multi-Color Architecture Feature Points', 'woodmart-child' ); ?></h4>
-					<div class="wc-repeater-container" id="ams-mc-features-repeater">
+					<h4 class="wc-subhead"><?php esc_html_e( 'Design Detail Cards Repeater', 'woodmart-child' ); ?></h4>
+					<div class="wc-repeater-container" id="ams-design-repeater">
 						<?php
-						$mc_features = ! empty( $mc['features'] ) ? $mc['features'] : array();
-						foreach ( $mc_features as $idx => $feat ) :
+						$dd_cards = ! empty( $dd['cards'] ) ? $dd['cards'] : array();
+						foreach ( $dd_cards as $idx => $card ) :
 						?>
 							<div class="wc-repeater-row" data-index="<?php echo esc_attr( $idx ); ?>">
 								<span class="wc-row-drag">☰</span>
 								<div class="wc-repeater-fields grid-2">
 									<div class="wc-field">
-										<label><?php esc_html_e( 'Feature Title', 'woodmart-child' ); ?></label>
-										<input type="text" name="ams_builder[multicolor_architecture][features][<?php echo esc_attr( $idx ); ?>][title]" value="<?php echo esc_attr( $feat['title'] ?? '' ); ?>" class="widefat">
+										<label><?php esc_html_e( 'Card Title', 'woodmart-child' ); ?></label>
+										<input type="text" name="ams_builder[design_details][cards][<?php echo esc_attr( $idx ); ?>][title]" value="<?php echo esc_attr( $card['title'] ?? '' ); ?>" class="widefat">
 									</div>
 									<div class="wc-field">
-										<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
-										<input type="text" name="ams_builder[multicolor_architecture][features][<?php echo esc_attr( $idx ); ?>][desc]" value="<?php echo esc_attr( $feat['desc'] ?? '' ); ?>" class="widefat">
+										<label><?php esc_html_e( 'Image Upload', 'woodmart-child' ); ?></label>
+										<div class="wc-image-picker">
+											<input type="hidden" name="ams_builder[design_details][cards][<?php echo esc_attr( $idx ); ?>][image]" value="<?php echo esc_attr( $card['image'] ?? '' ); ?>" class="wc-image-url">
+											<div class="wc-image-preview"><?php if ( ! empty( $card['image'] ) ) : ?><img src="<?php echo esc_url( $card['image'] ); ?>"><?php endif; ?></div>
+											<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
+											<button type="button" class="button wc-btn-remove-image <?php echo empty( $card['image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+										</div>
 									</div>
+								</div>
+								<div class="wc-field" style="margin-top: 8px;">
+									<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+									<textarea name="ams_builder[design_details][cards][<?php echo esc_attr( $idx ); ?>][desc]" rows="2" class="widefat"><?php echo esc_textarea( $card['desc'] ?? '' ); ?></textarea>
 								</div>
 								<button type="button" class="button wc-btn-remove-row">&times;</button>
 							</div>
 						<?php endforeach; ?>
 					</div>
-					<button type="button" class="button button-secondary wc-btn-add-row" data-target="ams-mc-features-repeater" data-template="tmpl-ams-mc-feature-row"><?php esc_html_e( '+ Add Architecture Point', 'woodmart-child' ); ?></button>
+					<button type="button" class="button button-secondary wc-btn-add-row" data-target="ams-design-repeater" data-template="tmpl-ams-design-row"><?php esc_html_e( '+ Add Design Card', 'woodmart-child' ); ?></button>
 				</section>
 
 				<!-- 6. PRINTER COMPATIBILITY MATRIX -->
@@ -528,6 +529,17 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 							<label><?php esc_html_e( 'Footer Note / Requirement Tip', 'woodmart-child' ); ?></label>
 							<input type="text" name="ams_builder[compatibility_matrix][note]" value="<?php echo esc_attr( $cm['note'] ?? '' ); ?>" class="widefat">
 						</div>
+					</div>
+
+					<div class="wc-field" style="margin-top: 8px; margin-bottom: 16px;">
+						<label><?php esc_html_e( 'Printer Lineup Showcase Image (Hero Image for Compatible Printers)', 'woodmart-child' ); ?></label>
+						<div class="wc-image-picker">
+							<input type="hidden" name="ams_builder[compatibility_matrix][lineup_image]" value="<?php echo esc_attr( $cm['lineup_image'] ?? '' ); ?>" class="wc-image-url">
+							<div class="wc-image-preview"><?php if ( ! empty( $cm['lineup_image'] ) ) : ?><img src="<?php echo esc_url( $cm['lineup_image'] ); ?>"><?php endif; ?></div>
+							<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
+							<button type="button" class="button wc-btn-remove-image <?php echo empty( $cm['lineup_image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+						</div>
+						<p class="description"><?php esc_html_e( 'Upload the wide lineup showcase image showing all Bambu Lab printers. If empty, default theme image is displayed.', 'woodmart-child' ); ?></p>
 					</div>
 
 					<h4 class="wc-subhead"><?php esc_html_e( 'Printer Models Repeater', 'woodmart-child' ); ?></h4>
@@ -881,18 +893,27 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 		</div>
 	</script>
 
-	<script type="text/html" id="tmpl-ams-mc-feature-row">
+	<script type="text/html" id="tmpl-ams-design-row">
 		<div class="wc-repeater-row" data-index="{{INDEX}}">
 			<span class="wc-row-drag">☰</span>
 			<div class="wc-repeater-fields grid-2">
 				<div class="wc-field">
-					<label><?php esc_html_e( 'Feature Title', 'woodmart-child' ); ?></label>
-					<input type="text" name="ams_builder[multicolor_architecture][features][{{INDEX}}][title]" value="" class="widefat">
+					<label><?php esc_html_e( 'Card Title', 'woodmart-child' ); ?></label>
+					<input type="text" name="ams_builder[design_details][cards][{{INDEX}}][title]" value="" class="widefat">
 				</div>
 				<div class="wc-field">
-					<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
-					<input type="text" name="ams_builder[multicolor_architecture][features][{{INDEX}}][desc]" value="" class="widefat">
+					<label><?php esc_html_e( 'Image Upload', 'woodmart-child' ); ?></label>
+					<div class="wc-image-picker">
+						<input type="hidden" name="ams_builder[design_details][cards][{{INDEX}}][image]" value="" class="wc-image-url">
+						<div class="wc-image-preview"></div>
+						<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
+						<button type="button" class="button wc-btn-remove-image hidden"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+					</div>
 				</div>
+			</div>
+			<div class="wc-field" style="margin-top: 8px;">
+				<label><?php esc_html_e( 'Description', 'woodmart-child' ); ?></label>
+				<textarea name="ams_builder[design_details][cards][{{INDEX}}][desc]" rows="2" class="widefat"></textarea>
 			</div>
 			<button type="button" class="button wc-btn-remove-row">&times;</button>
 		</div>
@@ -1115,44 +1136,48 @@ function woodmart_child_save_ams_builder_meta( $post_id, $post ) {
 		}
 	}
 
-	// 4. Speed & Efficiency Metrics
+	// 4. Speed & Efficiency Metrics (Image 3)
 	$clean['efficiency_metrics'] = array(
-		'eyebrow'      => sanitize_text_field( $raw_data['efficiency_metrics']['eyebrow'] ?? '' ),
-		'title'        => sanitize_text_field( $raw_data['efficiency_metrics']['title'] ?? '' ),
-		'subtitle'     => sanitize_textarea_field( $raw_data['efficiency_metrics']['subtitle'] ?? '' ),
-		'card_speed'   => array(
+		'comparison_caption' => sanitize_text_field( $raw_data['efficiency_metrics']['comparison_caption'] ?? 'Bambu PETG Basic' ),
+		'dry_label'          => sanitize_text_field( $raw_data['efficiency_metrics']['dry_label'] ?? 'Dry' ),
+		'moist_label'        => sanitize_text_field( $raw_data['efficiency_metrics']['moist_label'] ?? 'Moist' ),
+		'dry_image'          => esc_url_raw( $raw_data['efficiency_metrics']['dry_image'] ?? '' ),
+		'moist_image'        => esc_url_raw( $raw_data['efficiency_metrics']['moist_image'] ?? '' ),
+		'comparison_image'   => esc_url_raw( $raw_data['efficiency_metrics']['comparison_image'] ?? '' ),
+		'eyebrow'            => sanitize_text_field( $raw_data['efficiency_metrics']['eyebrow'] ?? '' ),
+		'title'              => sanitize_text_field( $raw_data['efficiency_metrics']['title'] ?? '' ),
+		'subtitle'           => sanitize_textarea_field( $raw_data['efficiency_metrics']['subtitle'] ?? '' ),
+		'card_speed'         => array(
 			'metric' => sanitize_text_field( $raw_data['efficiency_metrics']['card_speed']['metric'] ?? '' ),
 			'label'  => sanitize_text_field( $raw_data['efficiency_metrics']['card_speed']['label'] ?? '' ),
-			'desc'   => sanitize_text_field( $raw_data['efficiency_metrics']['card_speed']['desc'] ?? '' ),
+			'desc'   => sanitize_textarea_field( $raw_data['efficiency_metrics']['card_speed']['desc'] ?? '' ),
 		),
-		'card_waste'   => array(
+		'card_waste'         => array(
 			'metric' => sanitize_text_field( $raw_data['efficiency_metrics']['card_waste']['metric'] ?? '' ),
 			'label'  => sanitize_text_field( $raw_data['efficiency_metrics']['card_waste']['label'] ?? '' ),
-			'desc'   => sanitize_text_field( $raw_data['efficiency_metrics']['card_waste']['desc'] ?? '' ),
+			'desc'   => sanitize_textarea_field( $raw_data['efficiency_metrics']['card_waste']['desc'] ?? '' ),
 		),
-		'banner_title' => sanitize_text_field( $raw_data['efficiency_metrics']['banner_title'] ?? '' ),
-		'banner_desc'  => sanitize_text_field( $raw_data['efficiency_metrics']['banner_desc'] ?? '' ),
-		'banner_image' => esc_url_raw( $raw_data['efficiency_metrics']['banner_image'] ?? '' ),
+		'banner_title'       => sanitize_text_field( $raw_data['efficiency_metrics']['banner_title'] ?? '' ),
+		'banner_credit'      => sanitize_text_field( $raw_data['efficiency_metrics']['banner_credit'] ?? '' ),
+		'banner_desc'        => sanitize_text_field( $raw_data['efficiency_metrics']['banner_desc'] ?? '' ),
+		'banner_image'       => esc_url_raw( $raw_data['efficiency_metrics']['banner_image'] ?? '' ),
 	);
 
-	// 5. Multi-Color Architecture
-	$clean['multicolor_architecture'] = array(
-		'eyebrow'       => sanitize_text_field( $raw_data['multicolor_architecture']['eyebrow'] ?? '' ),
-		'title'         => sanitize_text_field( $raw_data['multicolor_architecture']['title'] ?? '' ),
-		'subtitle'      => sanitize_textarea_field( $raw_data['multicolor_architecture']['subtitle'] ?? '' ),
-		'chain_title'   => sanitize_text_field( $raw_data['multicolor_architecture']['chain_title'] ?? '' ),
-		'chain_badge'   => sanitize_text_field( $raw_data['multicolor_architecture']['chain_badge'] ?? '' ),
-		'chain_desc'    => sanitize_text_field( $raw_data['multicolor_architecture']['chain_desc'] ?? '' ),
-		'diagram_image' => esc_url_raw( $raw_data['multicolor_architecture']['diagram_image'] ?? '' ),
-		'features'      => array(),
+	// 5. Evolved, Polished Design Details (Image 4)
+	$clean['design_details'] = array(
+		'eyebrow'  => sanitize_text_field( $raw_data['design_details']['eyebrow'] ?? '' ),
+		'title'    => sanitize_text_field( $raw_data['design_details']['title'] ?? '' ),
+		'subtitle' => sanitize_textarea_field( $raw_data['design_details']['subtitle'] ?? '' ),
+		'cards'    => array(),
 	);
 
-	if ( ! empty( $raw_data['multicolor_architecture']['features'] ) && is_array( $raw_data['multicolor_architecture']['features'] ) ) {
-		foreach ( $raw_data['multicolor_architecture']['features'] as $feat ) {
-			if ( ! empty( $feat['title'] ) ) {
-				$clean['multicolor_architecture']['features'][] = array(
-					'title' => sanitize_text_field( $feat['title'] ?? '' ),
-					'desc'  => sanitize_text_field( $feat['desc'] ?? '' ),
+	if ( ! empty( $raw_data['design_details']['cards'] ) && is_array( $raw_data['design_details']['cards'] ) ) {
+		foreach ( $raw_data['design_details']['cards'] as $card ) {
+			if ( ! empty( $card['title'] ) || ! empty( $card['desc'] ) ) {
+				$clean['design_details']['cards'][] = array(
+					'title' => sanitize_text_field( $card['title'] ?? '' ),
+					'desc'  => sanitize_textarea_field( $card['desc'] ?? '' ),
+					'image' => esc_url_raw( $card['image'] ?? '' ),
 				);
 			}
 		}
@@ -1160,11 +1185,12 @@ function woodmart_child_save_ams_builder_meta( $post_id, $post ) {
 
 	// 6. Printer Compatibility Matrix
 	$clean['compatibility_matrix'] = array(
-		'eyebrow'  => sanitize_text_field( $raw_data['compatibility_matrix']['eyebrow'] ?? '' ),
-		'title'    => sanitize_text_field( $raw_data['compatibility_matrix']['title'] ?? '' ),
-		'subtitle' => sanitize_text_field( $raw_data['compatibility_matrix']['subtitle'] ?? '' ),
-		'note'     => sanitize_text_field( $raw_data['compatibility_matrix']['note'] ?? '' ),
-		'printers' => array(),
+		'eyebrow'      => sanitize_text_field( $raw_data['compatibility_matrix']['eyebrow'] ?? '' ),
+		'title'        => sanitize_text_field( $raw_data['compatibility_matrix']['title'] ?? '' ),
+		'subtitle'     => sanitize_text_field( $raw_data['compatibility_matrix']['subtitle'] ?? '' ),
+		'lineup_image' => esc_url_raw( $raw_data['compatibility_matrix']['lineup_image'] ?? '' ),
+		'note'         => sanitize_text_field( $raw_data['compatibility_matrix']['note'] ?? '' ),
+		'printers'     => array(),
 	);
 
 	if ( ! empty( $raw_data['compatibility_matrix']['printers'] ) && is_array( $raw_data['compatibility_matrix']['printers'] ) ) {

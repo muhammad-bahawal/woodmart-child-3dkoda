@@ -28,17 +28,20 @@ if ( function_exists( 'woodmart_child_is_ams_landing' ) && woodmart_child_is_ams
 		// 1. Hero Section (Unified 2-Column Hero: Left Sticky Gallery + Right Title, Price, Native Variations, Add-ons)
 		get_template_part( 'template-parts/product-ams/hero-section' );
 
-		// 2. Overview & High-Impact Hero Banner (Dark Band + 4 Metric Pills + Video Popup)
+		// Sticky In-Page Navigation Bar (Overview | Specs | FAQ)
+		get_template_part( 'template-parts/product-ams/sub-nav' );
+
+		// 2. Overview & High-Impact Hero Banner (Image 1: Eyebrow, Title, Hero Render, 4 Highlights Strip)
 		get_template_part( 'template-parts/product-ams/overview-banner' );
 
-		// 3. Drying & Intelligent Feeding (4 Feature Cards: Airtight Seal, RFID, Runout Backup, Buffer)
+		// 3. Drying Feature Section (Image 2: Dry Filament Quickly and Intelligently - 3 Zig-Zag Cards)
 		get_template_part( 'template-parts/product-ams/drying-feeding' );
 
-		// 4. Speed & Efficiency Metrics (+50% Speed, -10min Overhead + Studio Purge Banner)
+		// 4. Quality Comparison & Speed Metrics (Image 3: Honeycomb Dry vs Moist, +60%, -10min, Car Showcase)
 		get_template_part( 'template-parts/product-ams/efficiency-metrics' );
 
-		// 5. Multi-Color Architecture (4 to 16 Spools Hub Daisy-Chain + Distribution Schematic)
-		get_template_part( 'template-parts/product-ams/multicolor-architecture' );
+		// 5. Polished Design Details (Image 4: Evolved, Polished Design Details - 2 Zig-Zag Cards)
+		get_template_part( 'template-parts/product-ams/design-details' );
 
 		// 6. Printer Compatibility Matrix (Dynamic Repeater for X1, P1, A1 Series)
 		get_template_part( 'template-parts/product-ams/compatibility-matrix' );

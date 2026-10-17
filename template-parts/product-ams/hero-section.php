@@ -204,43 +204,100 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 			<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $core['id'] ); ?>">
 			<input type="hidden" name="variation_id" id="selected-variation-id" value="<?php echo ! $is_variable ? esc_attr( $core['id'] ) : ''; ?>">
 
-			<!-- DYNAMIC VARIATIONS: Rendered ONLY if the product is variable in WooCommerce -->
+			<!-- DYNAMIC VARIATIONS: Rendered if product is variable in WooCommerce -->
 			<?php if ( $is_variable ) : ?>
-				<fieldset class="product-configuration ams-variations-fieldset">
-					<div class="product-configuration__head">
-						<legend class="product-configuration__label"><?php esc_html_e( 'CHOOSE YOUR CONFIGURATION', 'woodmart-child' ); ?></legend>
-						<a href="#ams-compatibility" class="compare-packages-link"><?php esc_html_e( 'Check compatibility', 'woodmart-child' ); ?></a>
-					</div>
-					<div class="product-configuration__options">
-						<?php foreach ( $variations as $idx => $var ) : 
-							$var_in_stock = ! empty( $var['in_stock'] );
-						?>
-							<label class="option <?php echo ( $idx === 0 ) ? 'is-selected' : ''; ?>" data-var-id="<?php echo esc_attr( $var['id'] ); ?>">
-								<input type="radio" name="ams_variation_choice" value="<?php echo esc_attr( $var['id'] ); ?>"
-									<?php checked( $idx, 0 ); ?>
-									data-title="<?php echo esc_attr( $var['title'] ); ?>"
-									data-price-raw="<?php echo esc_attr( $var['price_raw'] ?? 0 ); ?>"
-									data-price-html="<?php echo esc_attr( $var['price_html'] ); ?>"
-									data-sku="<?php echo esc_attr( $var['sku'] ); ?>"
-									data-stock="<?php echo $var_in_stock ? 'instock' : 'outofstock'; ?>"
-									data-image="<?php echo esc_url( $var['image_url'] ?? '' ); ?>">
-								<div class="option-header">
-									<span class="option-title"><?php echo esc_html( $var['title'] ); ?></span>
-									<span class="option-check-icon" aria-hidden="true">
-										<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-											<polyline points="20 6 9 17 4 12"></polyline>
-										</svg>
-									</span>
-								</div>
-								<?php if ( ! empty( $var['subtitle'] ) ) : ?>
-									<span class="option-desc"><?php echo esc_html( $var['subtitle'] ); ?></span>
-								<?php endif; ?>
-								<span class="option-price" style="color: #111827 !important;"><?php echo wp_kses_post( $var['price_html'] ); ?></span>
-							</label>
-						<?php endforeach; ?>
-					</div>
-					<p class="note"><?php esc_html_e( 'Selected article:', 'woodmart-child' ); ?> <span class="product-sku" id="ams-selected-sku"><?php echo esc_html( $sku ?: '—' ); ?></span></p>
-				</fieldset>
+				<?php
+				$attributes           = ( $product_obj instanceof WC_Product ) ? $product_obj->get_attributes() : array();
+				$available_variations = ( $product_obj instanceof WC_Product_Variable ) ? $product_obj->get_available_variations() : array();
+
+				// Build client-side matrix
+				$matrix = array();
+				foreach ( $available_variations as $av ) {
+					$v_price_html = ! empty( $av['price_html'] ) ? $av['price_html'] : wc_price( $av['display_price'] );
+					$matrix[]     = array(
+						'id'           => $av['variation_id'],
+						'attributes'   => $av['attributes'],
+						'price_raw'    => $av['display_price'],
+						'price_html'   => $v_price_html,
+						'sku'          => ! empty( $av['sku'] ) ? $av['sku'] : $sku,
+						'image'        => ! empty( $av['image']['url'] ) ? $av['image']['url'] : '',
+						'in_stock'     => ! empty( $av['is_in_stock'] ),
+						'availability' => $av['availability_html'] ?? '',
+					);
+				}
+				?>
+
+				<!-- Dynamic Variation Attribute Groups (Image 1 & Image 3 Specification) -->
+				<div class="ams-attributes-container">
+					<?php
+					$attr_index = 0;
+					foreach ( $attributes as $attr_slug => $attr_obj ) :
+						if ( ! $attr_obj->get_variation() ) {
+							continue;
+						}
+						$attr_index++;
+						$taxonomy_name  = $attr_obj->get_name();
+						$attr_label     = wc_attribute_label( $taxonomy_name, $product_obj );
+						$attr_key_field = 'attribute_' . sanitize_title( $taxonomy_name );
+
+						// Retrieve options (taxonomy terms or custom options)
+						$options = array();
+						if ( $attr_obj->is_taxonomy() ) {
+							$terms = wc_get_product_terms( $product_id, $taxonomy_name, array( 'fields' => 'all' ) );
+							if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+								foreach ( $terms as $t ) {
+									$options[] = array(
+										'slug' => $t->slug,
+										'name' => $t->name,
+									);
+								}
+							}
+						} else {
+							$raw_opts = $attr_obj->get_options();
+							foreach ( $raw_opts as $ro ) {
+								$options[] = array(
+									'slug' => trim( $ro ),
+									'name' => trim( $ro ),
+								);
+							}
+						}
+
+						if ( empty( $options ) ) {
+							continue;
+						}
+					?>
+						<div class="ams-attr-group" data-attr-key="<?php echo esc_attr( $attr_key_field ); ?>">
+							<div class="ams-attr-header">
+								<span class="ams-attr-label"><?php echo esc_html( strtoupper( $attr_label ) ); ?>:</span>
+								<span class="ams-attr-selected-value" id="val-<?php echo esc_attr( sanitize_title( $attr_label ) ); ?>"></span>
+							</div>
+
+							<div class="ams-pills-grid" role="radiogroup" aria-label="<?php echo esc_attr( $attr_label ); ?>">
+								<?php foreach ( $options as $opt_idx => $opt ) : ?>
+									<button type="button" 
+											class="ams-pill-btn"
+											data-attr-key="<?php echo esc_attr( $attr_key_field ); ?>"
+											data-attr-val="<?php echo esc_attr( $opt['slug'] ); ?>"
+											data-attr-name="<?php echo esc_attr( $opt['name'] ); ?>">
+										<span class="pill-check-indicator" aria-hidden="true">✓</span>
+										<span class="pill-text"><?php echo esc_html( $opt['name'] ); ?></span>
+									</button>
+								<?php endforeach; ?>
+							</div>
+							<input type="hidden" name="<?php echo esc_attr( $attr_key_field ); ?>" value="" class="ams-hidden-attr">
+						</div>
+					<?php endforeach; ?>
+				</div>
+
+				<!-- Selected Variation Summary Line (Image 1) -->
+				<div class="ams-selected-summary-bar">
+					<span class="summary-label"><?php esc_html_e( 'Selected:', 'woodmart-child' ); ?></span>
+					<span class="summary-details" id="ams-variation-summary">—</span>
+				</div>
+
+				<script type="application/json" id="ams-variation-matrix">
+					<?php echo wp_json_encode( $matrix ); ?>
+				</script>
 			<?php endif; ?>
 
 			<!-- Quantity & Add to Basket Button -->
@@ -251,12 +308,11 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 					<button type="button" data-step="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
 				</div>
 				<button class="btn btn-add-to-cart ams-add-btn" type="submit" id="ams-main-add-btn">
-					<span><?php esc_html_e( 'Add to basket', 'woodmart-child' ); ?></span>
+					<span><?php esc_html_e( 'Add To Basket', 'woodmart-child' ); ?></span>
 					<span class="cart-icon" aria-hidden="true">
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-							<line x1="3" y1="6" x2="21" y2="6"></line>
-							<path d="M16 10a4 4 0 0 1-8 0"></path>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 						</svg>
 					</span>
 				</button>

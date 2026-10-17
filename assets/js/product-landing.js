@@ -602,6 +602,19 @@
 				return;
 			}
 
+			// Check if variation is required but not selected (AMS pill selectors)
+			const amsPillGroups = form.querySelectorAll('.ams-attr-group');
+			if (amsPillGroups.length > 0 && !variationId) {
+				showNotice('Please select all required configuration options before adding to basket.', true);
+				const attrContainer = form.querySelector('.ams-attributes-container');
+				if (attrContainer) {
+					attrContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					attrContainer.classList.add('is-unselected-alert');
+					setTimeout(() => attrContainer.classList.remove('is-unselected-alert'), 1200);
+				}
+				return;
+			}
+
 			// Check if variation is required but not selected (laser & crafting choice)
 			const lcRadios = form.querySelectorAll('input[name="lc_variation_choice"]');
 			if (lcRadios.length > 0 && !variationId) {
@@ -2261,10 +2274,21 @@
 		const root = document.querySelector('.ams-landing-root');
 		if (!root) return;
 
-		// 1. Dynamic Variations Sync (Variable WooCommerce Products)
-		const amsVarRadios = root.querySelectorAll('input[name="ams_variation_choice"]');
+		// 1. Dynamic Variations Handling with Multi-Attribute Matrix
+		const matrixEl = root.querySelector('#ams-variation-matrix');
+		let matrix = [];
+		if (matrixEl) {
+			try {
+				matrix = JSON.parse(matrixEl.textContent || '[]');
+			} catch (err) {
+				matrix = [];
+			}
+		}
+
+		const attrContainer = root.querySelector('.ams-attributes-container');
+		const pillButtons = root.querySelectorAll('.ams-pill-btn');
 		const amsHiddenVarInput = root.querySelector('#selected-variation-id');
-		const amsSkuDisplay = root.querySelector('#ams-selected-sku');
+		const amsSummarySpan = root.querySelector('#ams-variation-summary');
 		const amsStockText = root.querySelector('#ams-stock-text');
 		const amsStockRow = root.querySelector('#ams-stock-row');
 		const amsStockNote = root.querySelector('#ams-stock-note');
@@ -2277,10 +2301,17 @@
 		const amsStickyThumb = root.querySelector('#ams-sticky-thumb-img');
 		const vatLink = root.querySelector('.vat-link');
 		const priceNote = root.querySelector('.product-price-note');
+		const amsPurchaseForm = root.querySelector('#ams-purchase-form');
+
+		const totalAttrGroups = root.querySelectorAll('.ams-attr-group').length;
+		const defaultPriceHtml = amsPriceDisplay ? amsPriceDisplay.innerHTML : '';
+		const defaultMainImgSrc = amsMainImg ? amsMainImg.src : '';
+		const defaultStockText = amsStockText ? amsStockText.textContent : 'In Stock';
+		const defaultStockNote = amsStockNote ? amsStockNote.textContent : '';
 
 		let isExVat = false;
 		let currentRawPrice = parseFloat(amsPriceRow ? (amsPriceRow.dataset.priceRaw || 0) : 0) || 0;
-		let currentPriceHtml = amsPriceDisplay ? amsPriceDisplay.innerHTML : '';
+		let currentPriceHtml = defaultPriceHtml;
 
 		function formatPrice(rawNum) {
 			let symbol = (window.woodmartLandingData && window.woodmartLandingData.currencySymbol) || '€';
@@ -2316,39 +2347,93 @@
 			});
 		}
 
-		amsVarRadios.forEach(radio => {
-			radio.addEventListener('change', function () {
-				const varId = this.value;
-				const title = this.dataset.title || '';
-				const priceHtml = this.dataset.priceHtml || '';
-				const sku = this.dataset.sku || '';
-				const imageUrl = this.dataset.image || '';
-				const stockStatus = this.dataset.stock || 'instock';
-				const rawPrice = parseFloat(this.dataset.priceRaw || 0) || 0;
+		function normalizeVal(val) {
+			if (!val) return '';
+			return String(val).toLowerCase().trim().replace(/[\s\-_]+/g, '');
+		}
 
-				// 1. Hidden form field
-				if (amsHiddenVarInput) amsHiddenVarInput.value = varId;
+		function getSelectedAttributes() {
+			const selected = {};
+			const groups = root.querySelectorAll('.ams-attr-group');
+			groups.forEach(group => {
+				const activeBtn = group.querySelector('.ams-pill-btn.is-active');
+				const key = group.dataset.attrKey;
+				if (activeBtn && key) {
+					selected[key] = {
+						val: activeBtn.dataset.attrVal || '',
+						name: activeBtn.dataset.attrName || ''
+					};
+				}
+			});
+			return selected;
+		}
 
-				// 2. Title & attribute labels in sticky bar
-				if (amsStickyConfig && title) {
-					amsStickyConfig.textContent = title;
+		function getSelectedAttributeNames() {
+			const names = [];
+			const groups = root.querySelectorAll('.ams-attr-group');
+			groups.forEach(group => {
+				const activeBtn = group.querySelector('.ams-pill-btn.is-active');
+				if (activeBtn && activeBtn.dataset.attrName) {
+					names.push(activeBtn.dataset.attrName);
+				}
+			});
+			return names;
+		}
+
+		function findMatchingVariation(selectedAttrs) {
+			if (!matrix.length) return null;
+			const selectedKeys = Object.keys(selectedAttrs);
+			if (totalAttrGroups > 0 && selectedKeys.length < totalAttrGroups) {
+				return null;
+			}
+
+			return matrix.find(v => {
+				const vAttrs = v.attributes || {};
+				for (const [key, item] of Object.entries(selectedAttrs)) {
+					const targetVal = vAttrs[key];
+					// In WooCommerce, an empty string attribute in a variation means "Any"
+					if (!targetVal || targetVal === '') {
+						continue;
+					}
+					const targetNorm = normalizeVal(targetVal);
+					const valNorm = normalizeVal(item.val);
+					const nameNorm = normalizeVal(item.name);
+
+					if (targetNorm !== valNorm && targetNorm !== nameNorm && targetVal.toLowerCase() !== item.val.toLowerCase() && targetVal.toLowerCase() !== item.name.toLowerCase()) {
+						return false;
+					}
+				}
+				return true;
+			}) || null;
+		}
+
+		function syncVariationState() {
+			const selectedAttrs = getSelectedAttributes();
+			const names = getSelectedAttributeNames();
+			const isComplete = totalAttrGroups > 0 ? (Object.keys(selectedAttrs).length >= totalAttrGroups) : true;
+			const matched = isComplete ? findMatchingVariation(selectedAttrs) : null;
+
+			if (matched) {
+				if (amsHiddenVarInput) {
+					amsHiddenVarInput.value = matched.id;
 				}
 
-				// 3. Dynamic SKU display
-				if (amsSkuDisplay && sku) {
-					amsSkuDisplay.textContent = sku;
-				}
-				if (amsStockNote && sku) {
-					amsStockNote.textContent = 'SKU: ' + sku;
-				}
-
-				// 4. Dynamic Price (Hero & Sticky Bar)
-				currentRawPrice = rawPrice;
-				currentPriceHtml = priceHtml;
+				// Price update
+				currentRawPrice = parseFloat(matched.price_raw) || 0;
+				currentPriceHtml = matched.price_html || defaultPriceHtml;
 				renderPrice();
 
-				// 5. Live Stock Status: Strictly dynamic "In Stock" / "Out of Stock"
-				const isInStock = (stockStatus !== 'outofstock');
+				// Summary indicator
+				if (amsSummarySpan) {
+					const parts = [...names];
+					if (matched.sku) {
+						parts.push('SKU: ' + matched.sku);
+					}
+					amsSummarySpan.textContent = parts.join(' · ') || '—';
+				}
+
+				// Stock update
+				const isInStock = !!matched.in_stock;
 				if (amsStockText) {
 					amsStockText.textContent = isInStock ? 'In Stock' : 'Out of Stock';
 				}
@@ -2356,37 +2441,138 @@
 					amsStockRow.classList.toggle('is-instock', isInStock);
 					amsStockRow.classList.toggle('is-outofstock', !isInStock);
 				}
+				if (amsStockNote && matched.sku) {
+					amsStockNote.textContent = 'SKU: ' + matched.sku;
+				}
 				if (amsStickyStock) {
 					amsStickyStock.textContent = isInStock ? '● In Stock' : '● Out of Stock';
 					amsStickyStock.classList.toggle('is-instock', isInStock);
 					amsStickyStock.classList.toggle('is-outofstock', !isInStock);
 				}
 
-				// 6. Highlight selected option label
-				amsVarRadios.forEach(r => {
-					const opt = r.closest('.option');
-					if (opt) opt.classList.toggle('is-selected', r === radio);
-				});
-
-				// 7. Swap main gallery image to variation image
-				if (imageUrl && amsMainImg) {
+				// Main image update
+				if (matched.image && amsMainImg) {
 					amsMainImg.style.transition = 'opacity 0.2s ease';
 					amsMainImg.style.opacity = '0.3';
 					setTimeout(() => {
-						amsMainImg.src = imageUrl;
+						amsMainImg.src = matched.image;
 						amsMainImg.style.opacity = '1';
-						if (amsStickyThumb) amsStickyThumb.src = imageUrl;
+						if (amsStickyThumb) amsStickyThumb.src = matched.image;
 					}, 150);
 
-					// Highlight corresponding thumb if exists
-					const matchingThumb = root.querySelector(`.product-gallery__thumbs li[data-full-url="${imageUrl}"]`);
-					if (matchingThumb) {
-						root.querySelectorAll('.product-gallery__thumbs li').forEach(t => t.classList.remove('is-active'));
-						matchingThumb.classList.add('is-active');
-					}
+					// Sync gallery active thumb if matching URL
+					const thumbs = root.querySelectorAll('.product-gallery__thumbs li');
+					thumbs.forEach(t => {
+						const tUrl = t.dataset.fullUrl || '';
+						if (tUrl && matched.image.includes(tUrl.split('/').pop())) {
+							thumbs.forEach(th => th.classList.remove('is-active'));
+							t.classList.add('is-active');
+						}
+					});
 				}
+
+				// Sticky Bar update
+				if (amsStickyConfig) {
+					amsStickyConfig.textContent = names.join(' · ') || 'Selected Configuration';
+				}
+			} else {
+				// No variation or incomplete selection
+				if (amsHiddenVarInput) {
+					amsHiddenVarInput.value = '';
+				}
+
+				// Restore default price
+				currentPriceHtml = defaultPriceHtml;
+				currentRawPrice = parseFloat(amsPriceRow ? (amsPriceRow.dataset.priceRaw || 0) : 0) || 0;
+				renderPrice();
+
+				// Summary indicator
+				if (amsSummarySpan) {
+					amsSummarySpan.textContent = names.length > 0 ? names.join(' · ') : '—';
+				}
+
+				// Stock update
+				if (amsStockText && defaultStockText) {
+					amsStockText.textContent = defaultStockText;
+				}
+				if (amsStockNote && defaultStockNote) {
+					amsStockNote.textContent = defaultStockNote;
+				}
+				if (amsStockRow) {
+					amsStockRow.classList.add('is-instock');
+					amsStockRow.classList.remove('is-outofstock');
+				}
+
+				// Main image
+				if (amsMainImg && defaultMainImgSrc && !amsMainImg.src.includes(defaultMainImgSrc.split('/').pop())) {
+					amsMainImg.src = defaultMainImgSrc;
+				}
+				if (amsStickyThumb && defaultMainImgSrc) {
+					amsStickyThumb.src = defaultMainImgSrc;
+				}
+
+				// Sticky bar reset
+				if (amsStickyConfig) {
+					amsStickyConfig.textContent = 'Standard Package';
+				}
+			}
+		}
+
+		pillButtons.forEach(btn => {
+			btn.addEventListener('click', function () {
+				const group = this.closest('.ams-attr-group');
+				if (!group) return;
+
+				// Toggle active in this group
+				group.querySelectorAll('.ams-pill-btn').forEach(b => b.classList.remove('is-active'));
+				this.classList.add('is-active');
+
+				// Update selected label in header
+				const labelVal = group.querySelector('.ams-attr-selected-value');
+				if (labelVal) {
+					labelVal.textContent = this.dataset.attrName || '';
+				}
+
+				// Update hidden input
+				const hiddenInput = group.querySelector('.ams-hidden-attr');
+				if (hiddenInput) {
+					hiddenInput.value = this.dataset.attrVal || '';
+				}
+
+				if (attrContainer) {
+					attrContainer.classList.remove('is-unselected-alert');
+				}
+
+				syncVariationState();
 			});
 		});
+
+		// By default: NO variation is selected initially
+		if (amsHiddenVarInput && totalAttrGroups > 0) {
+			amsHiddenVarInput.value = '';
+		}
+
+		// Validate selection on form submit
+		if (amsPurchaseForm) {
+			amsPurchaseForm.addEventListener('submit', function (e) {
+				if (totalAttrGroups > 0 && (!amsHiddenVarInput || !amsHiddenVarInput.value)) {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+
+					if (attrContainer) {
+						attrContainer.classList.remove('is-unselected-alert');
+						void attrContainer.offsetWidth; // trigger reflow
+						attrContainer.classList.add('is-unselected-alert');
+						attrContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					}
+
+					if (typeof showNotice === 'function') {
+						showNotice('Please select all required configuration options before adding to basket.', true);
+					}
+					return false;
+				}
+			}, true);
+		}
 
 		// 2. Essential Additions (Steppers & Add Buttons)
 		const additionCards = root.querySelectorAll('.ams-additions-section .addition-card');
@@ -2566,6 +2752,138 @@
 			bannerScrollBtn.addEventListener('click', function (e) {
 				e.preventDefault();
 				heroSection.scrollIntoView({ behavior: 'smooth' });
+			});
+		}
+
+		// 8. Sticky Sub-Nav Header Offset & ScrollSpy (Overview | Specs | FAQ)
+		const subnavBar = root.querySelector('#ams-subnav');
+		if (subnavBar) {
+			const subnavLinksUl = subnavBar.querySelector('.ams-subnav-links');
+			const subnavLinks = subnavBar.querySelectorAll('.ams-subnav-link');
+			const navSections = [
+				{ id: 'ams-overview', elem: document.getElementById('ams-overview') },
+				{ id: 'ams-specifications', elem: document.getElementById('ams-specifications') },
+				{ id: 'ams-faq', elem: document.getElementById('ams-faq') }
+			].filter(s => s.elem !== null);
+
+			function getHeaderOffset() {
+				let adminOffset = 0;
+				const adminBar = document.getElementById('wpadminbar');
+				if (adminBar) {
+					const abStyle = window.getComputedStyle(adminBar);
+					if (abStyle.display !== 'none' && abStyle.visibility !== 'hidden' && abStyle.position === 'fixed') {
+						adminOffset = adminBar.offsetHeight || 0;
+					}
+				}
+
+				// Target the specific sticky row in Woodmart (excluding multi-row wrappers like .whb-header)
+				const stickyRow = document.querySelector('.whb-clone.whb-sticked') ||
+				                  document.querySelector('.whb-clone') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-sticky-row') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-main-header') ||
+				                  document.querySelector('.whb-header.whb-sticked .whb-general-header') ||
+				                  document.querySelector('.whb-sticky-row') ||
+				                  document.querySelector('.whb-main-header') ||
+				                  document.querySelector('.whb-general-header');
+
+				if (stickyRow) {
+					const rect = stickyRow.getBoundingClientRect();
+					const style = window.getComputedStyle(stickyRow);
+					const isFixedOrSticky = style.position === 'fixed' || style.position === 'sticky' ||
+					                        (stickyRow.closest('.whb-sticked') && window.getComputedStyle(stickyRow.closest('.whb-sticked')).position === 'fixed');
+
+					if (isFixedOrSticky && rect.height > 0 && rect.top >= 0 && rect.top <= adminOffset + 15) {
+						return Math.round(rect.bottom);
+					}
+
+					if (rect.height > 0) {
+						return Math.round(adminOffset + rect.height);
+					}
+				}
+
+				const genericSticky = document.querySelector('.whb-sticked:not(.whb-header)');
+				if (genericSticky && genericSticky.offsetHeight > 0) {
+					return Math.round(adminOffset + genericSticky.offsetHeight);
+				}
+
+				const isMobile = window.innerWidth <= 1024;
+				const defaultHeight = isMobile ? 60 : 64;
+				return Math.round(adminOffset + defaultHeight);
+			}
+
+			function updateStickyTop() {
+				const offset = getHeaderOffset();
+				document.documentElement.style.setProperty('--ams-subnav-top', offset + 'px');
+				subnavBar.style.setProperty('top', offset + 'px', 'important');
+			}
+			updateStickyTop();
+			window.addEventListener('resize', updateStickyTop);
+			window.addEventListener('scroll', updateStickyTop, { passive: true });
+			window.addEventListener('wdHeaderBuilderStickyChanged', updateStickyTop);
+			document.addEventListener('wdHeaderBuilderStickyChanged', updateStickyTop);
+
+			function centerActiveTab(activeLink) {
+				if (!activeLink || !subnavLinksUl) return;
+				if (subnavLinksUl.scrollWidth > subnavLinksUl.clientWidth) {
+					const targetLi = activeLink.closest('li') || activeLink;
+					const ulRect = subnavLinksUl.getBoundingClientRect();
+					const liRect = targetLi.getBoundingClientRect();
+					const currentScroll = subnavLinksUl.scrollLeft;
+					const relativeLeft = liRect.left - ulRect.left;
+					const targetScroll = currentScroll + relativeLeft - (ulRect.width / 2) + (liRect.width / 2);
+					subnavLinksUl.scrollTo({
+						left: Math.max(0, targetScroll),
+						behavior: 'smooth'
+					});
+				}
+			}
+
+			function updateSubnavActive() {
+				const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+				const headerOffset = getHeaderOffset() + (subnavBar.offsetHeight || 50) + 15;
+
+				let currentId = '';
+				for (let i = 0; i < navSections.length; i++) {
+					const sectionTop = navSections[i].elem.getBoundingClientRect().top + scrollPos - headerOffset;
+					if (scrollPos >= sectionTop - 50) {
+						currentId = navSections[i].id;
+					}
+				}
+
+				if (currentId) {
+					subnavLinks.forEach(link => {
+						const href = link.getAttribute('href').replace('#', '');
+						if (href === currentId) {
+							if (!link.classList.contains('is-active')) {
+								link.classList.add('is-active');
+								centerActiveTab(link);
+							}
+						} else {
+							link.classList.remove('is-active');
+						}
+					});
+				}
+			}
+
+			window.addEventListener('scroll', updateSubnavActive, { passive: true });
+			updateSubnavActive();
+
+			subnavLinks.forEach(link => {
+				link.addEventListener('click', function (e) {
+					const targetId = this.getAttribute('href');
+					if (!targetId || targetId === '#' || !targetId.startsWith('#')) return;
+					const targetEl = document.querySelector(targetId);
+					if (targetEl) {
+						e.preventDefault();
+						const headerOffset = getHeaderOffset();
+						const subnavHeight = subnavBar.offsetHeight || 50;
+						const targetTop = targetEl.getBoundingClientRect().top + window.pageYOffset - (headerOffset + subnavHeight + 10);
+						window.scrollTo({ top: targetTop, behavior: 'smooth' });
+						subnavLinks.forEach(l => l.classList.remove('is-active'));
+						this.classList.add('is-active');
+						centerActiveTab(this);
+					}
+				});
 			});
 		}
 	}

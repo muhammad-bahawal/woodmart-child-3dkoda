@@ -26,18 +26,19 @@ $subtitle = ! empty( $data['subtitle'] ) ? $data['subtitle'] : __( 'Everything y
 $items    = ! empty( $data['items'] ) ? $data['items'] : array();
 ?>
 
-<section class="ams-box-section container" id="ams-box-contents">
-	<div class="ams-section-head text-center">
-		<?php if ( ! empty( $eyebrow ) ) : ?>
-			<span class="ams-section-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
-		<?php endif; ?>
-		<h2 class="ams-section-title"><?php echo esc_html( $title ); ?></h2>
-		<?php if ( ! empty( $subtitle ) ) : ?>
-			<p class="ams-section-subtitle"><?php echo esc_html( $subtitle ); ?></p>
-		<?php endif; ?>
-	</div>
+<section class="ams-box-section" id="ams-box-contents">
+	<div class="ams-box-container container">
+		<div class="ams-section-head text-center is-dark">
+			<?php if ( ! empty( $eyebrow ) ) : ?>
+				<span class="ams-section-eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
+			<?php endif; ?>
+			<h2 class="ams-section-title"><?php echo esc_html( $title ); ?></h2>
+			<?php if ( ! empty( $subtitle ) ) : ?>
+				<p class="ams-section-subtitle"><?php echo esc_html( $subtitle ); ?></p>
+			<?php endif; ?>
+		</div>
 
-	<div class="ams-box-grid">
+		<div class="ams-box-grid">
 		<?php foreach ( $items as $idx => $item ) : 
 			$icon = $item['icon'] ?? 'box';
 		?>
@@ -88,5 +89,6 @@ $items    = ! empty( $data['items'] ) ? $data['items'] : array();
 				<?php endif; ?>
 			</div>
 		<?php endforeach; ?>
+	</div>
 	</div>
 </section>
