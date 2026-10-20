@@ -60,6 +60,41 @@ $benefits        = ! empty( $settings['general']['benefits'] ) ? $settings['gene
 // Check if product is variable
 $variations  = ! empty( $core['variations'] ) ? $core['variations'] : array();
 $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
+
+// Discover WooCommerce Default Form Values set by admin in backend
+$product_obj         = ( ! empty( $core['product'] ) && $core['product'] instanceof WC_Product ) ? $core['product'] : wc_get_product( $core['id'] );
+$attributes          = ( $product_obj instanceof WC_Product ) ? $product_obj->get_attributes() : array();
+$default_attributes  = ( $product_obj instanceof WC_Product ) ? $product_obj->get_default_attributes() : array();
+$default_color_slug  = '';
+$default_format_slug = '';
+
+if ( ! empty( $default_attributes ) ) {
+	foreach ( $default_attributes as $d_key => $d_val ) {
+		$d_key_clean = strtolower( trim( str_replace( 'attribute_', '', $d_key ) ) );
+		$d_val_clean = strtolower( trim( (string) $d_val ) );
+		if ( false !== stripos( $d_key_clean, 'color' ) ) {
+			$default_color_slug = $d_val_clean;
+		} else {
+			$default_format_slug = $d_val_clean;
+		}
+	}
+}
+
+// Pre-match active color display if default exists
+$active_color_name    = '';
+$active_color_display = '';
+if ( function_exists( 'woodmart_child_get_filament_color_options' ) ) {
+	$init_color_options = woodmart_child_get_filament_color_options( $core['id'] );
+	if ( $default_color_slug && ! empty( $init_color_options ) ) {
+		foreach ( $init_color_options as $c ) {
+			if ( $c['slug'] === $default_color_slug || sanitize_title( $c['name'] ) === $default_color_slug || strtolower( $c['name'] ) === $default_color_slug ) {
+				$active_color_name    = $c['name'];
+				$active_color_display = $c['display'];
+				break;
+			}
+		}
+	}
+}
 ?>
 
 <!-- Breadcrumb Strip -->
@@ -195,59 +230,26 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 		</div>
 
 		<!-- 6. Form & Swatches -->
-		<form class="product-add-to-cart-form filament-purchase-form" method="post" action="">
+		<form class="product-add-to-cart-form filament-purchase-form" method="post" action="" data-default-color="<?php echo esc_attr( $default_color_slug ); ?>" data-default-format="<?php echo esc_attr( $default_format_slug ); ?>">
 			<input type="hidden" name="product_id" value="<?php echo esc_attr( $core['id'] ); ?>">
 			<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $core['id'] ); ?>">
 			<input type="hidden" name="variation_id" id="selected-variation-id" value="<?php echo ! $is_variable ? esc_attr( $core['id'] ) : ''; ?>">
-			<input type="hidden" name="filament_color" id="selected-filament-color" value="">
-			<input type="hidden" name="filament_format" id="selected-filament-format" value="">
+			<input type="hidden" name="filament_color" id="selected-filament-color" value="<?php echo esc_attr( $active_color_name ); ?>">
+			<input type="hidden" name="filament_format" id="selected-filament-format" value="<?php echo esc_attr( $default_format_slug ); ?>">
 
 			<!-- VARIATIONS BLOCK: Only displayed when product is variable in WooCommerce -->
 			<?php if ( $is_variable ) : ?>
 				<?php
-				$product_obj = $core['product'];
-				$attributes  = ( $product_obj instanceof WC_Product ) ? $product_obj->get_attributes() : array();
+				// 1. Build Color Options dynamically from WooCommerce attributes
+				$color_options = function_exists( 'woodmart_child_get_filament_color_options' ) ? woodmart_child_get_filament_color_options( $core['id'] ) : array();
 
-				// Discover Color attribute vs Format / Packaging attribute
-				$color_attr  = null;
+				// Discover Format / Packaging attribute
 				$format_attr = null;
-
 				foreach ( $attributes as $attr_key => $attr_val ) {
-					$attr_name = $attr_val->get_name();
-					if ( false !== stripos( $attr_key, 'color' ) || false !== stripos( $attr_name, 'color' ) ) {
-						$color_attr = $attr_val;
-					} elseif ( $attr_val->get_variation() ) {
+					$attr_name = is_object( $attr_val ) && method_exists( $attr_val, 'get_name' ) ? $attr_val->get_name() : $attr_key;
+					if ( false === stripos( $attr_key, 'color' ) && false === stripos( $attr_name, 'color' ) && is_object( $attr_val ) && method_exists( $attr_val, 'get_variation' ) && $attr_val->get_variation() ) {
 						$format_attr = $attr_val;
-					}
-				}
-
-				// 1. Build Color Options with exact Woodmart term meta hex
-				$color_options = array();
-				if ( $color_attr ) {
-					if ( $color_attr->is_taxonomy() ) {
-						$terms = wc_get_product_terms( $core['id'], $color_attr->get_name(), array( 'fields' => 'all' ) );
-						if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
-							foreach ( $terms as $t ) {
-								$hex = woodmart_child_get_term_color( $t, $color_attr->get_name() );
-								$color_options[] = array(
-									'name'    => $t->name,
-									'display' => strtoupper( $t->name . ' ' . $hex ),
-									'hex'     => $hex,
-									'slug'    => $t->slug,
-								);
-							}
-						}
-					} else {
-						$raw_opts = $color_attr->get_options();
-						foreach ( $raw_opts as $ro ) {
-							$hex = woodmart_child_get_term_color( $ro );
-							$color_options[] = array(
-								'name'    => $ro,
-								'display' => strtoupper( $ro . ' ' . $hex ),
-								'hex'     => $hex,
-								'slug'    => sanitize_title( $ro ),
-							);
-						}
+						break;
 					}
 				}
 
@@ -391,15 +393,17 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 					<div class="filament-colors-block">
 						<div class="filament-colors-header">
 							<div class="filament-colors-label">
-								<?php esc_html_e( 'COLOR :', 'woodmart-child' ); ?> <span class="active-color-name is-placeholder" id="active-filament-color-name"><?php esc_html_e( 'Select a color', 'woodmart-child' ); ?></span>
+								<?php esc_html_e( 'COLOR :', 'woodmart-child' ); ?> <span class="active-color-name <?php echo $active_color_display ? '' : 'is-placeholder'; ?>" id="active-filament-color-name"><?php echo esc_html( $active_color_display ?: __( 'Select a color', 'woodmart-child' ) ); ?></span>
 							</div>
-							<a href="#all-colors" class="filament-view-colors-link"><?php esc_html_e( 'View all colors ›', 'woodmart-child' ); ?></a>
+							<a href="#find-colors" class="filament-view-colors-link"><?php esc_html_e( 'View all colors ›', 'woodmart-child' ); ?></a>
 						</div>
 
 						<div class="filament-swatches-grid" role="radiogroup" aria-label="<?php esc_attr_e( 'Filament Color Swatches', 'woodmart-child' ); ?>">
-							<?php foreach ( $color_options as $c_idx => $c ) : ?>
+							<?php foreach ( $color_options as $c_idx => $c ) : 
+								$is_c_active = ( $default_color_slug && ( $c['slug'] === $default_color_slug || sanitize_title( $c['name'] ) === $default_color_slug || strtolower( $c['name'] ) === $default_color_slug ) );
+							?>
 								<button type="button" 
-										class="filament-swatch" 
+										class="filament-swatch <?php echo $is_c_active ? 'is-active' : ''; ?>" 
 										data-color-name="<?php echo esc_attr( $c['name'] ); ?>" 
 										data-color-display="<?php echo esc_attr( $c['display'] ); ?>" 
 										data-color-hex="<?php echo esc_attr( $c['hex'] ); ?>" 
@@ -422,8 +426,18 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 								$f_title = $fo['name'];
 								$f_desc  = $fo['desc'];
 								$f_price = $initial_format_prices[ $f_slug ] ?? $core['price_html'];
+								$is_f_active = false;
+								if ( $default_format_slug ) {
+									if ( $f_slug === $default_format_slug || sanitize_title( $f_title ) === $default_format_slug || strtolower( $f_title ) === $default_format_slug ) {
+										$is_f_active = true;
+									} elseif ( false !== stripos( $default_format_slug, 'spool' ) && false !== stripos( $f_slug, 'spool' ) ) {
+										$is_f_active = true;
+									} elseif ( false !== stripos( $default_format_slug, 'refill' ) && false !== stripos( $f_slug, 'refill' ) ) {
+										$is_f_active = true;
+									}
+								}
 							?>
-								<div class="filament-format-card" 
+								<div class="filament-format-card <?php echo $is_f_active ? 'is-active' : ''; ?>" 
 									 data-format="<?php echo esc_attr( $f_slug ); ?>"
 									 data-title="<?php echo esc_attr( $f_title ); ?>">
 									<div class="format-card-top">
@@ -456,14 +470,17 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 			<?php endif; ?>
 
 			<!-- Quantity Stepper + Add to Basket Button -->
+			<?php
+			$has_default_selection = ( $default_color_slug && $default_format_slug );
+			?>
 			<div class="product-add-to-cart filament-add-row">
 				<div class="product-quantity">
 					<button type="button" data-step="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', 'woodmart-child' ); ?>">−</button>
 					<input type="text" name="quantity" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>">
 					<button type="button" data-step="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
 				</div>
-				<button class="btn btn-add-to-cart filament-btn-add-to-cart <?php echo $is_variable ? 'is-disabled' : ''; ?>" type="submit" <?php echo $is_variable ? 'data-state="unselected"' : 'data-state="ready"'; ?>>
-					<span class="btn-text"><?php echo $is_variable ? esc_html__( 'Please select a color', 'woodmart-child' ) : esc_html__( 'Add to basket', 'woodmart-child' ); ?></span>
+				<button class="btn btn-add-to-cart filament-btn-add-to-cart <?php echo ( $is_variable && ! $has_default_selection ) ? 'is-disabled' : ''; ?>" type="submit" <?php echo ( $is_variable && ! $has_default_selection ) ? 'data-state="unselected"' : 'data-state="ready"'; ?>>
+					<span class="btn-text"><?php echo ( $is_variable && ! $has_default_selection ) ? esc_html__( 'Please select a color', 'woodmart-child' ) : esc_html__( 'Add to basket', 'woodmart-child' ); ?></span>
 					<span class="cart-icon" aria-hidden="true">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>

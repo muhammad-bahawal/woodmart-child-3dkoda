@@ -37,7 +37,7 @@ function woodmart_child_render_ams_builder_meta_box( $post ) {
 	$settings        = woodmart_child_get_ams_builder_settings( $post->ID );
 	$enabled_landing = get_post_meta( $post->ID, '_woodmart_child_ams_landing_enabled', true );
 	if ( '' === $enabled_landing ) {
-		$enabled_landing = isset( $settings['general']['enable_landing'] ) ? $settings['general']['enable_landing'] : '0';
+		$enabled_landing = '0';
 	}
 	?>
 	<div class="wc-builder-wrap">

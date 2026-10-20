@@ -912,20 +912,98 @@
 			}
 		}
 
+		// Read WooCommerce Default Form Values from form attributes
+		const buyForm = root.querySelector('.filament-purchase-form');
+		const defaultColor = (buyForm && buyForm.dataset.defaultColor ? buyForm.dataset.defaultColor.toLowerCase().trim() : '');
+		const defaultFormat = (buyForm && buyForm.dataset.defaultFormat ? buyForm.dataset.defaultFormat.toLowerCase().trim() : '');
+
 		let selectedColorSlug = '';
 		let currentColorName = '';
-		const initialActiveSwatch = root.querySelector('.filament-swatch.is-active');
+		let initialActiveSwatch = root.querySelector('.filament-swatch.is-active');
+
+		if (!initialActiveSwatch && defaultColor && swatches.length > 0) {
+			initialActiveSwatch = Array.from(swatches).find(s => {
+				const sSlug = (s.dataset.slug || '').toLowerCase();
+				const sName = (s.dataset.colorName || '').toLowerCase();
+				return sSlug === defaultColor || sName === defaultColor || defaultColor.includes(sSlug) || sSlug.includes(defaultColor);
+			});
+			if (initialActiveSwatch) {
+				initialActiveSwatch.classList.add('is-active');
+			}
+		}
+
 		if (initialActiveSwatch) {
 			selectedColorSlug = (initialActiveSwatch.dataset.slug || '').toLowerCase();
 			currentColorName = initialActiveSwatch.dataset.colorName || '';
+			if (activeColorSpan) {
+				activeColorSpan.textContent = initialActiveSwatch.dataset.colorDisplay || initialActiveSwatch.dataset.colorName || '';
+				activeColorSpan.classList.remove('is-placeholder');
+			}
+			if (colorInput) {
+				colorInput.value = currentColorName;
+			}
 		}
 
 		let selectedFormatSlug = '';
 		let currentFormatTitle = '';
-		const initialActiveCard = root.querySelector('.filament-format-card.is-active');
+		let initialActiveCard = root.querySelector('.filament-format-card.is-active');
+
+		if (!initialActiveCard && defaultFormat && formatCards.length > 0) {
+			initialActiveCard = Array.from(formatCards).find(c => {
+				const fSlug = (c.dataset.format || '').toLowerCase();
+				const fTitle = (c.dataset.title || '').toLowerCase();
+				return fSlug === defaultFormat || fTitle === defaultFormat || defaultFormat.includes(fSlug) || fSlug.includes(defaultFormat);
+			});
+			if (initialActiveCard) {
+				initialActiveCard.classList.add('is-active');
+			}
+		}
+
+		// If color is set but still no format card selected, auto-select first format card
+		if (!initialActiveCard && selectedColorSlug && formatCards.length > 0) {
+			initialActiveCard = formatCards[0];
+			initialActiveCard.classList.add('is-active');
+		}
+
 		if (initialActiveCard) {
 			selectedFormatSlug = (initialActiveCard.dataset.format || '').toLowerCase();
 			currentFormatTitle = initialActiveCard.dataset.title || '';
+			if (formatInput) {
+				formatInput.value = currentFormatTitle;
+			}
+		}
+
+		// Helper to synchronize lower showcase color palette with hero
+		function syncShowcasePalette(colorSlug, colorHex, colorDisplay) {
+			const paletteCard = document.querySelector('.filament-palette-card');
+			if (!paletteCard) return;
+
+			const dots = paletteCard.querySelectorAll('.filament-palette-dot');
+			const cSlug = (colorSlug || '').toLowerCase().trim();
+			const cHex = (colorHex || '').toLowerCase().trim();
+
+			dots.forEach(d => {
+				const dSlug = (d.getAttribute('data-slug') || '').toLowerCase().trim();
+				const dName = (d.getAttribute('data-name') || '').toLowerCase().trim();
+				const dHex = (d.getAttribute('data-hex') || '').toLowerCase().trim();
+
+				const isMatch = (cSlug && (dSlug === cSlug || dName === cSlug || cSlug.includes(dSlug) || dSlug.includes(cSlug))) ||
+					(cHex && dHex === cHex);
+
+				if (isMatch) {
+					dots.forEach(item => item.classList.remove('is-active'));
+					d.classList.add('is-active');
+				}
+			});
+
+			const statusSwatch = document.getElementById('filament-palette-status-swatch');
+			const statusName = document.getElementById('filament-palette-status-name');
+			if (statusSwatch && colorHex) {
+				statusSwatch.style.backgroundColor = colorHex;
+			}
+			if (statusName && colorDisplay) {
+				statusName.textContent = colorDisplay;
+			}
 		}
 
 		function findMatchingVariation(colorSlug, formatSlug) {
@@ -1072,6 +1150,32 @@
 		// Initial update of format prices
 		updateFormatCardPrices();
 
+		// Apply initial matching variation if default color or format is present
+		if (selectedColorSlug || selectedFormatSlug) {
+			const initialVar = findMatchingVariation(selectedColorSlug, selectedFormatSlug);
+			if (initialVar) {
+				applyVariation(initialVar);
+			}
+			if (initialActiveSwatch) {
+				syncShowcasePalette(selectedColorSlug, initialActiveSwatch.dataset.colorHex, initialActiveSwatch.dataset.colorDisplay || currentColorName);
+			}
+			if (selectedFormatSlug) {
+				syncChooseFormatCards(selectedFormatSlug, currentFormatTitle);
+			}
+		}
+
+		// Smooth scroll for "View all colors ›" link to Showcase section
+		const viewColorsLink = root.querySelector('.filament-view-colors-link');
+		if (viewColorsLink) {
+			viewColorsLink.addEventListener('click', function(e) {
+				const target = document.getElementById('find-colors');
+				if (target) {
+					e.preventDefault();
+					target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			});
+		}
+
 		// Color Swatches Selection
 		swatches.forEach(swatch => {
 			swatch.addEventListener('click', function () {
@@ -1113,6 +1217,9 @@
 						variationSummary.textContent = currentColorName.toUpperCase();
 					}
 				}
+
+				// Synchronize lower showcase color palette
+				syncShowcasePalette(selectedColorSlug, this.dataset.colorHex, this.dataset.colorDisplay || currentColorName);
 			});
 		});
 
@@ -1483,7 +1590,7 @@
 			}
 		}
 
-		// 2. Color Showcase Interactive Palette
+		// 2. Color Showcase Interactive Palette (Bidirectionally synced with Hero Swatches)
 		const paletteCard = document.querySelector('.filament-palette-card');
 		if (paletteCard) {
 			const dots = paletteCard.querySelectorAll('.filament-palette-dot');
@@ -1496,23 +1603,36 @@
 					this.classList.add('is-active');
 
 					const name = this.getAttribute('data-name') || '';
+					const display = this.getAttribute('data-display') || name;
 					const hex = this.getAttribute('data-hex') || '#111827';
+					const slug = (this.getAttribute('data-slug') || '').toLowerCase().trim();
 
 					if (statusSwatch) {
 						statusSwatch.style.backgroundColor = hex;
 					}
 					if (statusName) {
-						statusName.textContent = name;
+						statusName.textContent = display;
 					}
 
-					// Sync with hero color swatches if present
-					const heroSwatches = document.querySelectorAll('.filament-color-swatch-item');
+					// Bi-directional synchronization: Trigger matching hero swatch
+					const heroSwatches = document.querySelectorAll('.filament-swatch');
+					let matchedHeroSwatch = null;
+
 					heroSwatches.forEach(hs => {
-						const hsHex = hs.getAttribute('data-hex') || '';
-						if (hsHex && hsHex.toLowerCase() === hex.toLowerCase()) {
-							hs.click();
+						const hsSlug = (hs.getAttribute('data-slug') || '').toLowerCase().trim();
+						const hsName = (hs.getAttribute('data-color-name') || '').toLowerCase().trim();
+						const hsHex = (hs.getAttribute('data-color-hex') || '').toLowerCase().trim();
+
+						if (slug && (hsSlug === slug || hsName === slug || slug.includes(hsSlug) || hsSlug.includes(slug))) {
+							matchedHeroSwatch = hs;
+						} else if (!matchedHeroSwatch && hex && hsHex === hex.toLowerCase()) {
+							matchedHeroSwatch = hs;
 						}
 					});
+
+					if (matchedHeroSwatch && !matchedHeroSwatch.classList.contains('is-active')) {
+						matchedHeroSwatch.click();
+					}
 				});
 			});
 		}

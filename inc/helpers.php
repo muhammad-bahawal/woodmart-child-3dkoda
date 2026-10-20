@@ -30,7 +30,14 @@ function woodmart_child_is_ams_landing( $product_or_id = null ) {
 		return false;
 	}
 
+	// If filament landing is explicitly enabled, yield to filament unless AMS is explicitly '1'
 	$enabled = get_post_meta( $product_id, '_woodmart_child_ams_landing_enabled', true );
+	if ( '1' !== (string) $enabled ) {
+		$filament_enabled = get_post_meta( $product_id, '_woodmart_child_filament_landing_enabled', true );
+		if ( '1' === (string) $filament_enabled ) {
+			return false;
+		}
+	}
 
 	if ( '' === $enabled ) {
 		$settings = get_post_meta( $product_id, '_woodmart_child_ams_builder', true );
@@ -1735,6 +1742,89 @@ function woodmart_child_get_term_color( $term, $taxonomy = 'pa_color' ) {
 }
 
 /**
+ * Extract dynamic color options for a filament product from its WooCommerce attributes.
+ *
+ * @param int $product_id Product ID.
+ * @return array Array of color items (name, display, hex, slug).
+ */
+function woodmart_child_get_filament_color_options( $product_id = 0 ) {
+	if ( ! $product_id ) {
+		$product_id = get_queried_object_id() ?: get_the_ID();
+	}
+	$product = wc_get_product( $product_id );
+	if ( ! $product ) {
+		return array();
+	}
+
+	$attributes = $product->get_attributes();
+	$color_attr = null;
+
+	foreach ( $attributes as $attr_key => $attr_val ) {
+		$attr_name = is_object( $attr_val ) && method_exists( $attr_val, 'get_name' ) ? $attr_val->get_name() : $attr_key;
+		if ( false !== stripos( $attr_key, 'color' ) || false !== stripos( $attr_name, 'color' ) ) {
+			$color_attr = $attr_val;
+			break;
+		}
+	}
+
+	$color_options = array();
+
+	if ( $color_attr ) {
+		if ( is_object( $color_attr ) && method_exists( $color_attr, 'is_taxonomy' ) && $color_attr->is_taxonomy() ) {
+			$terms = wc_get_product_terms( $product_id, $color_attr->get_name(), array( 'fields' => 'all' ) );
+			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+				foreach ( $terms as $t ) {
+					$hex = woodmart_child_get_term_color( $t, $color_attr->get_name() );
+					$color_options[] = array(
+						'name'    => $t->name,
+						'display' => strtoupper( $t->name . ' ' . $hex ),
+						'hex'     => $hex,
+						'slug'    => $t->slug,
+					);
+				}
+			}
+		} elseif ( is_object( $color_attr ) && method_exists( $color_attr, 'get_options' ) ) {
+			$raw_opts = $color_attr->get_options();
+			foreach ( $raw_opts as $ro ) {
+				$hex = woodmart_child_get_term_color( $ro );
+				$color_options[] = array(
+					'name'    => $ro,
+					'display' => strtoupper( $ro . ' ' . $hex ),
+					'hex'     => $hex,
+					'slug'    => sanitize_title( $ro ),
+				);
+			}
+		}
+	}
+
+	// If no taxonomy terms found, inspect available variations for color attributes
+	if ( empty( $color_options ) && $product->is_type( 'variable' ) ) {
+		$available_variations = $product->get_available_variations();
+		$seen = array();
+		foreach ( $available_variations as $av ) {
+			foreach ( $av['attributes'] as $ak => $val ) {
+				if ( false !== stripos( $ak, 'color' ) && ! empty( $val ) ) {
+					$slug = strtolower( trim( $val ) );
+					if ( ! in_array( $slug, $seen, true ) ) {
+						$seen[] = $slug;
+						$hex = woodmart_child_get_term_color( $slug );
+						$name = ucwords( str_replace( array( '-', '_' ), ' ', $slug ) );
+						$color_options[] = array(
+							'name'    => $name,
+							'display' => strtoupper( $name . ' ' . $hex ),
+							'hex'     => $hex,
+							'slug'    => $slug,
+						);
+					}
+				}
+			}
+		}
+	}
+
+	return $color_options;
+}
+
+/**
  * Get default demo data for Accessories Landing Page (Bambu Lab Hotends & Spare Parts).
  *
  * @return array
@@ -2803,7 +2893,7 @@ function woodmart_child_get_laser_crafting_section_data( $section_key, $product_
 function woodmart_child_get_default_ams_builder_data() {
 	return array(
 		'general'                 => array(
-			'enable_landing'  => '1',
+			'enable_landing'  => '0',
 			'eyebrow'         => 'Bambu Lab AMS',
 			'brand_name'      => 'Bambu Lab',
 			'badge_text'      => 'Authorized Bambu Lab Reseller',
