@@ -26,7 +26,7 @@ $subtitle = ! empty( $data['subtitle'] ) ? $data['subtitle'] : __( "The filament
 $sp_badge    = ! empty( $data['spool_badge'] ) ? $data['spool_badge'] : __( 'RECOMMENDED FOR FIRST PURCHASE', 'woodmart-child' );
 $sp_title    = ! empty( $data['spool_title'] ) ? $data['spool_title'] : __( 'Complete Spool', 'woodmart-child' );
 $sp_price    = ! empty( $data['spool_price'] ) ? $data['spool_price'] : '€24.90';
-$sp_vat      = ! empty( $data['spool_vat'] ) ? $data['spool_vat'] : '€24.90 incl. 24% VAT · sample price';
+$sp_vat      = ! empty( $data['spool_vat'] ) ? $data['spool_vat'] : '€24.90 incl. 24% VAT';
 $sp_desc     = ! empty( $data['spool_desc'] ) ? $data['spool_desc'] : __( "Ready-to-print 1 kg spool for everyday PLA work. Best choice if this is your first time buying Bambu filament or you don't yet own a reusable spool", 'woodmart-child' );
 $sp_bullets  = ! empty( $data['spool_bullets'] ) ? $data['spool_bullets'] : array(
 	__( 'Includes reusable spool', 'woodmart-child' ),
@@ -39,7 +39,7 @@ $sp_btn_text = ! empty( $data['spool_btn_text'] ) ? $data['spool_btn_text'] : __
 $rf_badge    = ! empty( $data['refill_badge'] ) ? $data['refill_badge'] : __( 'BEST IF YOU ALREADY OWN A SPOOL', 'woodmart-child' );
 $rf_title    = ! empty( $data['refill_title'] ) ? $data['refill_title'] : __( 'Refill', 'woodmart-child' );
 $rf_price    = ! empty( $data['refill_price'] ) ? $data['refill_price'] : '€21.90';
-$rf_vat      = ! empty( $data['refill_vat'] ) ? $data['refill_vat'] : '€21.90 incl. 24% VAT · sample price';
+$rf_vat      = ! empty( $data['refill_vat'] ) ? $data['refill_vat'] : '€21.90 incl. 24% VAT';
 $rf_desc     = ! empty( $data['refill_desc'] ) ? $data['refill_desc'] : __( 'Fits the Bambu Reusable Spool. See official assembly guide', 'woodmart-child' );
 $rf_bullets  = ! empty( $data['refill_bullets'] ) ? $data['refill_bullets'] : array(
 	__( 'No spool included', 'woodmart-child' ),

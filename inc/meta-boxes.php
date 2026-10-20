@@ -1476,7 +1476,7 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 
 					<div class="wc-field" style="margin-top:16px;">
 						<label><?php esc_html_e( 'Selected Article / SKU Note Template', 'woodmart-child' ); ?></label>
-						<input type="text" name="filament_builder[general][selected_sku_note]" value="<?php echo esc_attr( $settings['general']['selected_sku_note'] ?? 'Selected variation: BLACK · COMPLETE SPOOL · SAMPLE SKU' ); ?>" class="widefat">
+						<input type="text" name="filament_builder[general][selected_sku_note]" value="<?php echo esc_attr( $settings['general']['selected_sku_note'] ?? '' ); ?>" class="widefat">
 					</div>
 
 					<h4 class="wc-subhead"><?php esc_html_e( 'Color Swatches Palette (Shown if product is Variable with colors)', 'woodmart-child' ); ?></h4>
@@ -1932,7 +1932,7 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 								</div>
 								<div class="wc-field">
 									<label><?php esc_html_e( 'VAT Note', 'woodmart-child' ); ?></label>
-									<input type="text" name="filament_builder[choose_format][spool_vat]" value="<?php echo esc_attr( $settings['choose_format']['spool_vat'] ?? '€24.90 incl. 24% VAT · sample price' ); ?>" class="widefat">
+									<input type="text" name="filament_builder[choose_format][spool_vat]" value="<?php echo esc_attr( $settings['choose_format']['spool_vat'] ?? '€24.90 incl. 24% VAT' ); ?>" class="widefat">
 								</div>
 							</div>
 							<div class="wc-field">
@@ -1970,7 +1970,7 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 								</div>
 								<div class="wc-field">
 									<label><?php esc_html_e( 'VAT Note', 'woodmart-child' ); ?></label>
-									<input type="text" name="filament_builder[choose_format][refill_vat]" value="<?php echo esc_attr( $settings['choose_format']['refill_vat'] ?? '€21.90 incl. 24% VAT · sample price' ); ?>" class="widefat">
+									<input type="text" name="filament_builder[choose_format][refill_vat]" value="<?php echo esc_attr( $settings['choose_format']['refill_vat'] ?? '€21.90 incl. 24% VAT' ); ?>" class="widefat">
 								</div>
 							</div>
 							<div class="wc-field">
@@ -2171,7 +2171,7 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 							</div>
 							<div class="wc-field">
 								<label><?php esc_html_e( 'VAT Note', 'woodmart-child' ); ?></label>
-								<input type="text" name="filament_builder[recommended_settings][spool_vat]" value="<?php echo esc_attr( $settings['recommended_settings']['spool_vat'] ?? '€24.90 incl. 24% VAT sample price' ); ?>" class="widefat">
+								<input type="text" name="filament_builder[recommended_settings][spool_vat]" value="<?php echo esc_attr( $settings['recommended_settings']['spool_vat'] ?? '€24.90 incl. 24% VAT' ); ?>" class="widefat">
 							</div>
 							<div class="wc-field">
 								<label><?php esc_html_e( 'Button Text', 'woodmart-child' ); ?></label>

@@ -274,7 +274,7 @@ function woodmart_child_get_default_builder_data() {
 			'announcement_left'  => 'From Tallinn to your door. 1–2 day Baltic delivery.',
 			'announcement_mid'   => 'Estonia · Latvia · Lithuania | EN',
 			'announcement_right' => 'Prices incl. VAT',
-			'reseller_strip'     => '<b>●</b> Authorized Bambu Lab Reseller · <span class="muted">Product-page concept · Sample prices, stock and SKU mappings · No payment is processed.</span>',
+			'reseller_strip'     => '<b>●</b> Authorized Bambu Lab Reseller · <span class="muted">Fast Baltic delivery · 2-Year Warranty.</span>',
 			'benefits'           => array(
 				array(
 					'title'    => 'Fast Baltic delivery',
@@ -429,7 +429,7 @@ function woodmart_child_get_default_builder_data() {
 			'standalone'  => array(
 				'eyebrow'     => 'Focused & flexible',
 				'title'       => 'X1–Carbon',
-				'price_note'  => 'incl. 24% VAT · sample price',
+				'price_note'  => 'incl. 24% VAT',
 				'description' => 'For makers who mainly print one material or color at a time.',
 				'bullets'     => "X1-Carbon printer\nEnclosed CoreXY platform\nTextured PEI plate\nLocal Baltic support",
 				'btn_text'    => 'Choose Standalone',
@@ -438,7 +438,7 @@ function woodmart_child_get_default_builder_data() {
 				'badge'       => 'OUR RECOMMENDED SETUP',
 				'eyebrow'     => 'Multi material ready',
 				'title'       => 'X1–Carbon Combo',
-				'price_note'  => 'incl. 24% VAT · sample price',
+				'price_note'  => 'incl. 24% VAT',
 				'description' => 'For a more automated workflow with multi color and material management.',
 				'bullets'     => "Everything in Standalone\nAutomatic Material System\nAutomatic material loading\nMulti color workflow",
 				'btn_text'    => 'Choose Combo',
@@ -751,6 +751,170 @@ function woodmart_child_get_section_data( $section_key, $product_id = 0 ) {
 }
 
 /**
+ * Retrieve additional variation gallery images for a specific variation.
+ *
+ * Supports WoodMart native variation gallery, WooCommerce additional variation
+ * images, and popular gallery plugins.
+ *
+ * @param int $variation_id Variation ID.
+ * @param int $parent_product_id Optional parent product ID.
+ * @return array Array of image items with id, url, thumb, alt.
+ */
+function woodmart_child_get_variation_gallery_images( $variation_id, $parent_product_id = 0, $var_data = array() ) {
+	if ( ! $variation_id ) {
+		return array();
+	}
+
+	$var_obj = wc_get_product( $variation_id );
+	if ( ! $var_obj ) {
+		return array();
+	}
+
+	$parent_id = $parent_product_id ?: $var_obj->get_parent_id();
+	$images    = array();
+	$img_ids   = array();
+
+	// 1. Primary featured image of the variation (always first)
+	$primary_id = $var_obj->get_image_id();
+	if ( ! $primary_id && ! empty( $var_data['image_id'] ) ) {
+		$primary_id = absint( $var_data['image_id'] );
+	}
+	if ( $primary_id ) {
+		$img_ids[] = absint( $primary_id );
+	}
+
+	// 2. WooCommerce Core Native Variation Gallery CRUD method
+	if ( method_exists( $var_obj, 'get_gallery_image_ids' ) ) {
+		$core_gallery_ids = $var_obj->get_gallery_image_ids();
+		if ( ! empty( $core_gallery_ids ) && is_array( $core_gallery_ids ) ) {
+			foreach ( $core_gallery_ids as $cid ) {
+				$cid = absint( $cid );
+				if ( $cid && ! in_array( $cid, $img_ids, true ) ) {
+					$img_ids[] = $cid;
+				}
+			}
+		}
+	}
+
+	// 3. Post meta: WooCommerce Core stores variation gallery in '_product_image_gallery'
+	$gallery_post_meta = get_post_meta( $variation_id, '_product_image_gallery', true );
+	if ( ! empty( $gallery_post_meta ) ) {
+		$parsed_meta = is_array( $gallery_post_meta ) ? $gallery_post_meta : explode( ',', (string) $gallery_post_meta );
+		foreach ( $parsed_meta as $g_id ) {
+			$g_id = absint( trim( (string) $g_id ) );
+			if ( $g_id && ! in_array( $g_id, $img_ids, true ) ) {
+				$img_ids[] = $g_id;
+			}
+		}
+	}
+
+	// 4. If passed from $product->get_available_variations()
+	if ( ! empty( $var_data['gallery_image_ids'] ) && is_array( $var_data['gallery_image_ids'] ) ) {
+		foreach ( $var_data['gallery_image_ids'] as $v_gid ) {
+			$v_gid = absint( $v_gid );
+			if ( $v_gid && ! in_array( $v_gid, $img_ids, true ) ) {
+				$img_ids[] = $v_gid;
+			}
+		}
+	}
+
+	// 5. WoodMart variation gallery data stored on the parent product
+	if ( $parent_id ) {
+		$parent_gallery_data = get_post_meta( $parent_id, 'woodmart_variation_gallery_data', true );
+		if ( ! empty( $parent_gallery_data ) ) {
+			$parent_gallery_data = maybe_unserialize( $parent_gallery_data );
+			if ( is_array( $parent_gallery_data ) && ! empty( $parent_gallery_data[ $variation_id ] ) ) {
+				$raw_data = $parent_gallery_data[ $variation_id ];
+				$parsed   = is_array( $raw_data ) ? $raw_data : explode( ',', (string) $raw_data );
+				foreach ( $parsed as $pid ) {
+					$pid = absint( trim( (string) $pid ) );
+					if ( $pid && ! in_array( $pid, $img_ids, true ) ) {
+						$img_ids[] = $pid;
+					}
+				}
+			}
+		}
+	}
+
+	// 6. Direct variation meta keys used by WoodMart and other variation gallery extensions
+	$meta_keys = array(
+		'wd_additional_variation_images_data',
+		'woodmart_additional_variation_images_data',
+		'_variation_image_gallery',
+		'_wc_additional_variation_images',
+		'woo_variation_gallery_images',
+		'rtwpvs_images',
+		'variation_image_gallery',
+	);
+
+	foreach ( $meta_keys as $m_key ) {
+		$val = get_post_meta( $variation_id, $m_key, true );
+		if ( ! empty( $val ) ) {
+			$val = maybe_unserialize( $val );
+			$ids = is_array( $val ) ? $val : explode( ',', (string) $val );
+			foreach ( $ids as $raw_id ) {
+				$raw_id = absint( trim( (string) $raw_id ) );
+				if ( $raw_id && ! in_array( $raw_id, $img_ids, true ) ) {
+					$img_ids[] = $raw_id;
+				}
+			}
+		}
+	}
+
+	// 7. WoodMart helper function fallback if available
+	if ( function_exists( 'woodmart_get_variation_gallery_data' ) ) {
+		$wd_data = woodmart_get_variation_gallery_data( $variation_id );
+		if ( is_array( $wd_data ) ) {
+			foreach ( $wd_data as $wid ) {
+				$wid = absint( $wid );
+				if ( $wid && ! in_array( $wid, $img_ids, true ) ) {
+					$img_ids[] = $wid;
+				}
+			}
+		}
+	}
+
+	$var_title = $var_obj->get_name();
+
+	foreach ( $img_ids as $id ) {
+		$url = wp_get_attachment_image_url( $id, 'full' );
+		if ( ! $url ) {
+			continue;
+		}
+		$thumb = wp_get_attachment_image_url( $id, 'thumbnail' ) ?: $url;
+		$alt   = get_post_meta( $id, '_wp_attachment_image_alt', true ) ?: $var_title;
+
+		$images[] = array(
+			'id'    => $id,
+			'url'   => $url,
+			'thumb' => $thumb,
+			'alt'   => $alt,
+		);
+	}
+
+	// 8. If additional images exist as structured objects in variation data
+	if ( ! empty( $var_data['variation_gallery_images'] ) && is_array( $var_data['variation_gallery_images'] ) ) {
+		$existing_urls = array_column( $images, 'url' );
+		foreach ( $var_data['variation_gallery_images'] as $v_img ) {
+			if ( is_array( $v_img ) ) {
+				$full_src = $v_img['full_src'] ?? ( $v_img['src'] ?? ( $v_img['url'] ?? '' ) );
+				if ( $full_src && ! in_array( $full_src, $existing_urls, true ) ) {
+					$images[] = array(
+						'id'    => absint( $v_img['image_id'] ?? ( $v_img['id'] ?? 0 ) ),
+						'url'   => $full_src,
+						'thumb' => $v_img['gallery_thumbnail_src'] ?? ( $v_img['thumb'] ?? $full_src ),
+						'alt'   => $v_img['alt'] ?? $var_title,
+					);
+					$existing_urls[] = $full_src;
+				}
+			}
+		}
+	}
+
+	return $images;
+}
+
+/**
  * Extract and format WooCommerce core product data for the custom product landing page.
  *
  * @param int|WC_Product|null $product_or_id
@@ -809,7 +973,7 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 	// Stock
 	$is_in_stock  = $product->is_in_stock();
 	$stock_status = $product->get_stock_status();
-	$stock_label  = $is_in_stock ? __( '● In Stock · Tallinn', 'woodmart-child' ) : __( '○ Out of stock', 'woodmart-child' );
+	$stock_label  = $is_in_stock ? __( '● In Stock', 'woodmart-child' ) : __( '○ Out of stock', 'woodmart-child' );
 
 	// Variations
 	$is_variable = $product->is_type( 'variable' );
@@ -868,6 +1032,21 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 				$var_img_url = $main_image_url;
 			}
 
+			$var_gallery = woodmart_child_get_variation_gallery_images( $var['variation_id'], $product_id, $var );
+			if ( ! empty( $var_gallery[0]['url'] ) ) {
+				$var_img_url = $var_gallery[0]['url'];
+			}
+			$var_stock_status = $var_obj ? $var_obj->get_stock_status() : ( $var['is_in_stock'] ? 'instock' : 'outofstock' );
+			$var_backorder = ( 'onbackorder' === $var_stock_status ) || ( $var_obj && $var_obj->is_on_backorder() );
+
+			if ( $var_backorder ) {
+				$var_stock_text = __( 'Available on Backorder', 'woodmart-child' );
+			} elseif ( $var['is_in_stock'] && 'outofstock' !== $var_stock_status ) {
+				$var_stock_text = __( 'In Stock', 'woodmart-child' );
+			} else {
+				$var_stock_text = __( 'Out of stock', 'woodmart-child' );
+			}
+
 			$variations[] = array(
 				'id'           => $var['variation_id'],
 				'title'        => $display_title,
@@ -876,8 +1055,11 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 				'price_html'   => $formatted_p,
 				'sku'          => $var['sku'] ?: $product->get_sku(),
 				'in_stock'     => $var['is_in_stock'],
+				'stock_status' => $var_stock_status,
+				'stock_text'   => $var_stock_text,
 				'is_combo'     => $is_combo,
 				'image_url'    => $var_img_url,
+				'gallery'      => $var_gallery,
 				'attributes'   => $var['attributes'],
 			);
 		}
@@ -891,16 +1073,19 @@ function woodmart_child_get_core_product_data( $product_or_id = null ) {
 
 		$variations = array(
 			array(
-				'id'         => $product_id,
-				'title'      => $product->get_name(),
-				'subtitle'   => $product->get_short_description() ?: __( 'Standard package', 'woodmart-child' ),
-				'price_raw'  => $base_price_num,
-				'price_html' => $formatted_p,
-				'sku'        => $product->get_sku(),
-				'in_stock'   => $is_in_stock,
-				'is_combo'   => false,
-				'image_url'  => $main_image_url,
-				'attributes' => array(),
+				'id'           => $product_id,
+				'title'        => $product->get_name(),
+				'subtitle'     => $product->get_short_description() ?: __( 'Standard package', 'woodmart-child' ),
+				'price_raw'    => $base_price_num,
+				'price_html'   => $formatted_p,
+				'sku'          => $product->get_sku(),
+				'in_stock'     => $is_in_stock,
+				'stock_status' => $stock_status,
+				'stock_text'   => $is_in_stock ? __( 'In Stock', 'woodmart-child' ) : __( 'Out of stock', 'woodmart-child' ),
+				'is_combo'     => false,
+				'image_url'    => $main_image_url,
+				'gallery'      => $gallery_images,
+				'attributes'   => array(),
 			),
 		);
 	}
@@ -965,12 +1150,12 @@ function woodmart_child_get_default_filament_builder_data() {
 			'subtitle'          => 'Reliable, easy-to-print PLA for prototypes, models and everyday parts.',
 			'rating_text'       => 'Built for everyday making',
 			'stock_text'        => 'In Stock',
-			'stock_note'        => 'Sample inventory',
+			'stock_note'        => '',
 			'price_display'     => '€24.90',
 			'price_raw'         => '24.90',
-			'vat_note'          => 'Incl. 24% VAT · sample price',
+			'vat_note'          => 'incl. 24% VAT',
 			'ex_vat_text'       => 'Show ex. VAT',
-			'selected_sku_note' => 'Selected variation: BLACK · COMPLETE SPOOL · SAMPLE SKU',
+			'selected_sku_note' => '',
 			'team_quote_text'   => 'Buying for a team? Request a tailored quote →',
 			'benefits'          => array(
 				array(
@@ -1182,7 +1367,7 @@ function woodmart_child_get_default_filament_builder_data() {
 			'spool_badge'    => 'RECOMMENDED FOR FIRST PURCHASE',
 			'spool_title'    => 'Complete Spool',
 			'spool_price'    => '€24.90',
-			'spool_vat'      => '€24.90 incl. 24% VAT · sample price',
+			'spool_vat'      => '€24.90 incl. 24% VAT',
 			'spool_desc'     => "Ready-to-print 1 kg spool for everyday PLA work. Best choice if this is your first time buying Bambu filament or you don't yet own a reusable spool",
 			'spool_bullets'  => array(
 				'Includes reusable spool',
@@ -1193,7 +1378,7 @@ function woodmart_child_get_default_filament_builder_data() {
 			'refill_badge'   => 'BEST IF YOU ALREADY OWN A SPOOL',
 			'refill_title'   => 'Refill',
 			'refill_price'   => '€21.90',
-			'refill_vat'     => '€21.90 incl. 24% VAT · sample price',
+			'refill_vat'     => '€21.90 incl. 24% VAT',
 			'refill_desc'    => 'Fits the Bambu Reusable Spool. See official assembly guide',
 			'refill_bullets' => array(
 				'No spool included',
@@ -1268,7 +1453,7 @@ function woodmart_child_get_default_filament_builder_data() {
 			'spool_badge'   => 'RECOMMENDED FOR FIRST PURCHASE',
 			'spool_title'   => 'Complete Spool',
 			'spool_price'   => '€24.90',
-			'spool_vat'     => '€24.90 incl. 24% VAT sample price',
+			'spool_vat'     => '€24.90 incl. 24% VAT',
 			'spool_btn'     => 'Add Complete Spool →',
 			'items'         => array(
 				array( 'label' => 'Material type', 'value' => 'PLA' ),
@@ -1564,11 +1749,11 @@ function woodmart_child_get_default_accessories_builder_data() {
 			'title'                => 'Bambu Hotend with Nozzle',
 			'subtitle'             => 'High-precision extrusion assembly engineered for Bambu Lab X1 and P1 series. Durable hardened steel construction for composite filaments.',
 			'rating_text'          => '4.9 / 5 (128 reviews) · Trusted Baltic Stock',
-			'stock_text'           => 'In Stock — Tallinn',
-			'stock_note'           => 'Sample inventory · Dispatched within 24h',
+			'stock_text'           => 'In Stock',
+			'stock_note'           => '',
 			'price_display'        => '€35.00',
 			'price_raw'            => '35.00',
-			'vat_note'             => 'Incl. 24% VAT · sample price',
+			'vat_note'             => 'incl. 24% VAT',
 			'ex_vat_text'          => 'Show ex. VAT',
 			'warranty_note'        => 'Local 3DKoda warranty guidance',
 			'team_quote_text'      => 'Buying spare parts in bulk for your print farm? Request business volume pricing →',
@@ -2014,9 +2199,9 @@ function woodmart_child_get_default_laser_crafting_builder_data() {
 			'brand_name'       => 'Bambu Lab',
 			'badge_text'       => '● Authorized Bambu Lab Reseller',
 			'rating_text'      => '4.9 / 5 (94 reviews) · Trusted Baltic Stock',
-			'stock_text'       => 'In Stock — Tallinn',
+			'stock_text'       => 'In Stock',
 			'stock_note'       => 'Dispatched within 24h · Free Baltic Shipping',
-			'vat_note'         => 'Incl. 24% VAT · sample price',
+			'vat_note'         => 'incl. 24% VAT',
 			'ex_vat_text'      => 'Show ex. VAT',
 			'warranty_text'    => '2-Year Local Warranty',
 			'team_quote_text'  => 'Need crafting workstations for your studio or lab? Request volume business quote →',
@@ -2626,7 +2811,7 @@ function woodmart_child_get_default_ams_builder_data() {
 			'stock_text'      => 'In Stock',
 			'stock_note'      => 'SKU: FA008',
 			'warranty_text'   => '2-Year Official Warranty',
-			'vat_note'        => 'Incl. 24% VAT · sample price',
+			'vat_note'        => 'incl. 24% VAT',
 			'ex_vat_text'     => 'Show ex. VAT',
 			'team_quote_text' => 'Buying for a team or print farm? Request a tailored quote →',
 			'guarantees'      => array(

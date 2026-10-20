@@ -35,7 +35,7 @@ $price_html  = ! empty( $default_var['price_html'] ) ? $default_var['price_html'
 				<b class="sticky-bar-title"><?php echo esc_html( $title ); ?></b>
 				<span class="sticky-bar-price">
 					<?php echo wp_kses_post( $price_html ); ?>
-					<small><?php esc_html_e( 'incl. 24% VAT · sample price', 'woodmart-child' ); ?></small>
+					<small><?php esc_html_e( 'incl. 24% VAT', 'woodmart-child' ); ?></small>
 				</span>
 			</div>
 		</div>

@@ -12,7 +12,7 @@
  * - Full-width "In Stock · Tallinn" card with package icon
  * - Clean black price row with VAT toggle
  * - Unselected setup options by default with black price & variation image sync
- * - Add to sample basket button with Figma basket icon
+ * - Add to Basket button with Figma basket icon
  * - Full-width "Buying for a team?" bar
  * - 3-column Service benefits placed inside right column with orange icons
  * - Sticky section navigation
@@ -60,7 +60,7 @@ $default_var = array();
 				</svg>
 			</button>
 
-			<ul class="product-gallery__thumbs">
+			<ul class="product-gallery__thumbs" data-default-gallery="<?php echo esc_attr( wp_json_encode( $core['gallery_images'] ?? array() ) ); ?>">
 				<?php if ( ! empty( $core['gallery_images'] ) ) : ?>
 					<?php foreach ( $core['gallery_images'] as $idx => $img ) : ?>
 						<li class="<?php echo 0 === $idx ? 'is-active' : ''; ?>" data-full-url="<?php echo esc_url( $img['url'] ); ?>" data-alt="<?php echo esc_attr( $img['alt'] ); ?>">
@@ -126,8 +126,10 @@ $default_var = array();
 		<!-- 3. Full-width In Stock Row with Package Icon and Border -->
 		<?php
 		$clean_stock_label = preg_replace( '/^[●•\s·]+/', '', $core['stock_label'] );
+		$clean_stock_label = trim( preg_replace( '/[\s·—\-_]*Tallinn/i', '', $clean_stock_label ) );
+		$initial_stock_cls = ! empty( $core['is_in_stock'] ) ? 'is-instock' : 'is-outofstock';
 		?>
-		<div class="product-stock-row">
+		<div class="product-stock-row <?php echo esc_attr( $initial_stock_cls ); ?>">
 			<span class="stock-icon" aria-hidden="true">
 				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
@@ -136,8 +138,8 @@ $default_var = array();
 				</svg>
 			</span>
 			<span class="stock-text"><?php echo esc_html( $clean_stock_label ); ?></span>
-			<span class="stock-sep">·</span>
-			<span class="stock-note"><?php echo esc_html( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : __( 'Demo Inventory', 'woodmart-child' ) ); ?></span>
+			<span class="stock-sep" <?php echo empty( $core['sku'] ) ? 'style="display:none;"' : ''; ?>>·</span>
+			<span class="stock-note"><?php echo esc_html( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : '' ); ?></span>
 		</div>
 
 		<!-- 4. Price Row with Black Color and VAT toggle -->
@@ -146,7 +148,7 @@ $default_var = array();
 				<span class="product-price" style="color: #111827 !important;" data-price-raw="<?php echo esc_attr( $core['price'] ?? 0 ); ?>" data-price-html="<?php echo esc_attr( $core['price_html'] ); ?>"><?php echo wp_kses_post( $core['price_html'] ); ?></span>
 			</div>
 			<div class="product-price-meta">
-				<span class="product-price-note"><?php esc_html_e( 'incl. 24% VAT · sample price', 'woodmart-child' ); ?></span>
+				<span class="product-price-note"><?php esc_html_e( 'incl. 24% VAT', 'woodmart-child' ); ?></span>
 				<div class="product-vat-toggle">
 					<a href="#packages" class="vat-link"><?php esc_html_e( 'Show ex. VAT', 'woodmart-child' ); ?></a>
 				</div>
@@ -174,7 +176,11 @@ $default_var = array();
 									data-price-raw="<?php echo esc_attr( $var['price_raw'] ?? 0 ); ?>"
 									data-price-html="<?php echo esc_attr( $var['price_html'] ); ?>"
 									data-sku="<?php echo esc_attr( $var['sku'] ); ?>"
-									data-image="<?php echo esc_url( $var['image_url'] ?? '' ); ?>">
+									data-image="<?php echo esc_url( $var['image_url'] ?? '' ); ?>"
+									data-in-stock="<?php echo ! empty( $var['in_stock'] ) ? '1' : '0'; ?>"
+									data-stock-status="<?php echo esc_attr( $var['stock_status'] ?? '' ); ?>"
+									data-stock-text="<?php echo esc_attr( $var['stock_text'] ?? '' ); ?>"
+									data-gallery="<?php echo esc_attr( wp_json_encode( $var['gallery'] ?? array() ) ); ?>">
 								<div class="option-header">
 									<span class="option-title"><?php echo esc_html( $var['title'] ); ?></span>
 									<span class="option-check-icon" aria-hidden="true">
@@ -189,10 +195,14 @@ $default_var = array();
 						<?php endforeach; ?>
 					</div>
 					<p class="note"><?php esc_html_e( 'Selected article:', 'woodmart-child' ); ?> <span class="product-sku"><?php echo esc_html( $core['sku'] ?: '—' ); ?></span></p>
+
+					<script type="application/json" id="product-variations-matrix">
+						<?php echo wp_json_encode( $variations ); ?>
+					</script>
 				</fieldset>
 			<?php endif; ?>
 
-			<!-- 5 (part 2). Quantity & Add to Sample Basket Button with Figma Icon -->
+			<!-- 5 (part 2). Quantity & Add to Basket Button with Figma Icon -->
 			<div class="product-add-to-cart">
 				<div class="product-quantity">
 					<button type="button" data-step="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', 'woodmart-child' ); ?>">−</button>
@@ -200,7 +210,7 @@ $default_var = array();
 					<button type="button" data-step="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
 				</div>
 				<button class="btn btn-add-to-cart" type="submit">
-					<span><?php esc_html_e( 'Add to sample basket', 'woodmart-child' ); ?></span>
+					<span><?php esc_html_e( 'Add to Basket', 'woodmart-child' ); ?></span>
 					<span class="cart-icon" aria-hidden="true">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 							<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>

@@ -51,8 +51,8 @@ if ( $is_backorder ) {
 	$stock_class = 'is-outofstock';
 }
 
-$stock_note      = ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : ( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : __( 'Sample inventory', 'woodmart-child' ) );
-$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'Incl. 24% VAT · sample price', 'woodmart-child' );
+$stock_note      = ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : ( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : '' );
+$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'incl. 24% VAT', 'woodmart-child' );
 $ex_vat_text     = ! empty( $settings['general']['ex_vat_text'] ) ? $settings['general']['ex_vat_text'] : __( 'Show ex. VAT', 'woodmart-child' );
 $team_quote_text = ! empty( $settings['general']['team_quote_text'] ) ? $settings['general']['team_quote_text'] : __( 'Buying for a team? Request a tailored quote →', 'woodmart-child' );
 $benefits        = ! empty( $settings['general']['benefits'] ) ? $settings['general']['benefits'] : array();
@@ -88,7 +88,7 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 				</svg>
 			</button>
 
-			<ul class="product-gallery__thumbs">
+			<ul class="product-gallery__thumbs" data-default-gallery="<?php echo esc_attr( wp_json_encode( $core['gallery_images'] ?? array() ) ); ?>">
 				<?php if ( ! empty( $core['gallery_images'] ) ) : ?>
 					<?php foreach ( $core['gallery_images'] as $idx => $img ) : ?>
 						<li class="<?php echo 0 === $idx ? 'is-active' : ''; ?>" data-full-url="<?php echo esc_url( $img['url'] ); ?>" data-alt="<?php echo esc_attr( $img['alt'] ); ?>">
@@ -375,6 +375,7 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 						'in_stock'     => $v_in_stock,
 						'stock_status' => $v_stock_state,
 						'stock_text'   => $v_stock_text,
+						'gallery'      => woodmart_child_get_variation_gallery_images( $av['variation_id'], $core['id'], $av ),
 					);
 
 					if ( $f_slug && ( empty( $first_color_slug ) || $c_slug === $first_color_slug ) ) {

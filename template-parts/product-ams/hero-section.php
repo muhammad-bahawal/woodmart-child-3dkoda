@@ -46,9 +46,10 @@ if ( $is_backorder ) {
 	$stock_text  = __( 'Out of Stock', 'woodmart-child' );
 	$stock_class = 'is-outofstock';
 }
+$stock_text = trim( preg_replace( '/[\s·—\-_]*Tallinn/i', '', $stock_text ) );
 
 $stock_note      = ! empty( $sku ) ? ( __( 'SKU: ', 'woodmart-child' ) . $sku ) : ( ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : '' );
-$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'Incl. 24% VAT · sample price', 'woodmart-child' );
+$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'incl. 24% VAT', 'woodmart-child' );
 $ex_vat_text     = ! empty( $settings['general']['ex_vat_text'] ) ? $settings['general']['ex_vat_text'] : __( 'Show ex. VAT', 'woodmart-child' );
 $team_quote_text = ! empty( $settings['general']['team_quote_text'] ) ? $settings['general']['team_quote_text'] : __( 'Buying for a team or print farm? Request a tailored quote →', 'woodmart-child' );
 
@@ -87,7 +88,7 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 				</svg>
 			</button>
 
-			<ul class="product-gallery__thumbs">
+			<ul class="product-gallery__thumbs" data-default-gallery="<?php echo esc_attr( wp_json_encode( $core['gallery_images'] ?? array() ) ); ?>">
 				<?php if ( ! empty( $main_image ) ) : ?>
 					<li class="is-active" data-full-url="<?php echo esc_url( $main_image ); ?>" data-alt="<?php echo esc_attr( $title ); ?>">
 						<img src="<?php echo esc_url( $main_image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="eager">
@@ -221,7 +222,9 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 						'price_html'   => $v_price_html,
 						'sku'          => ! empty( $av['sku'] ) ? $av['sku'] : $sku,
 						'image'        => ! empty( $av['image']['url'] ) ? $av['image']['url'] : '',
+						'gallery'      => woodmart_child_get_variation_gallery_images( $av['variation_id'], $core['id'], $av ),
 						'in_stock'     => ! empty( $av['is_in_stock'] ),
+						'stock_text'   => ! empty( $av['is_in_stock'] ) ? __( 'In Stock', 'woodmart-child' ) : __( 'Out of stock', 'woodmart-child' ),
 						'availability' => $av['availability_html'] ?? '',
 					);
 				}

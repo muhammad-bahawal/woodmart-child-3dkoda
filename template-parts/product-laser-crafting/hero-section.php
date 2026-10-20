@@ -53,9 +53,10 @@ if ( $is_backorder ) {
 	$stock_text  = __( 'Out of Stock', 'woodmart-child' );
 	$stock_class = 'is-outofstock';
 }
+$stock_text = trim( preg_replace( '/[\s·—\-_]*Tallinn/i', '', $stock_text ) );
 
-$stock_note      = ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : ( ! empty( $sku ) ? ( __( 'SKU: ', 'woodmart-child' ) . $sku ) : __( 'Sample inventory', 'woodmart-child' ) );
-$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'Incl. 24% VAT · sample price', 'woodmart-child' );
+$stock_note      = ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : ( ! empty( $sku ) ? ( __( 'SKU: ', 'woodmart-child' ) . $sku ) : '' );
+$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'incl. 24% VAT', 'woodmart-child' );
 $ex_vat_text     = ! empty( $settings['general']['ex_vat_text'] ) ? $settings['general']['ex_vat_text'] : __( 'Show ex. VAT', 'woodmart-child' );
 $team_quote_text = ! empty( $settings['general']['team_quote_text'] ) ? $settings['general']['team_quote_text'] : __( 'Buying for a team? Request a tailored quote →', 'woodmart-child' );
 
@@ -94,7 +95,7 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 				</svg>
 			</button>
 
-			<ul class="product-gallery__thumbs">
+			<ul class="product-gallery__thumbs" data-default-gallery="<?php echo esc_attr( wp_json_encode( $core['gallery_images'] ?? array() ) ); ?>">
 				<?php if ( ! empty( $main_image ) ) : ?>
 					<li class="is-active" data-full-url="<?php echo esc_url( $main_image ); ?>" data-alt="<?php echo esc_attr( $title ); ?>">
 						<img src="<?php echo esc_url( $main_image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="eager">
@@ -224,7 +225,11 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 									data-price-raw="<?php echo esc_attr( $var['price_raw'] ?? 0 ); ?>"
 									data-price-html="<?php echo esc_attr( $var['price_html'] ); ?>"
 									data-sku="<?php echo esc_attr( $var['sku'] ); ?>"
-									data-image="<?php echo esc_url( $var['image_url'] ?? '' ); ?>">
+									data-image="<?php echo esc_url( $var['image_url'] ?? '' ); ?>"
+									data-in-stock="<?php echo ! empty( $var['in_stock'] ) ? '1' : '0'; ?>"
+									data-stock-status="<?php echo esc_attr( $var['stock_status'] ?? '' ); ?>"
+									data-stock-text="<?php echo esc_attr( $var['stock_text'] ?? '' ); ?>"
+									data-gallery="<?php echo esc_attr( wp_json_encode( $var['gallery'] ?? array() ) ); ?>">
 								<div class="option-header">
 									<span class="option-title"><?php echo esc_html( $var['title'] ); ?></span>
 									<span class="option-check-icon" aria-hidden="true">
@@ -241,6 +246,10 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 						<?php endforeach; ?>
 					</div>
 					<p class="note"><?php esc_html_e( 'Selected article:', 'woodmart-child' ); ?> <span class="product-sku" id="lc-selected-sku"><?php echo esc_html( $sku ?: '—' ); ?></span></p>
+
+					<script type="application/json" id="lc-variation-matrix">
+						<?php echo wp_json_encode( $variations ); ?>
+					</script>
 				</fieldset>
 			<?php endif; ?>
 

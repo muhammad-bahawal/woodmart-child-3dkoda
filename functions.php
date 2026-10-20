@@ -123,9 +123,9 @@ function woodmart_child_enqueue_landing_assets() {
 			'checkoutUrl'    => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '#',
 			'currencySymbol' => '€',
 			'i18n'           => array(
-				'adding'    => __( 'Adding to sample basket...', 'woodmart-child' ),
-				'added'     => __( 'Added to sample basket', 'woodmart-child' ),
-				'error'     => __( 'Could not add to sample basket. Please try again.', 'woodmart-child' ),
+				'adding'    => __( 'Adding to basket...', 'woodmart-child' ),
+				'added'     => __( 'Added to basket', 'woodmart-child' ),
+				'error'     => __( 'Could not add to basket. Please try again.', 'woodmart-child' ),
 				'view_cart' => __( 'View basket', 'woodmart-child' ),
 			),
 		)
@@ -683,4 +683,95 @@ add_filter( 'woocommerce_currency_symbol', function( $currency_symbol, $currency
 	return '€';
 }, 999, 2 );
 
+add_filter( 'woocommerce_price_format', function( $format, $currency_pos ) {
+	return '€%2$s';
+}, 999, 2 );
 
+
+
+
+
+// 1. Smart Loop Button URL Shortcode
+add_shortcode('loop_smart_cart_url', function() {
+    global $product;
+    if ( ! $product && function_exists('wc_get_product') ) {
+        $product = wc_get_product( get_the_ID() );
+    }
+    
+    if ( ! $product ) {
+        return esc_url( get_permalink() );
+    }
+    
+    if ( $product->is_type( 'variable' ) || $product->is_type( 'grouped' ) ) {
+        return esc_url( $product->get_permalink() );
+    }
+    
+    return esc_url( $product->add_to_cart_url() );
+});
+
+// 2. Reliable AJAX Handler for Elementor Button & Woodmart Drawer
+add_action('wp_footer', function() {
+    ?>
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Parent container ya direct link dono par click capture karega
+        $(document).on('click', 'a[href*="add-to-cart="], .ajax_add_to_cart a, a.ajax_add_to_cart', function(e) {
+            var $link = $(this);
+            var href = $link.attr('href');
+            
+            if (!href || href.indexOf('add-to-cart=') === -1) {
+                return; // Variable products ke normal permalink par kuch na kare
+            }
+            
+            // Default page navigation aur reload rok diya
+            e.preventDefault();
+            e.stopPropagation();
+            
+            var match = href.match(/add-to-cart=([0-9]+)/);
+            if (!match) return;
+            var productId = match[1];
+            
+            $link.addClass('loading');
+            
+            // Direct WooCommerce AJAX call
+            $.ajax({
+                type: 'POST',
+                url: '?wc-ajax=add_to_cart',
+                data: {
+                    product_id: productId,
+                    quantity: 1
+                },
+                dataType: 'json',
+                success: function(response) {
+                    $link.removeClass('loading');
+                    
+                    if (response.error && response.product_url) {
+                        window.location.href = response.product_url;
+                        return;
+                    }
+                    
+                    // WooCommerce & Woodmart cart fragments update trigger
+                    $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash, $link]);
+                    
+                    // Woodmart Side Mini-Cart Drawer Open
+                    setTimeout(function() {
+                        if ($('.cart-widget-opener').length) {
+                            $('.cart-widget-opener').trigger('click');
+                        } else if ($('.woodmart-cart-icon').length) {
+                            $('.woodmart-cart-icon').trigger('click');
+                        } else {
+                            $('body').addClass('woodmart-cart-opened');
+                            $('.woodmart-close-side').addClass('woodmart-close-side-opened');
+                        }
+                    }, 100);
+                },
+                error: function() {
+                    $link.removeClass('loading');
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+    </script>
+    <?php
+}, 999);

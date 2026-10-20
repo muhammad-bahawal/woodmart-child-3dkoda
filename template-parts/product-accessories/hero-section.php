@@ -34,9 +34,10 @@ $price_display   = $core['price_html'];
 $badge_text      = ! empty( $settings['general']['badge_text'] ) ? $settings['general']['badge_text'] : __( '● Authorized Bambu Lab Reseller', 'woodmart-child' );
 $eyebrow         = ! empty( $settings['general']['eyebrow'] ) ? $settings['general']['eyebrow'] : __( 'GENUINE ACCESSORIES & SPARE PARTS', 'woodmart-child' );
 $rating_text     = ! empty( $settings['general']['rating_text'] ) ? $settings['general']['rating_text'] : __( '4.9 / 5 (128 reviews) · Trusted Baltic Stock', 'woodmart-child' );
-$stock_text      = ! empty( $settings['general']['stock_text'] ) ? $settings['general']['stock_text'] : __( 'In Stock — Tallinn', 'woodmart-child' );
-$stock_note      = ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : ( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : __( 'Sample inventory · Dispatched within 24h', 'woodmart-child' ) );
-$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'Incl. 24% VAT · sample price', 'woodmart-child' );
+$stock_text      = ! empty( $settings['general']['stock_text'] ) ? $settings['general']['stock_text'] : __( 'In Stock', 'woodmart-child' );
+$stock_text      = trim( preg_replace( '/[\s·—\-_]*Tallinn/i', '', $stock_text ) );
+$stock_note      = ! empty( $settings['general']['stock_note'] ) ? $settings['general']['stock_note'] : ( ! empty( $core['sku'] ) ? ( __( 'SKU: ', 'woodmart-child' ) . $core['sku'] ) : '' );
+$vat_note        = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'incl. 24% VAT', 'woodmart-child' );
 $ex_vat_text     = ! empty( $settings['general']['ex_vat_text'] ) ? $settings['general']['ex_vat_text'] : __( 'Show ex. VAT', 'woodmart-child' );
 $team_quote_text = ! empty( $settings['general']['team_quote_text'] ) ? $settings['general']['team_quote_text'] : __( 'Buying spare parts in bulk for your print farm? Request business volume pricing →', 'woodmart-child' );
 $gallery_badges  = ! empty( $settings['general']['compatibility_badges'] ) ? $settings['general']['compatibility_badges'] : array();
@@ -73,7 +74,7 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 				</svg>
 			</button>
 
-			<ul class="product-gallery__thumbs">
+			<ul class="product-gallery__thumbs" data-default-gallery="<?php echo esc_attr( wp_json_encode( $core['gallery_images'] ?? array() ) ); ?>">
 				<?php if ( ! empty( $core['gallery_images'] ) ) : ?>
 					<?php foreach ( $core['gallery_images'] as $idx => $img ) : ?>
 						<li class="<?php echo 0 === $idx ? 'is-active' : ''; ?>" data-full-url="<?php echo esc_url( $img['url'] ); ?>" data-alt="<?php echo esc_attr( $img['alt'] ); ?>">
@@ -141,7 +142,10 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 		</div>
 
 		<!-- 4. Stock Banner Card -->
-		<div class="product-stock-row accessories-stock-row">
+		<?php
+		$acc_stock_cls = ! empty( $core['is_in_stock'] ) ? 'is-instock' : 'is-outofstock';
+		?>
+		<div class="product-stock-row accessories-stock-row <?php echo esc_attr( $acc_stock_cls ); ?>">
 			<span class="stock-icon" aria-hidden="true">
 				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
@@ -219,7 +223,9 @@ $is_variable = ! empty( $core['is_variable'] ) && count( $variations ) > 1;
 						'price_html'   => $v_price_html,
 						'sku'          => $av['sku'] ?: $core['sku'],
 						'image'        => ! empty( $av['image']['url'] ) ? $av['image']['url'] : '',
+						'gallery'      => woodmart_child_get_variation_gallery_images( $av['variation_id'], $core['id'], $av ),
 						'in_stock'     => $av['is_in_stock'],
+						'stock_text'   => $av['is_in_stock'] ? __( 'In Stock', 'woodmart-child' ) : __( 'Out of stock', 'woodmart-child' ),
 						'availability' => $av['availability_html'] ?? '',
 					);
 				}

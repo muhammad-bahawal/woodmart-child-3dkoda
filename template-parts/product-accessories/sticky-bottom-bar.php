@@ -19,7 +19,7 @@ $first_var   = ! empty( $variations[0] ) ? $variations[0] : array();
 $thumb_img   = ! empty( $core['main_thumb_url'] ) ? $core['main_thumb_url'] : ( ! empty( $core['main_image_url'] ) ? $core['main_image_url'] : ( $first_var['image_url'] ?? '' ) );
 $title       = $core['title'] ?? '';
 $price_html  = $core['price_html'] ?? '';
-$vat_note    = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'incl. 24% VAT · sample price', 'woodmart-child' );
+$vat_note    = ! empty( $settings['general']['vat_note'] ) ? $settings['general']['vat_note'] : __( 'incl. 24% VAT', 'woodmart-child' );
 ?>
 
 <div class="sticky-purchase-bar accessories-sticky-bar" id="accessories-sticky-bar">

@@ -29,7 +29,7 @@ $profile_url  = ! empty( $setup_data['profile_url'] ) ? $setup_data['profile_url
 $spool_badge = ! empty( $setup_data['spool_badge'] ) ? $setup_data['spool_badge'] : __( 'RECOMMENDED FOR FIRST PURCHASE', 'woodmart-child' );
 $spool_title = ! empty( $setup_data['spool_title'] ) ? $setup_data['spool_title'] : __( 'Complete Spool', 'woodmart-child' );
 $spool_price = ! empty( $setup_data['spool_price'] ) ? $setup_data['spool_price'] : '€24.90';
-$spool_vat   = ! empty( $setup_data['spool_vat'] ) ? $setup_data['spool_vat'] : '€24.90 incl. 24% VAT sample price';
+$spool_vat   = ! empty( $setup_data['spool_vat'] ) ? $setup_data['spool_vat'] : '€24.90 incl. 24% VAT';
 $spool_btn   = ! empty( $setup_data['spool_btn'] ) ? $setup_data['spool_btn'] : __( 'Add Complete Spool →', 'woodmart-child' );
 
 $items = ! empty( $setup_data['items'] ) && is_array( $setup_data['items'] ) ? $setup_data['items'] : array();
