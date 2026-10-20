@@ -429,18 +429,4 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 			</div>
 		</div>
 	</div>
-
-	<!-- Trust Footer Strip -->
-	<div class="filament-additions__trust-strip">
-		<ul class="trust-bullets">
-			<li>• <?php esc_html_e( 'Free shipping over €50 across Estonia, Latvia and Lithuania', 'woodmart-child' ); ?></li>
-			<li>• <?php esc_html_e( '1–2 day Baltic delivery from Tallinn. See our Shipping Policy', 'woodmart-child' ); ?></li>
-		</ul>
-		<div class="trust-payment-pills">
-			<span class="payment-pill">Montonio</span>
-			<span class="payment-pill">Bank Payments</span>
-			<span class="payment-pill">Card Payments</span>
-			<span class="payment-pill">Digital Wallets</span>
-		</div>
-	</div>
 </section>
