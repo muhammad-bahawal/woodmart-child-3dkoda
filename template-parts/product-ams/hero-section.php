@@ -421,25 +421,5 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 			</div>
 		<?php endforeach; ?>
 	</div>
-
-	<!-- Baltic Trust & Payment Strip -->
-	<div class="filament-trust-strip">
-		<div class="trust-pill">
-			<span class="dot">●</span>
-			<span><?php esc_html_e( 'Free Baltic shipping over 99 €', 'woodmart-child' ); ?></span>
-		</div>
-		<div class="trust-pill">
-			<span class="dot">●</span>
-			<span><?php esc_html_e( 'Omniva · DPD · SmartPost lockers', 'woodmart-child' ); ?></span>
-		</div>
-		<div class="trust-pill">
-			<span class="dot">●</span>
-			<span><?php esc_html_e( 'Same-day dispatch from Tallinn', 'woodmart-child' ); ?></span>
-		</div>
-		<div class="trust-pill">
-			<span class="dot">●</span>
-			<span><?php esc_html_e( '14-day hassle-free return window', 'woodmart-child' ); ?></span>
-		</div>
-	</div>
 </section>
 <?php endif; ?>
