@@ -1265,9 +1265,6 @@ function woodmart_child_get_default_filament_builder_data() {
 					'options'   => array( 'P1 Series / Cool Plate SuperTack', 'X1 Series / Cool Plate SuperTack', 'A1 Series / Cool Plate SuperTack' ),
 				),
 			),
-			'shipping_bullet_1' => 'Free shipping over €50 across Estonia, Latvia and Lithuania',
-			'shipping_bullet_2' => '1–2 day Baltic delivery from Tallinn. See our Shipping Policy',
-			'payment_methods'   => array( 'Montonio', 'Bank Payments', 'Card Payments', 'Digital Wallets' ),
 		),
 		'nav'                 => array(
 			'enabled'  => '1',

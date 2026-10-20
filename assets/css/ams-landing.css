@@ -2497,7 +2497,14 @@
 	.ams-landing-root .ams-service-highlights .service-item {
 		display: flex;
 		align-items: center;
-		gap: 14px;
+		gap: 12px;
+		padding: 0 0 9px 0;
+		border-bottom: 1px solid #edf2f7;
+	}
+
+	.ams-landing-root .ams-service-highlights .service-item:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
 	}
 
 	.ams-landing-root .ams-service-highlights .service-icon {

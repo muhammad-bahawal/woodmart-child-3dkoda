@@ -2701,6 +2701,80 @@
 	color: #6b7280;
 }
 
+@media (max-width: 768px) {
+	.laser-crafting-landing-root .lc-service-highlights {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 10px !important;
+		margin-top: 20px !important;
+		padding: 14px 16px !important;
+		background: #f8fafc !important;
+		border: 1px solid #e2e8f0 !important;
+		border-radius: 14px !important;
+		box-sizing: border-box !important;
+		box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+		width: 100% !important;
+	}
+
+	.laser-crafting-landing-root .lc-service-highlights .service-item {
+		display: flex !important;
+		align-items: center !important;
+		gap: 12px !important;
+		padding: 0 0 9px 0 !important;
+		margin: 0 !important;
+		border-bottom: 1px solid #edf2f7 !important;
+		background: transparent !important;
+	}
+
+	.laser-crafting-landing-root .lc-service-highlights .service-item:last-child {
+		border-bottom: none !important;
+		padding-bottom: 0 !important;
+	}
+
+	.laser-crafting-landing-root .lc-service-highlights .service-icon {
+		width: 36px !important;
+		height: 36px !important;
+		min-width: 36px !important;
+		min-height: 36px !important;
+		border-radius: 10px !important;
+		background: #fff7ed !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		flex-shrink: 0 !important;
+		margin: 0 !important;
+		color: #ff5e1a !important;
+	}
+
+	.laser-crafting-landing-root .lc-service-highlights .service-icon svg {
+		width: 18px !important;
+		height: 18px !important;
+		stroke: #ff5e1a !important;
+	}
+
+	.laser-crafting-landing-root .lc-service-highlights .service-text {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 1px !important;
+		min-width: 0 !important;
+	}
+
+	.laser-crafting-landing-root .lc-service-highlights .service-text strong {
+		font-size: 13.5px !important;
+		font-weight: 700 !important;
+		color: #0f172a !important;
+		line-height: 1.25 !important;
+		display: block !important;
+	}
+
+	.laser-crafting-landing-root .lc-service-highlights .service-text span {
+		font-size: 11.5px !important;
+		color: #64748b !important;
+		line-height: 1.35 !important;
+		display: block !important;
+	}
+}
+
 /* Essential Additions Section (Image 1) */
 .laser-crafting-landing-root .lc-additions-section {
 	padding: 60px 0 40px;

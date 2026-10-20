@@ -2435,8 +2435,75 @@ body.admin-bar .accessories-landing-root .accessories-gallery-column {
 	}
 
 	.accessories-summary-column .hero-service-features {
-		grid-template-columns: 1fr !important;
+		display: flex !important;
+		flex-direction: column !important;
 		gap: 10px !important;
+		margin-top: 20px !important;
+		padding: 14px 16px !important;
+		background: #f8fafc !important;
+		border: 1px solid #e2e8f0 !important;
+		border-radius: 14px !important;
+		box-sizing: border-box !important;
+		box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+		width: 100% !important;
+	}
+
+	.accessories-summary-column .hero-service-feature-item {
+		display: flex !important;
+		align-items: center !important;
+		gap: 12px !important;
+		padding: 0 0 9px 0 !important;
+		margin: 0 !important;
+		border-bottom: 1px solid #edf2f7 !important;
+		background: transparent !important;
+	}
+
+	.accessories-summary-column .hero-service-feature-item:last-child {
+		border-bottom: none !important;
+		padding-bottom: 0 !important;
+	}
+
+	.accessories-summary-column .hero-service-feature-icon {
+		width: 36px !important;
+		height: 36px !important;
+		min-width: 36px !important;
+		min-height: 36px !important;
+		border-radius: 10px !important;
+		background: #fff7ed !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		flex-shrink: 0 !important;
+		margin: 0 !important;
+		color: #ff5e1a !important;
+	}
+
+	.accessories-summary-column .hero-service-feature-icon svg {
+		width: 18px !important;
+		height: 18px !important;
+		stroke: #ff5e1a !important;
+	}
+
+	.accessories-summary-column .hero-service-feature-text {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 1px !important;
+		min-width: 0 !important;
+	}
+
+	.accessories-summary-column .hero-service-feature-title {
+		font-size: 13.5px !important;
+		font-weight: 700 !important;
+		color: #0f172a !important;
+		line-height: 1.25 !important;
+		display: block !important;
+	}
+
+	.accessories-summary-column .hero-service-feature-desc {
+		font-size: 11.5px !important;
+		color: #64748b !important;
+		line-height: 1.35 !important;
+		display: block !important;
 	}
 
 	.vases-grid {

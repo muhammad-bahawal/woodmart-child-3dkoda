@@ -141,21 +141,21 @@ $color_columns = array(
 		<!-- Swatch Palette Box (Dynamic from Product Color Variations) -->
 		<div class="filament-palette-card" aria-label="<?php esc_attr_e( 'Color swatches palette', 'woodmart-child' ); ?>">
 			<?php if ( ! empty( $color_options ) ) : ?>
-				<div class="filament-palette-columns filament-dynamic-palette" style="display:flex !important; flex-wrap:wrap !important; justify-content:center !important; align-items:center !important; gap:16px !important; max-width:860px; margin:0 auto;">
+				<div class="filament-palette-columns filament-dynamic-palette">
 					<?php foreach ( $color_options as $c ) : 
 						$is_active = ( $active_color && $active_color['slug'] === $c['slug'] );
 						$is_border = in_array( strtolower( $c['hex'] ), array( '#ffffff', '#fff', '#fefefe', '#f8fafc', '#f1f5f9' ), true );
 					?>
 						<button type="button" 
 								class="filament-palette-dot <?php echo $is_active ? 'is-active' : ''; ?> <?php echo $is_border ? 'has-border' : ''; ?>" 
-								style="--dot-color: <?php echo esc_attr( $c['hex'] ); ?>; width:36px !important; height:36px !important; min-width:36px !important; min-height:36px !important;" 
+								style="--dot-color: <?php echo esc_attr( $c['hex'] ); ?>;" 
 								data-slug="<?php echo esc_attr( $c['slug'] ); ?>"
 								data-name="<?php echo esc_attr( $c['name'] ); ?>"
 								data-display="<?php echo esc_attr( $c['display'] ); ?>"
 								data-hex="<?php echo esc_attr( $c['hex'] ); ?>"
 								aria-label="<?php echo esc_attr( $c['name'] ); ?>"
 								title="<?php echo esc_attr( $c['name'] ); ?>">
-							<span class="dot-fill" style="background-color: <?php echo esc_attr( $c['hex'] ); ?>; width:22px !important; height:22px !important; min-width:22px !important; min-height:22px !important;"></span>
+							<span class="dot-fill" style="background-color: <?php echo esc_attr( $c['hex'] ); ?>;"></span>
 						</button>
 					<?php endforeach; ?>
 				</div>

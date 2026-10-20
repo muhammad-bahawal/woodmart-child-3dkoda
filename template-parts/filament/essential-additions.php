@@ -35,9 +35,6 @@ $additions_data = $settings['essential_additions'];
 $eyebrow        = ! empty( $additions_data['eyebrow'] ) ? $additions_data['eyebrow'] : __( 'DISCOVER MORE HERE!', 'woodmart-child' );
 $title          = ! empty( $additions_data['title'] ) ? $additions_data['title'] : __( 'Essential additions specifically tested with Bambu PLA Basic', 'woodmart-child' );
 $cards          = ! empty( $additions_data['cards'] ) ? $additions_data['cards'] : array();
-$bullet_1       = ! empty( $additions_data['shipping_bullet_1'] ) ? $additions_data['shipping_bullet_1'] : __( 'Free shipping over €50 across Estonia, Latvia and Lithuania', 'woodmart-child' );
-$bullet_2       = ! empty( $additions_data['shipping_bullet_2'] ) ? $additions_data['shipping_bullet_2'] : __( '1–2 day Baltic delivery from Tallinn. See our Shipping Policy', 'woodmart-child' );
-$payment_pills  = ! empty( $additions_data['payment_methods'] ) ? $additions_data['payment_methods'] : array( 'Montonio', 'Bank Payments', 'Card Payments', 'Digital Wallets' );
 ?>
 
 <section class="filament-additions container" id="essential-additions">
@@ -134,25 +131,5 @@ $payment_pills  = ! empty( $additions_data['payment_methods'] ) ? $additions_dat
 				</div>
 			</div>
 		<?php endforeach; ?>
-	</div>
-
-	<!-- Bottom Trust Strip & Payment Methods -->
-	<div class="filament-trust-strip">
-		<div class="filament-trust-bullets">
-			<div class="trust-bullet">
-				<span class="bullet-dot">•</span>
-				<span><?php echo esc_html( $bullet_1 ); ?></span>
-			</div>
-			<div class="trust-bullet">
-				<span class="bullet-dot">•</span>
-				<span><?php echo wp_kses_post( $bullet_2 ); ?></span>
-			</div>
-		</div>
-
-		<div class="filament-payment-pills" aria-label="<?php esc_attr_e( 'Accepted Payment Methods', 'woodmart-child' ); ?>">
-			<?php foreach ( $payment_pills as $pm ) : ?>
-				<span class="payment-pill"><?php echo esc_html( $pm ); ?></span>
-			<?php endforeach; ?>
-		</div>
 	</div>
 </section>

@@ -3057,9 +3057,115 @@ div.product.landing-page-root .summary .price * {
 	.landing-page-root .product-comparison__grid,
 	.landing-page-root .product-package-contents__grid,
 	.landing-page-root .product-benefits .container,
-	.landing-page-root .product-summary .product-benefits,
-	.landing-page-root .hero-service-features {
+	.landing-page-root .product-summary .product-benefits {
 		grid-template-columns: 1fr !important;
+	}
+
+	/* Mobile Delivery & Service Features Trust Module (All Landing Templates) */
+	.landing-page-root .hero-service-features,
+	.hero-service-features,
+	.filament-service-highlights,
+	.lc-service-highlights,
+	.ams-service-highlights {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 10px !important;
+		margin-top: 20px !important;
+		padding: 14px 16px !important;
+		background: #f8fafc !important;
+		border: 1px solid #e2e8f0 !important;
+		border-radius: 14px !important;
+		box-sizing: border-box !important;
+		box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+		width: 100% !important;
+	}
+
+	.landing-page-root .hero-service-feature-item,
+	.hero-service-feature-item,
+	.filament-service-highlights .service-item,
+	.lc-service-highlights .service-item,
+	.ams-service-highlights .service-item {
+		display: flex !important;
+		align-items: center !important;
+		gap: 12px !important;
+		padding: 0 0 9px 0 !important;
+		margin: 0 !important;
+		border-bottom: 1px solid #edf2f7 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+		border-radius: 0 !important;
+	}
+
+	.landing-page-root .hero-service-feature-item:last-child,
+	.hero-service-feature-item:last-child,
+	.filament-service-highlights .service-item:last-child,
+	.lc-service-highlights .service-item:last-child,
+	.ams-service-highlights .service-item:last-child {
+		border-bottom: none !important;
+		padding-bottom: 0 !important;
+	}
+
+	.landing-page-root .hero-service-feature-icon,
+	.hero-service-feature-icon,
+	.filament-service-highlights .service-icon,
+	.lc-service-highlights .service-icon,
+	.ams-service-highlights .service-icon {
+		width: 36px !important;
+		height: 36px !important;
+		min-width: 36px !important;
+		min-height: 36px !important;
+		border-radius: 10px !important;
+		background: #fff7ed !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		flex-shrink: 0 !important;
+		margin: 0 !important;
+		color: #ff5e1a !important;
+	}
+
+	.landing-page-root .hero-service-feature-icon svg,
+	.hero-service-feature-icon svg,
+	.filament-service-highlights .service-icon svg,
+	.lc-service-highlights .service-icon svg,
+	.ams-service-highlights .service-icon svg {
+		width: 18px !important;
+		height: 18px !important;
+		stroke: #ff5e1a !important;
+	}
+
+	.landing-page-root .hero-service-feature-text,
+	.hero-service-feature-text,
+	.filament-service-highlights .service-text,
+	.lc-service-highlights .service-text,
+	.ams-service-highlights .service-text {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 1px !important;
+		min-width: 0 !important;
+	}
+
+	.landing-page-root .hero-service-feature-title,
+	.hero-service-feature-title,
+	.filament-service-highlights .service-text strong,
+	.lc-service-highlights .service-text strong,
+	.ams-service-highlights .service-text strong {
+		font-size: 13.5px !important;
+		font-weight: 700 !important;
+		color: #0f172a !important;
+		line-height: 1.25 !important;
+		display: block !important;
+	}
+
+	.landing-page-root .hero-service-feature-desc,
+	.hero-service-feature-desc,
+	.filament-service-highlights .service-text span,
+	.lc-service-highlights .service-text span,
+	.ams-service-highlights .service-text span {
+		font-size: 11.5px !important;
+		color: #64748b !important;
+		line-height: 1.35 !important;
+		display: block !important;
 	}
 
 	.landing-page-root .product-comparison__grid .plan--rec {
@@ -4148,6 +4254,45 @@ body.admin-bar.custom-landing-canvas .filament-subnav-bar {
 	flex-wrap: nowrap !important;
 }
 
+.landing-page-root .filament-palette-columns.filament-dynamic-palette {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	justify-content: center !important;
+	align-items: center !important;
+	gap: 16px !important;
+	max-width: 860px !important;
+	width: 100% !important;
+	min-width: 0 !important;
+	margin: 0 auto !important;
+}
+
+.landing-page-root .filament-dynamic-palette .filament-palette-dot {
+	width: 36px !important;
+	height: 36px !important;
+	min-width: 36px !important;
+	min-height: 36px !important;
+	max-width: 36px !important;
+	max-height: 36px !important;
+	flex: 0 0 36px !important;
+}
+
+.landing-page-root .filament-dynamic-palette .filament-palette-dot .dot-fill {
+	width: 22px !important;
+	height: 22px !important;
+	min-width: 22px !important;
+	min-height: 22px !important;
+	max-width: 22px !important;
+	max-height: 22px !important;
+}
+
+.landing-page-root .filament-dynamic-palette .filament-palette-dot.is-active::after {
+	width: 32px !important;
+	height: 32px !important;
+	min-width: 32px !important;
+	min-height: 32px !important;
+	border: 2px solid #0f172a !important;
+}
+
 .landing-page-root .filament-palette-col {
 	display: flex !important;
 	flex-direction: column !important;
@@ -4406,12 +4551,35 @@ body.admin-bar.custom-landing-canvas .filament-subnav-bar {
 	}
 
 	.landing-page-root .filament-palette-card {
-		padding: 28px 18px 20px !important;
+		padding: 24px 16px 20px !important;
+		overflow-x: visible !important;
+		overflow: visible !important;
+		box-sizing: border-box !important;
+		max-width: 100% !important;
+	}
+
+	.landing-page-root .filament-palette-columns.filament-dynamic-palette {
+		min-width: 0 !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		display: flex !important;
+		flex-wrap: wrap !important;
+		justify-content: center !important;
+		align-items: center !important;
+		gap: 12px !important;
+		padding: 0 !important;
+		margin: 0 auto !important;
+	}
+
+	.landing-page-root .filament-palette-columns:not(.filament-dynamic-palette) {
+		min-width: 620px !important;
 		overflow-x: auto !important;
 	}
 
-	.landing-page-root .filament-palette-columns {
-		min-width: 620px !important;
+	.landing-page-root .filament-palette-status {
+		margin-top: 20px !important;
+		padding-top: 14px !important;
+		gap: 8px !important;
 	}
 
 	.landing-page-root .filament-rfid-card {

@@ -1622,26 +1622,6 @@ function woodmart_child_render_filament_builder_meta_box( $post ) {
 							</div>
 						</div>
 					<?php endfor; ?>
-
-					<h4 class="wc-subhead"><?php esc_html_e( 'Bottom Trust Strip & Payment Methods', 'woodmart-child' ); ?></h4>
-					<div class="wc-field-row grid-2">
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Shipping Bullet 1', 'woodmart-child' ); ?></label>
-							<input type="text" name="filament_builder[essential_additions][shipping_bullet_1]" value="<?php echo esc_attr( $settings['essential_additions']['shipping_bullet_1'] ?? '' ); ?>" class="widefat">
-						</div>
-						<div class="wc-field">
-							<label><?php esc_html_e( 'Shipping Bullet 2', 'woodmart-child' ); ?></label>
-							<input type="text" name="filament_builder[essential_additions][shipping_bullet_2]" value="<?php echo esc_attr( $settings['essential_additions']['shipping_bullet_2'] ?? '' ); ?>" class="widefat">
-						</div>
-					</div>
-
-					<div class="wc-field">
-						<label><?php esc_html_e( 'Payment Methods Pills (Comma-separated)', 'woodmart-child' ); ?></label>
-						<?php
-						$pm = ! empty( $settings['essential_additions']['payment_methods'] ) ? implode( ', ', $settings['essential_additions']['payment_methods'] ) : 'Montonio, Bank Payments, Card Payments, Digital Wallets';
-						?>
-						<input type="text" name="filament_builder[essential_additions][payment_methods_csv]" value="<?php echo esc_attr( $pm ); ?>" class="widefat">
-					</div>
 				</section>
 
 				<!-- 3. STICKY SUBNAV -->
@@ -2535,13 +2515,10 @@ function woodmart_child_save_filament_builder_meta( $post_id, $post ) {
 
 	// 2. Essential Additions
 	$clean['essential_additions'] = array(
-		'enabled'           => ! empty( $raw_data['essential_additions']['enabled'] ) ? '1' : '0',
-		'eyebrow'           => sanitize_text_field( $raw_data['essential_additions']['eyebrow'] ?? '' ),
-		'title'             => sanitize_text_field( $raw_data['essential_additions']['title'] ?? '' ),
-		'cards'             => array(),
-		'shipping_bullet_1' => sanitize_text_field( $raw_data['essential_additions']['shipping_bullet_1'] ?? '' ),
-		'shipping_bullet_2' => sanitize_text_field( $raw_data['essential_additions']['shipping_bullet_2'] ?? '' ),
-		'payment_methods'   => array(),
+		'enabled' => ! empty( $raw_data['essential_additions']['enabled'] ) ? '1' : '0',
+		'eyebrow' => sanitize_text_field( $raw_data['essential_additions']['eyebrow'] ?? '' ),
+		'title'   => sanitize_text_field( $raw_data['essential_additions']['title'] ?? '' ),
+		'cards'   => array(),
 	);
 
 	if ( ! empty( $raw_data['essential_additions']['cards'] ) && is_array( $raw_data['essential_additions']['cards'] ) ) {
