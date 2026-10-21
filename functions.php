@@ -312,6 +312,24 @@ function woodmart_child_ajax_add_to_cart() {
 	if ( ! empty( $_POST['addition_option'] ) ) {
 		$cart_item_data['addition_option'] = sanitize_text_field( wp_unslash( $_POST['addition_option'] ) );
 	}
+	if ( ! empty( $_POST['addon_title'] ) ) {
+		$cart_item_data['custom_title'] = sanitize_text_field( wp_unslash( $_POST['addon_title'] ) );
+	}
+	if ( ! empty( $_POST['addon_price'] ) ) {
+		$raw_price   = sanitize_text_field( wp_unslash( $_POST['addon_price'] ) );
+		$clean_price = preg_replace( '/[^0-9\.,]/', '', $raw_price );
+		$clean_price = str_replace( ',', '.', $clean_price );
+		if ( is_numeric( $clean_price ) && (float) $clean_price > 0 ) {
+			$cart_item_data['custom_price'] = (float) $clean_price;
+		}
+	}
+	if ( ! empty( $_POST['addon_image'] ) ) {
+		$cart_item_data['custom_image'] = esc_url_raw( wp_unslash( $_POST['addon_image'] ) );
+	}
+	if ( ! empty( $_POST['is_bundle_addon'] ) ) {
+		$cart_item_data['is_bundle_addon'] = true;
+		$cart_item_data['addon_unique']    = md5( microtime() . wp_rand() );
+	}
 
 	$cart_item_key = false;
 
@@ -355,6 +373,13 @@ function woodmart_child_ajax_add_to_cart() {
 	}
 
 	if ( $cart_item_key ) {
+		// Immediately set the price on the newly added cart item in memory
+		if ( isset( $cart_item_data['custom_price'] ) && isset( WC()->cart->cart_contents[ $cart_item_key ] ) ) {
+			WC()->cart->cart_contents[ $cart_item_key ]['data']->set_price( (float) $cart_item_data['custom_price'] );
+		}
+		// Recalculate totals immediately so refreshed fragments & subtotals are 100% accurate
+		WC()->cart->calculate_totals();
+
 		// Calculate refreshed fragments safely
 		$mini_cart = '';
 		try {
@@ -381,10 +406,12 @@ function woodmart_child_ajax_add_to_cart() {
 		}
 
 		$data = array(
-			'cart_hash'  => WC()->cart ? WC()->cart->get_cart_hash() : '',
-			'cart_count' => WC()->cart ? WC()->cart->get_cart_contents_count() : 1,
-			'fragments'  => $fragments,
-			'message'    => __( 'Product successfully added to basket.', 'woodmart-child' ),
+			'cart_hash'     => WC()->cart ? WC()->cart->get_cart_hash() : '',
+			'cart_count'    => WC()->cart ? WC()->cart->get_cart_contents_count() : 1,
+			'cart_total'    => WC()->cart ? WC()->cart->get_cart_total() : '',
+			'cart_subtotal' => WC()->cart ? WC()->cart->get_cart_subtotal() : '',
+			'fragments'     => $fragments,
+			'message'       => __( 'Product successfully added to basket.', 'woodmart-child' ),
 		);
 
 		// Discard any buffered notices/warnings prior to sending pure JSON
@@ -409,9 +436,39 @@ add_action( 'wp_ajax_woodmart_child_add_to_cart', 'woodmart_child_ajax_add_to_ca
 add_action( 'wp_ajax_nopriv_woodmart_child_add_to_cart', 'woodmart_child_ajax_add_to_cart' );
 
 /**
+ * Restore custom price, title, image, and options when cart is loaded from session
+ */
+function woodmart_child_get_cart_item_from_session( $cart_item, $values, $key ) {
+	if ( isset( $values['custom_price'] ) && is_numeric( $values['custom_price'] ) ) {
+		$cart_item['custom_price'] = (float) $values['custom_price'];
+		if ( isset( $cart_item['data'] ) && is_object( $cart_item['data'] ) ) {
+			$cart_item['data']->set_price( (float) $values['custom_price'] );
+		}
+	}
+	if ( ! empty( $values['custom_title'] ) ) {
+		$cart_item['custom_title'] = $values['custom_title'];
+	}
+	if ( ! empty( $values['custom_image'] ) ) {
+		$cart_item['custom_image'] = $values['custom_image'];
+	}
+	if ( ! empty( $values['addition_option'] ) ) {
+		$cart_item['addition_option'] = $values['addition_option'];
+	}
+	if ( ! empty( $values['is_bundle_addon'] ) ) {
+		$cart_item['is_bundle_addon'] = true;
+	}
+	return $cart_item;
+}
+add_filter( 'woocommerce_get_cart_item_from_session', 'woodmart_child_get_cart_item_from_session', 20, 3 );
+
+/**
  * Display Custom Essential Addition Option in Cart & Mini Cart
  */
 function woodmart_child_display_addition_option_cart( $item_data, $cart_item ) {
+	if ( ! empty( $cart_item['is_bundle_addon'] ) ) {
+		// Clean out main product variation attributes (Color, Packaging, etc.)
+		$item_data = array();
+	}
 	if ( ! empty( $cart_item['addition_option'] ) ) {
 		$item_data[] = array(
 			'key'   => __( 'Option', 'woodmart-child' ),
@@ -431,6 +488,95 @@ function woodmart_child_add_addition_option_to_order_items( $item, $cart_item_ke
 	}
 }
 add_action( 'woocommerce_checkout_create_order_line_item', 'woodmart_child_add_addition_option_to_order_items', 10, 4 );
+
+/**
+ * Set custom price for bundle add-ons in cart & calculate totals
+ */
+function woodmart_child_set_addon_custom_price( $cart ) {
+	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+		return;
+	}
+	foreach ( $cart->get_cart() as $cart_item ) {
+		if ( isset( $cart_item['custom_price'] ) && is_numeric( $cart_item['custom_price'] ) ) {
+			$cart_item['data']->set_price( (float) $cart_item['custom_price'] );
+		}
+	}
+}
+add_action( 'woocommerce_before_calculate_totals', 'woodmart_child_set_addon_custom_price', 20, 1 );
+
+/**
+ * Display custom name for bundle add-ons in cart, mini cart & checkout
+ */
+function woodmart_child_filter_addon_cart_item_name( $name, $cart_item, $cart_item_key ) {
+	if ( ! empty( $cart_item['custom_title'] ) ) {
+		return esc_html( $cart_item['custom_title'] );
+	}
+	return $name;
+}
+add_filter( 'woocommerce_cart_item_name', 'woodmart_child_filter_addon_cart_item_name', 20, 3 );
+
+/**
+ * Filter unit price in cart, checkout and mini-cart for bundle add-ons
+ */
+function woodmart_child_filter_addon_cart_item_price( $price, $cart_item, $cart_item_key ) {
+	if ( isset( $cart_item['custom_price'] ) && is_numeric( $cart_item['custom_price'] ) ) {
+		return wc_price( (float) $cart_item['custom_price'] );
+	}
+	return $price;
+}
+add_filter( 'woocommerce_cart_item_price', 'woodmart_child_filter_addon_cart_item_price', 20, 3 );
+
+/**
+ * Filter item price string in WooCommerce mini-cart widget and side drawer
+ */
+function woodmart_child_filter_widget_cart_item_quantity( $html, $cart_item, $cart_item_key ) {
+	if ( isset( $cart_item['custom_price'] ) && is_numeric( $cart_item['custom_price'] ) ) {
+		$qty   = ! empty( $cart_item['quantity'] ) ? $cart_item['quantity'] : 1;
+		$price = wc_price( (float) $cart_item['custom_price'] );
+		return '<span class="quantity">' . sprintf( '%s &times; %s', $qty, $price ) . '</span>';
+	}
+	return $html;
+}
+add_filter( 'woocommerce_widget_cart_item_quantity', 'woodmart_child_filter_widget_cart_item_quantity', 20, 3 );
+
+/**
+ * Filter item subtotal in cart and checkout for bundle add-ons
+ */
+function woodmart_child_filter_addon_cart_item_subtotal( $subtotal, $cart_item, $cart_item_key ) {
+	if ( isset( $cart_item['custom_price'] ) && is_numeric( $cart_item['custom_price'] ) ) {
+		$qty = ! empty( $cart_item['quantity'] ) ? $cart_item['quantity'] : 1;
+		return wc_price( (float) $cart_item['custom_price'] * $qty );
+	}
+	return $subtotal;
+}
+add_filter( 'woocommerce_cart_item_subtotal', 'woodmart_child_filter_addon_cart_item_subtotal', 20, 3 );
+
+/**
+ * Display custom thumbnail for bundle add-ons in cart, mini cart & checkout
+ */
+function woodmart_child_filter_addon_cart_item_thumbnail( $thumbnail, $cart_item, $cart_item_key ) {
+	if ( ! empty( $cart_item['custom_image'] ) ) {
+		return '<img src="' . esc_url( $cart_item['custom_image'] ) . '" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" style="object-fit:contain; width:60px; height:60px; border-radius:6px;" />';
+	}
+	return $thumbnail;
+}
+add_filter( 'woocommerce_cart_item_thumbnail', 'woodmart_child_filter_addon_cart_item_thumbnail', 20, 3 );
+
+/**
+ * Save custom title and price to order line items upon checkout
+ */
+function woodmart_child_add_addon_title_to_order_items( $item, $cart_item_key, $values, $order ) {
+	if ( ! empty( $values['custom_title'] ) ) {
+		$item->set_name( $values['custom_title'] );
+	}
+	if ( ! empty( $values['custom_price'] ) && is_numeric( $values['custom_price'] ) ) {
+		$unit_price = (float) $values['custom_price'];
+		$qty        = $item->get_quantity() ?: 1;
+		$item->set_subtotal( $unit_price * $qty );
+		$item->set_total( $unit_price * $qty );
+	}
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'woodmart_child_add_addon_title_to_order_items', 15, 4 );
 
 /**
  * ============================================================================

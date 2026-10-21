@@ -205,39 +205,60 @@ function woodmart_child_render_laser_crafting_builder_meta_box( $post ) {
 						<?php
 						$addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general']['bundle_addons'] : array();
 						foreach ( $addons as $idx => $addon ) :
+							$opt_val = '';
+							if ( ! empty( $addon['options'] ) ) {
+								$opt_val = is_array( $addon['options'] ) ? implode( ', ', $addon['options'] ) : (string) $addon['options'];
+							}
 						?>
 							<div class="wc-repeater-row" data-index="<?php echo esc_attr( $idx ); ?>">
 								<span class="wc-row-drag">☰</span>
-								<div class="wc-repeater-fields grid-3">
-									<div class="wc-field">
-										<label><?php esc_html_e( 'Item Title', 'woodmart-child' ); ?></label>
-										<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][title]" value="<?php echo esc_attr( $addon['title'] ?? '' ); ?>" class="widefat">
+								<div class="wc-addon-repeater-fields">
+									<!-- Row 1: Pricing & Title -->
+									<div class="wc-field-row grid-4">
+										<div class="wc-field">
+											<label><strong><?php esc_html_e( 'Item Title', 'woodmart-child' ); ?></strong></label>
+											<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][title]" value="<?php echo esc_attr( $addon['title'] ?? '' ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'e.g. Print Finishing Kit', 'woodmart-child' ); ?>">
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( 'Discount Badge', 'woodmart-child' ); ?></label>
+											<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][badge]" value="<?php echo esc_attr( $addon['badge'] ?? '' ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'e.g. 15% off', 'woodmart-child' ); ?>">
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( 'Bundle Price', 'woodmart-child' ); ?></label>
+											<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][price]" value="<?php echo esc_attr( $addon['price'] ?? '' ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'e.g. €45.00', 'woodmart-child' ); ?>">
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( 'Regular Price', 'woodmart-child' ); ?></label>
+											<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][regular_price]" value="<?php echo esc_attr( $addon['regular_price'] ?? '' ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'e.g. €52.95', 'woodmart-child' ); ?>">
+										</div>
 									</div>
-									<div class="wc-field">
-										<label><?php esc_html_e( 'Discount Badge (e.g. 15% off)', 'woodmart-child' ); ?></label>
-										<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][badge]" value="<?php echo esc_attr( $addon['badge'] ?? '' ); ?>" class="widefat">
+
+									<!-- Row 2: Product ID & Options & Description -->
+									<div class="wc-field-row grid-3-addon">
+										<div class="wc-field">
+											<label><strong><?php esc_html_e( 'Product ID', 'woodmart-child' ); ?></strong></label>
+											<input type="number" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][product_id]" value="<?php echo esc_attr( $addon['product_id'] ?? '' ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'e.g. 1234', 'woodmart-child' ); ?>">
+										</div>
+										<div class="wc-field">
+											<label><strong><?php esc_html_e( 'Dropdown Options (Comma-separated)', 'woodmart-child' ); ?></strong></label>
+											<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][options]" value="<?php echo esc_attr( $opt_val ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'e.g. Standard Toolset (Complete), Pro Kit', 'woodmart-child' ); ?>">
+										</div>
+										<div class="wc-field">
+											<label><?php esc_html_e( 'Short Description', 'woodmart-child' ); ?></label>
+											<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][description]" value="<?php echo esc_attr( $addon['description'] ?? '' ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'Description...', 'woodmart-child' ); ?>">
+										</div>
 									</div>
-									<div class="wc-field">
-										<label><?php esc_html_e( 'Bundle Price (e.g. €45.00)', 'woodmart-child' ); ?></label>
-										<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][price]" value="<?php echo esc_attr( $addon['price'] ?? '' ); ?>" class="widefat">
-									</div>
-								</div>
-								<div class="wc-repeater-fields grid-3" style="margin-top: 8px;">
-									<div class="wc-field">
-										<label><?php esc_html_e( 'Regular Price (e.g. €52.95)', 'woodmart-child' ); ?></label>
-										<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][regular_price]" value="<?php echo esc_attr( $addon['regular_price'] ?? '' ); ?>" class="widefat">
-									</div>
-									<div class="wc-field">
-										<label><?php esc_html_e( 'Short Description', 'woodmart-child' ); ?></label>
-										<input type="text" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][description]" value="<?php echo esc_attr( $addon['description'] ?? '' ); ?>" class="widefat">
-									</div>
-									<div class="wc-field">
-										<label><?php esc_html_e( 'Thumbnail Image', 'woodmart-child' ); ?></label>
-										<div class="wc-image-picker">
-											<input type="hidden" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][image]" value="<?php echo esc_attr( $addon['image'] ?? '' ); ?>" class="wc-image-url">
-											<div class="wc-image-preview"><?php if ( ! empty( $addon['image'] ) ) : ?><img src="<?php echo esc_url( $addon['image'] ); ?>"><?php endif; ?></div>
-											<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
-											<button type="button" class="button wc-btn-remove-image <?php echo empty( $addon['image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+
+									<!-- Row 3: Thumbnail Image -->
+									<div class="wc-field-row">
+										<div class="wc-field">
+											<label><?php esc_html_e( 'Thumbnail Image', 'woodmart-child' ); ?></label>
+											<div class="wc-image-picker">
+												<input type="hidden" name="laser_crafting_builder[general][bundle_addons][<?php echo esc_attr( $idx ); ?>][image]" value="<?php echo esc_attr( $addon['image'] ?? '' ); ?>" class="wc-image-url">
+												<div class="wc-image-preview"><?php if ( ! empty( $addon['image'] ) ) : ?><img src="<?php echo esc_url( $addon['image'] ); ?>"><?php endif; ?></div>
+												<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
+												<button type="button" class="button wc-btn-remove-image <?php echo empty( $addon['image'] ) ? 'hidden' : ''; ?>"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -1123,36 +1144,53 @@ function woodmart_child_render_laser_crafting_builder_meta_box( $post ) {
 	<script type="text/template" id="tmpl-lc-addon-row">
 		<div class="wc-repeater-row" data-index="{{INDEX}}">
 			<span class="wc-row-drag">☰</span>
-			<div class="wc-repeater-fields grid-3">
-				<div class="wc-field">
-					<label><?php esc_html_e( 'Item Title', 'woodmart-child' ); ?></label>
-					<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][title]" value="" class="widefat">
+			<div class="wc-addon-repeater-fields">
+				<!-- Row 1: Pricing & Title -->
+				<div class="wc-field-row grid-4">
+					<div class="wc-field">
+						<label><strong><?php esc_html_e( 'Item Title', 'woodmart-child' ); ?></strong></label>
+						<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][title]" value="" class="widefat" placeholder="<?php esc_attr_e( 'e.g. Print Finishing Kit', 'woodmart-child' ); ?>">
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Discount Badge', 'woodmart-child' ); ?></label>
+						<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][badge]" value="15% off" class="widefat" placeholder="<?php esc_attr_e( 'e.g. 15% off', 'woodmart-child' ); ?>">
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Bundle Price', 'woodmart-child' ); ?></label>
+						<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][price]" value="€45.00" class="widefat" placeholder="<?php esc_attr_e( 'e.g. €45.00', 'woodmart-child' ); ?>">
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Regular Price', 'woodmart-child' ); ?></label>
+						<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][regular_price]" value="€52.95" class="widefat" placeholder="<?php esc_attr_e( 'e.g. €52.95', 'woodmart-child' ); ?>">
+					</div>
 				</div>
-				<div class="wc-field">
-					<label><?php esc_html_e( 'Discount Badge', 'woodmart-child' ); ?></label>
-					<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][badge]" value="15% off" class="widefat">
+
+				<!-- Row 2: Product ID & Options & Description -->
+				<div class="wc-field-row grid-3-addon">
+					<div class="wc-field">
+						<label><strong><?php esc_html_e( 'Product ID', 'woodmart-child' ); ?></strong></label>
+						<input type="number" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][product_id]" value="" class="widefat" placeholder="<?php esc_attr_e( 'e.g. 1234', 'woodmart-child' ); ?>">
+					</div>
+					<div class="wc-field">
+						<label><strong><?php esc_html_e( 'Dropdown Options (Comma-separated)', 'woodmart-child' ); ?></strong></label>
+						<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][options]" value="" class="widefat" placeholder="<?php esc_attr_e( 'e.g. Standard Toolset (Complete), Pro Kit', 'woodmart-child' ); ?>">
+					</div>
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Short Description', 'woodmart-child' ); ?></label>
+						<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][description]" value="" class="widefat" placeholder="<?php esc_attr_e( 'Description...', 'woodmart-child' ); ?>">
+					</div>
 				</div>
-				<div class="wc-field">
-					<label><?php esc_html_e( 'Bundle Price', 'woodmart-child' ); ?></label>
-					<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][price]" value="€45.00" class="widefat">
-				</div>
-			</div>
-			<div class="wc-repeater-fields grid-3" style="margin-top: 8px;">
-				<div class="wc-field">
-					<label><?php esc_html_e( 'Regular Price', 'woodmart-child' ); ?></label>
-					<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][regular_price]" value="€52.95" class="widefat">
-				</div>
-				<div class="wc-field">
-					<label><?php esc_html_e( 'Short Description', 'woodmart-child' ); ?></label>
-					<input type="text" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][description]" value="" class="widefat">
-				</div>
-				<div class="wc-field">
-					<label><?php esc_html_e( 'Thumbnail Image', 'woodmart-child' ); ?></label>
-					<div class="wc-image-picker">
-						<input type="hidden" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][image]" value="" class="wc-image-url">
-						<div class="wc-image-preview"></div>
-						<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
-						<button type="button" class="button wc-btn-remove-image hidden"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+
+				<!-- Row 3: Thumbnail Image -->
+				<div class="wc-field-row">
+					<div class="wc-field">
+						<label><?php esc_html_e( 'Thumbnail Image', 'woodmart-child' ); ?></label>
+						<div class="wc-image-picker">
+							<input type="hidden" name="laser_crafting_builder[general][bundle_addons][{{INDEX}}][image]" value="" class="wc-image-url">
+							<div class="wc-image-preview"></div>
+							<button type="button" class="button wc-btn-upload-image"><?php esc_html_e( 'Select Image', 'woodmart-child' ); ?></button>
+							<button type="button" class="button wc-btn-remove-image hidden"><?php esc_html_e( 'Remove', 'woodmart-child' ); ?></button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -1384,6 +1422,15 @@ function woodmart_child_save_laser_crafting_builder_meta( $post_id, $post ) {
 	if ( ! empty( $raw_data['general']['bundle_addons'] ) && is_array( $raw_data['general']['bundle_addons'] ) ) {
 		foreach ( $raw_data['general']['bundle_addons'] as $addon ) {
 			if ( ! empty( $addon['title'] ) ) {
+				$options_raw = $addon['options'] ?? '';
+				$options_arr = array();
+				if ( is_array( $options_raw ) ) {
+					$options_arr = array_values( array_filter( array_map( 'sanitize_text_field', $options_raw ) ) );
+				} elseif ( is_string( $options_raw ) && '' !== trim( $options_raw ) ) {
+					$parts       = explode( ',', $options_raw );
+					$options_arr = array_values( array_filter( array_map( 'sanitize_text_field', array_map( 'trim', $parts ) ) ) );
+				}
+
 				$clean['general']['bundle_addons'][] = array(
 					'id'            => sanitize_title( $addon['title'] ),
 					'title'         => sanitize_text_field( $addon['title'] ?? '' ),
@@ -1391,6 +1438,8 @@ function woodmart_child_save_laser_crafting_builder_meta( $post_id, $post ) {
 					'price'         => sanitize_text_field( $addon['price'] ?? '' ),
 					'regular_price' => sanitize_text_field( $addon['regular_price'] ?? '' ),
 					'description'   => sanitize_text_field( $addon['description'] ?? '' ),
+					'product_id'    => ! empty( $addon['product_id'] ) ? absint( $addon['product_id'] ) : 0,
+					'options'       => $options_arr,
 					'image'         => esc_url_raw( $addon['image'] ?? '' ),
 				);
 			}

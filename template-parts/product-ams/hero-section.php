@@ -375,8 +375,15 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 	</div>
 
 	<div class="filament-additions__grid">
-		<?php foreach ( $addons as $a_idx => $addon ) : ?>
-			<div class="addition-card" data-addon-id="<?php echo esc_attr( $addon['id'] ?? ( 'addon-' . $a_idx ) ); ?>">
+		<?php
+		foreach ( $addons as $a_idx => $addon ) :
+			$addon_price_raw = $addon['price'] ?? 0;
+			$addon_price_val = is_numeric( $addon_price_raw ) ? '€' . number_format( (float) $addon_price_raw, 2 ) : (string) $addon_price_raw;
+			$addon_img_val   = ! empty( $addon['image'] ) ? $addon['image'] : '';
+			$addon_pid_val   = ! empty( $addon['product_id'] ) ? absint( $addon['product_id'] ) : 0;
+			$addon_title_val = ! empty( $addon['title'] ) ? $addon['title'] : '';
+		?>
+			<div class="addition-card" data-addon-id="<?php echo esc_attr( $addon['id'] ?? ( 'addon-' . $a_idx ) ); ?>" data-product-id="<?php echo esc_attr( $addon_pid_val ); ?>" data-title="<?php echo esc_attr( $addon_title_val ); ?>" data-price="<?php echo esc_attr( $addon_price_val ); ?>" data-image="<?php echo esc_url( $addon_img_val ); ?>">
 				<div class="addition-card__img-wrap">
 					<?php if ( ! empty( $addon['badge'] ) ) : ?>
 						<span class="badge"><?php echo esc_html( $addon['badge'] ); ?></span>
@@ -413,7 +420,7 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 							<input type="text" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>">
 							<button type="button" data-step="1" aria-label="<?php esc_attr_e( 'Increase', 'woodmart-child' ); ?>">+</button>
 						</div>
-						<button type="button" class="btn addition-card__btn-add" data-title="<?php echo esc_attr( $addon['title'] ); ?>">
+						<button type="button" class="btn addition-card__btn-add" data-product-id="<?php echo esc_attr( $addon_pid_val ); ?>" data-title="<?php echo esc_attr( $addon_title_val ); ?>" data-price="<?php echo esc_attr( $addon_price_val ); ?>" data-image="<?php echo esc_url( $addon_img_val ); ?>">
 							<span><?php esc_html_e( 'Add', 'woodmart-child' ); ?></span>
 						</button>
 					</div>

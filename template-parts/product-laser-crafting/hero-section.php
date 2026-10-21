@@ -325,6 +325,14 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 </section>
 
 <!-- Essential Additions Section (Directly under Hero, matching Image 1) -->
+<?php
+if ( empty( $addons ) ) {
+	$default_data = function_exists( 'woodmart_child_get_default_laser_crafting_builder_data' ) ? woodmart_child_get_default_laser_crafting_builder_data() : array();
+	$addons = $default_data['general']['bundle_addons'] ?? array();
+}
+
+if ( ! empty( $addons ) && is_array( $addons ) ) :
+?>
 <section class="filament-additions container lc-additions-section" id="lc-essential-additions">
 	<div class="filament-additions__header">
 		<span class="eyebrow"><?php esc_html_e( 'DISCOVER MORE HERE!', 'woodmart-child' ); ?></span>
@@ -332,101 +340,114 @@ $addons = ! empty( $settings['general']['bundle_addons'] ) ? $settings['general'
 	</div>
 
 	<div class="filament-additions__grid">
-		<!-- Card 1: Print Finishing Kit -->
-		<div class="addition-card">
-			<div class="addition-card__icon-box">
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<circle cx="12" cy="12" r="10"></circle>
-					<path d="m4.93 4.93 4.24 4.24"></path>
-					<path d="m14.83 9.17 4.24-4.24"></path>
-					<path d="m14.83 14.83 4.24 4.24"></path>
-					<path d="m9.17 14.83-4.24 4.24"></path>
-				</svg>
-			</div>
-			<h3 class="addition-card__title"><?php esc_html_e( 'Print Finishing Kit', 'woodmart-child' ); ?></h3>
-			<div class="addition-card__pricing">
-				<span class="price-current">€45.00</span>
-				<span class="price-old">€52.95</span>
-			</div>
-			<p class="addition-card__desc"><?php esc_html_e( 'The Complete Kit for Print Removal, De-support & Surface Cleanup.', 'woodmart-child' ); ?></p>
-			<div class="addition-card__options">
-				<select class="addition-card__select" aria-label="<?php esc_attr_e( 'Option', 'woodmart-child' ); ?>">
-					<option value="complete"><?php esc_html_e( 'Standard Toolset (Complete)', 'woodmart-child' ); ?></option>
-				</select>
-			</div>
-			<div class="addition-card__footer">
-				<div class="addition-card__qty">
-					<button type="button" data-step="-1">−</button>
-					<input type="text" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>">
-					<button type="button" data-step="1">+</button>
-				</div>
-				<button type="button" class="btn addition-card__btn-add">
-					<span><?php esc_html_e( 'Add', 'woodmart-child' ); ?></span>
-				</button>
-			</div>
-		</div>
+		<?php
+		foreach ( $addons as $a_idx => $addon ) :
+			$addon_title      = ! empty( $addon['title'] ) ? $addon['title'] : '';
+			if ( empty( $addon_title ) ) {
+				continue;
+			}
+			$addon_price      = ! empty( $addon['price'] ) ? $addon['price'] : '';
+			$addon_reg_price  = ! empty( $addon['regular_price'] ) ? $addon['regular_price'] : '';
+			$addon_desc       = ! empty( $addon['description'] ) ? $addon['description'] : '';
+			$addon_image      = ! empty( $addon['image'] ) ? $addon['image'] : '';
+			$addon_product_id = ! empty( $addon['product_id'] ) ? absint( $addon['product_id'] ) : 0;
+			
+			$options_raw = $addon['options'] ?? array();
+			if ( is_string( $options_raw ) ) {
+				$addon_options = array_values( array_filter( array_map( 'trim', explode( ',', $options_raw ) ) ) );
+			} elseif ( is_array( $options_raw ) ) {
+				$addon_options = $options_raw;
+			} else {
+				$addon_options = array();
+			}
 
-		<!-- Card 2: CyberBrick Time-lapse Kit -->
-		<div class="addition-card">
+			// Fallback options if none provided
+			if ( empty( $addon_options ) ) {
+				if ( 0 === $a_idx ) {
+					$addon_options = array( __( 'Standard Toolset (Complete)', 'woodmart-child' ) );
+				} elseif ( 1 === $a_idx ) {
+					$addon_options = array( __( 'A2L Mounting Bracket Kit', 'woodmart-child' ) );
+				} else {
+					$addon_options = array( __( 'A2L / Large Format Series', 'woodmart-child' ) );
+				}
+			}
+		?>
+		<div class="addition-card" data-product-id="<?php echo esc_attr( $addon_product_id ); ?>" data-title="<?php echo esc_attr( $addon_title ); ?>" data-price="<?php echo esc_attr( $addon_price ); ?>" data-image="<?php echo esc_url( $addon_image ); ?>">
 			<div class="addition-card__icon-box">
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-					<circle cx="12" cy="13" r="4"></circle>
-				</svg>
+				<?php if ( ! empty( $addon_image ) ) : ?>
+					<img src="<?php echo esc_url( $addon_image ); ?>" alt="<?php echo esc_attr( $addon_title ); ?>" style="width: 28px; height: 28px; object-fit: contain;">
+				<?php else : ?>
+					<?php if ( 0 === $a_idx ) : ?>
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<path d="m4.93 4.93 4.24 4.24"></path>
+							<path d="m14.83 9.17 4.24-4.24"></path>
+							<path d="m14.83 14.83 4.24 4.24"></path>
+							<path d="m9.17 14.83-4.24 4.24"></path>
+						</svg>
+					<?php elseif ( 1 === $a_idx ) : ?>
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+							<circle cx="12" cy="13" r="4"></circle>
+						</svg>
+					<?php else : ?>
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+							<line x1="3" y1="9" x2="21" y2="9"></line>
+							<line x1="9" y1="21" x2="9" y2="9"></line>
+						</svg>
+					<?php endif; ?>
+				<?php endif; ?>
 			</div>
-			<h3 class="addition-card__title"><?php esc_html_e( 'CyberBrick Time-lapse Kit', 'woodmart-child' ); ?></h3>
+			<h3 class="addition-card__title"><?php echo esc_html( $addon_title ); ?></h3>
 			<div class="addition-card__pricing">
-				<span class="price-current">€13.60</span>
-				<span class="price-old">€20.90</span>
+				<span class="price-current"><?php echo esc_html( $addon_price ); ?></span>
+				<?php if ( ! empty( $addon_reg_price ) ) : ?>
+					<span class="price-old"><?php echo esc_html( $addon_reg_price ); ?></span>
+				<?php endif; ?>
 			</div>
-			<p class="addition-card__desc"><?php esc_html_e( 'Specially designed for 3D printers to capture high-framerate time-lapse videos.', 'woodmart-child' ); ?></p>
-			<div class="addition-card__options">
-				<select class="addition-card__select" aria-label="<?php esc_attr_e( 'Option', 'woodmart-child' ); ?>">
-					<option value="mount"><?php esc_html_e( 'A2L Mounting Bracket Kit', 'woodmart-child' ); ?></option>
+			<?php if ( ! empty( $addon_desc ) ) : ?>
+				<p class="addition-card__desc"><?php echo esc_html( $addon_desc ); ?></p>
+			<?php endif; ?>
+			<div class="addition-card__options custom-dropdown-wrap">
+				<select class="addition-card__select visually-hidden-select" aria-label="<?php esc_attr_e( 'Option', 'woodmart-child' ); ?>">
+					<?php foreach ( $addon_options as $opt_val ) : ?>
+						<option value="<?php echo esc_attr( $opt_val ); ?>"><?php echo esc_html( $opt_val ); ?></option>
+					<?php endforeach; ?>
 				</select>
+				<button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+					<span class="custom-dropdown-label"><?php echo esc_html( $addon_options[0] ?? '' ); ?></span>
+					<span class="custom-dropdown-arrow" aria-hidden="true">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="6 9 12 15 18 9"></polyline>
+						</svg>
+					</span>
+				</button>
+				<div class="custom-dropdown-menu" role="listbox">
+					<?php foreach ( $addon_options as $opt_idx => $opt_val ) : ?>
+						<div class="custom-dropdown-item <?php echo 0 === $opt_idx ? 'is-selected' : ''; ?>" role="option" data-value="<?php echo esc_attr( $opt_val ); ?>" aria-selected="<?php echo 0 === $opt_idx ? 'true' : 'false'; ?>">
+							<span class="item-text"><?php echo esc_html( $opt_val ); ?></span>
+							<span class="item-check" aria-hidden="true">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+									<polyline points="20 6 9 17 4 12"></polyline>
+								</svg>
+							</span>
+						</div>
+					<?php endforeach; ?>
+				</div>
 			</div>
 			<div class="addition-card__footer">
 				<div class="addition-card__qty">
-					<button type="button" data-step="-1">−</button>
+					<button type="button" data-step="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', 'woodmart-child' ); ?>">−</button>
 					<input type="text" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>">
-					<button type="button" data-step="1">+</button>
+					<button type="button" data-step="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
 				</div>
-				<button type="button" class="btn addition-card__btn-add">
+				<button type="button" class="btn addition-card__btn-add" data-product-id="<?php echo esc_attr( $addon_product_id ); ?>" data-title="<?php echo esc_attr( $addon_title ); ?>" data-price="<?php echo esc_attr( $addon_price ); ?>" data-image="<?php echo esc_url( $addon_image ); ?>">
 					<span><?php esc_html_e( 'Add', 'woodmart-child' ); ?></span>
 				</button>
 			</div>
 		</div>
-
-		<!-- Card 3: Bambu Cool Plate SuperTack Series -->
-		<div class="addition-card">
-			<div class="addition-card__icon-box">
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-					<line x1="3" y1="9" x2="21" y2="9"></line>
-					<line x1="9" y1="21" x2="9" y2="9"></line>
-				</svg>
-			</div>
-			<h3 class="addition-card__title"><?php esc_html_e( 'Bambu Cool Plate SuperTack Series', 'woodmart-child' ); ?></h3>
-			<div class="addition-card__pricing">
-				<span class="price-current">€24.49</span>
-				<span class="price-old">€34.00</span>
-			</div>
-			<p class="addition-card__desc"><?php esc_html_e( 'Strong adhesion at low bed temp, designed for PLA, PETG and crafting vinyl.', 'woodmart-child' ); ?></p>
-			<div class="addition-card__options">
-				<select class="addition-card__select" aria-label="<?php esc_attr_e( 'Option', 'woodmart-child' ); ?>">
-					<option value="a2l"><?php esc_html_e( 'A2L / Large Format Series', 'woodmart-child' ); ?></option>
-				</select>
-			</div>
-			<div class="addition-card__footer">
-				<div class="addition-card__qty">
-					<button type="button" data-step="-1">−</button>
-					<input type="text" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>">
-					<button type="button" data-step="1">+</button>
-				</div>
-				<button type="button" class="btn addition-card__btn-add">
-					<span><?php esc_html_e( 'Add', 'woodmart-child' ); ?></span>
-				</button>
-			</div>
-		</div>
+		<?php endforeach; ?>
 	</div>
 </section>
+<?php endif; ?>

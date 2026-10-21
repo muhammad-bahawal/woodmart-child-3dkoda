@@ -55,12 +55,6 @@ $button_text = ! empty( $settings['faq']['sticky_bar']['button_text'] ) ? $setti
 				<span class="ams-sticky-bar__vat-note"><?php esc_html_e( 'incl. 24% VAT', 'woodmart-child' ); ?></span>
 			</div>
 
-			<div class="ams-sticky-bar__qty">
-				<button type="button" class="ams-sticky-qty-btn" data-dir="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', 'woodmart-child' ); ?>">−</button>
-				<input type="text" class="ams-sticky-qty-input" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>" readonly>
-				<button type="button" class="ams-sticky-qty-btn" data-dir="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
-			</div>
-
 			<button type="button" class="btn btn-add-to-cart ams-sticky-btn-add" id="ams-sticky-btn-add">
 				<span><?php echo esc_html( $button_text ); ?></span>
 				<span class="cart-icon" aria-hidden="true">

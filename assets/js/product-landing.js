@@ -1315,6 +1315,71 @@
 			});
 		}
 
+		// Essential Additions: Custom Dropdown Interactivity
+		const filamentDropdownWraps = root.querySelectorAll('.filament-additions .custom-dropdown-wrap');
+		filamentDropdownWraps.forEach(wrap => {
+			const trigger = wrap.querySelector('.custom-dropdown-trigger');
+			const label = wrap.querySelector('.custom-dropdown-label');
+			const hiddenSelect = wrap.querySelector('.addition-select');
+			const items = wrap.querySelectorAll('.custom-dropdown-item');
+			const card = wrap.closest('.filament-addition-card');
+
+			if (trigger) {
+				trigger.addEventListener('click', function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					const isOpen = wrap.classList.contains('is-open');
+
+					// Close any other open dropdowns first
+					filamentDropdownWraps.forEach(w => {
+						if (w !== wrap) {
+							w.classList.remove('is-open');
+							w.querySelector('.custom-dropdown-trigger')?.setAttribute('aria-expanded', 'false');
+							w.closest('.filament-addition-card')?.classList.remove('is-dropdown-open');
+						}
+					});
+
+					wrap.classList.toggle('is-open', !isOpen);
+					trigger.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+					if (card) card.classList.toggle('is-dropdown-open', !isOpen);
+				});
+			}
+
+			items.forEach(item => {
+				item.addEventListener('click', function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					const val = this.dataset.value || '';
+					if (label) label.textContent = val;
+					if (hiddenSelect) {
+						hiddenSelect.value = val;
+						hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
+					}
+					items.forEach(i => {
+						i.classList.remove('is-selected');
+						i.setAttribute('aria-selected', 'false');
+					});
+					this.classList.add('is-selected');
+					this.setAttribute('aria-selected', 'true');
+
+					wrap.classList.remove('is-open');
+					trigger?.setAttribute('aria-expanded', 'false');
+					if (card) card.classList.remove('is-dropdown-open');
+				});
+			});
+		});
+
+		// Close open dropdowns on click outside
+		document.addEventListener('click', function (e) {
+			if (!e.target.closest('.filament-additions .custom-dropdown-wrap')) {
+				filamentDropdownWraps.forEach(w => {
+					w.classList.remove('is-open');
+					w.querySelector('.custom-dropdown-trigger')?.setAttribute('aria-expanded', 'false');
+					w.closest('.filament-addition-card')?.classList.remove('is-dropdown-open');
+				});
+			}
+		});
+
 		// Essential Additions Add Button (Real WooCommerce Cart & Order Sync)
 		const additionAddBtns = root.querySelectorAll('.btn-addition-add');
 		additionAddBtns.forEach(btn => {
@@ -1323,29 +1388,30 @@
 				const card = this.closest('.filament-addition-card');
 				if (!card) return;
 
-				const productId = parseInt(this.dataset.productId || card.dataset.productId, 10) || 0;
+				const mainProductId = parseInt(root.querySelector('input[name="product_id"]')?.value || root.querySelector('input[name="add-to-cart"]')?.value || document.querySelector('input[name="product_id"]')?.value || document.querySelector('input[name="add-to-cart"]')?.value, 10) || 0;
+				let productId = parseInt(this.dataset.productId || card.dataset.productId, 10) || 0;
+				if (!productId) {
+					productId = mainProductId;
+				}
+
+				if (!productId) {
+					showNotice('Could not find product to add.', true);
+					return;
+				}
+
 				const qtyInput = card.querySelector('.addition-quantity input');
 				const quantity = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
 				const selectElem = card.querySelector('.addition-select');
 				const selectedOption = selectElem ? selectElem.value : '';
-				const cardTitle = this.dataset.title || 'Product';
-
-				if (!productId) {
-					// Feedback when admin hasn't linked a specific product ID
-					const origText = this.textContent.trim();
-					this.textContent = 'Added ✓';
-					this.style.background = '#047857';
-					setTimeout(() => {
-						this.textContent = origText;
-						this.style.background = '';
-					}, 1500);
-					return;
-				}
+				const cardTitle = (this.dataset.title || card.dataset.title || 'Product').trim();
+				const itemPrice = this.dataset.price || (card ? card.dataset.price : '') || '';
+				const itemImage = this.dataset.image || (card ? card.dataset.image : '') || '';
 
 				// Real WooCommerce AJAX Add To Cart
-				const origText = this.textContent;
+				const origContent = this.innerHTML;
 				this.classList.add('is-loading');
 				this.disabled = true;
+				this.innerHTML = '<span>Adding...</span>';
 
 				const config = window.woodmartLandingData || {};
 				const ajaxUrl = config.ajaxUrl || '/wp-admin/admin-ajax.php';
@@ -1356,6 +1422,14 @@
 				formData.append('security', nonce);
 				formData.append('product_id', productId);
 				formData.append('quantity', quantity);
+				formData.append('is_bundle_addon', '1');
+				formData.append('addon_title', cardTitle);
+				if (itemPrice) {
+					formData.append('addon_price', itemPrice);
+				}
+				if (itemImage) {
+					formData.append('addon_image', itemImage);
+				}
 				if (selectedOption) {
 					formData.append('addition_option', selectedOption);
 				}
@@ -1390,17 +1464,23 @@
 							});
 						}
 
-						this.textContent = 'Added ✓';
+						if (resData.cart_total) {
+							document.querySelectorAll('.wd-cart-subtotal, .whb-cart-subtotal, .woodmart-cart-subtotal, .cart-subtotal').forEach(el => {
+								el.innerHTML = resData.cart_total;
+							});
+						}
+
+						this.innerHTML = '<span>Added ✓</span>';
 						this.style.background = '#047857';
 						setTimeout(() => {
-							this.textContent = origText;
+							this.innerHTML = origContent;
 							this.style.background = '';
-						}, 2000);
+						}, 2500);
 
 						// Show toast notice
-						showNotice(`✓ Added ${cardTitle} to basket! <a href="${cartUrl}">View basket →</a>`, false);
+						showNotice(`✓ Added ${cardTitle} ${selectedOption ? '(' + selectedOption + ') ' : ''}to basket! <a href="${cartUrl}">View basket →</a>`, false);
 
-						// Trigger fragments
+						// Trigger fragments and open Woodmart mini-cart side drawer
 						if (window.jQuery) {
 							try {
 								const fragments = resData.fragments || data.fragments || {};
@@ -1412,16 +1492,30 @@
 								}
 								window.jQuery(document.body).trigger('wc_fragment_refresh');
 								window.jQuery(document.body).trigger('added_to_cart', [fragments, cartHash, window.jQuery(btn)]);
+								setTimeout(function() {
+									if (window.jQuery('.cart-widget-opener').length) {
+										window.jQuery('.cart-widget-opener').trigger('click');
+									} else if (window.jQuery('.woodmart-cart-icon').length) {
+										window.jQuery('.woodmart-cart-icon').trigger('click');
+									} else {
+										window.jQuery('body').addClass('woodmart-cart-opened');
+										window.jQuery('.woodmart-close-side').addClass('woodmart-close-side-opened');
+									}
+								}, 100);
 							} catch (jqErr) {}
 						}
 					} else {
 						const errorMsg = (data && data.data && data.data.message) ? data.data.message : 'Could not add to basket.';
 						showNotice(errorMsg, true);
+						this.innerHTML = origContent;
+						this.style.background = '';
 					}
 				})
 				.catch(err => {
 					this.classList.remove('is-loading');
 					this.disabled = false;
+					this.innerHTML = origContent;
+					this.style.background = '';
 					showNotice('Network error. Please try again.', true);
 				});
 			});
@@ -2037,7 +2131,73 @@
 			});
 		});
 
-		// 2. Essential Additions (Steppers & Add Buttons)
+		// 2. Custom Dropdowns for Add-ons (Zero Blue, Text Wrapping inside Card)
+		const dropdownWraps = root.querySelectorAll('.lc-additions-section .custom-dropdown-wrap');
+		dropdownWraps.forEach(wrap => {
+			const trigger = wrap.querySelector('.custom-dropdown-trigger');
+			const label = wrap.querySelector('.custom-dropdown-label');
+			const hiddenSelect = wrap.querySelector('.addition-card__select');
+			const items = wrap.querySelectorAll('.custom-dropdown-item');
+			const card = wrap.closest('.addition-card');
+
+			if (trigger) {
+				trigger.addEventListener('click', function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					const isOpen = wrap.classList.contains('is-open');
+
+					// Close all other open dropdowns first
+					dropdownWraps.forEach(w => {
+						w.classList.remove('is-open');
+						w.querySelector('.custom-dropdown-trigger')?.setAttribute('aria-expanded', 'false');
+						w.closest('.addition-card')?.classList.remove('is-dropdown-open');
+					});
+
+					if (!isOpen) {
+						wrap.classList.add('is-open');
+						trigger.setAttribute('aria-expanded', 'true');
+						if (card) card.classList.add('is-dropdown-open');
+					}
+				});
+			}
+
+			items.forEach(item => {
+				item.addEventListener('click', function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					const val = this.dataset.value || '';
+					if (label) label.textContent = val;
+					if (hiddenSelect) {
+						hiddenSelect.value = val;
+						hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
+					}
+					items.forEach(i => {
+						i.classList.remove('is-selected');
+						i.setAttribute('aria-selected', 'false');
+					});
+					this.classList.add('is-selected');
+					this.setAttribute('aria-selected', 'true');
+
+					wrap.classList.remove('is-open');
+					trigger?.setAttribute('aria-expanded', 'false');
+					if (card) card.classList.remove('is-dropdown-open');
+				});
+			});
+		});
+
+		// Close any open custom dropdown on click outside
+		document.addEventListener('click', function (e) {
+			if (!e.target.closest('.custom-dropdown-wrap')) {
+				dropdownWraps.forEach(w => {
+					w.classList.remove('is-open');
+					w.querySelector('.custom-dropdown-trigger')?.setAttribute('aria-expanded', 'false');
+					w.closest('.addition-card')?.classList.remove('is-dropdown-open');
+				});
+			}
+		});
+
+		// 2.1 Essential Additions (Steppers & Real Add to Cart)
+		let cumulativeAddonsPrice = 0;
 		const additionCards = root.querySelectorAll('.lc-additions-section .addition-card');
 		additionCards.forEach(card => {
 			const qtyInput = card.querySelector('.addition-card__qty input');
@@ -2056,14 +2216,157 @@
 			if (addBtn) {
 				addBtn.addEventListener('click', function (e) {
 					e.preventDefault();
-					const origText = this.innerHTML;
-					this.innerHTML = '<span>Added ✓</span>';
-					this.style.background = '#047857';
-					showNotice(`✓ Added ${title} to basket!`, false);
-					setTimeout(() => {
-						this.innerHTML = origText;
+					const card = this.closest('.addition-card');
+					
+					// Main product ID on this page as reliable fallback
+					const mainProductId = parseInt(root.querySelector('input[name="product_id"]')?.value || root.querySelector('input[name="add-to-cart"]')?.value || document.querySelector('input[name="product_id"]')?.value || document.querySelector('input[name="add-to-cart"]')?.value, 10) || 0;
+					
+					// Linked product ID or fallback to main product ID
+					let productId = parseInt(this.dataset.productId || (card ? card.dataset.productId : 0), 10) || 0;
+					if (!productId) {
+						productId = mainProductId;
+					}
+
+					if (!productId) {
+						showNotice('Could not find product to add.', true);
+						return;
+					}
+
+					const qtyInput = card ? card.querySelector('.addition-card__qty input') : null;
+					const quantity = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+					const selectElem = card ? card.querySelector('.addition-card__select') : null;
+					const selectedOption = selectElem ? selectElem.value : '';
+					const itemTitle = (this.dataset.title || title || 'Product').trim();
+					const itemPrice = this.dataset.price || (card ? card.dataset.price : '') || '';
+					const itemImage = this.dataset.image || (card ? card.dataset.image : '') || '';
+
+					const origContent = this.innerHTML;
+
+					// Real WooCommerce AJAX Add To Cart
+					this.classList.add('is-loading');
+					this.disabled = true;
+					this.innerHTML = '<span>Adding...</span>';
+
+					const config = window.woodmartLandingData || {};
+					const ajaxUrl = config.ajaxUrl || '/wp-admin/admin-ajax.php';
+					const nonce = config.nonce || '';
+
+					const formData = new FormData();
+					formData.append('action', 'woodmart_child_add_to_cart');
+					formData.append('security', nonce);
+					formData.append('product_id', productId);
+					formData.append('quantity', quantity);
+					formData.append('is_bundle_addon', '1');
+					formData.append('addon_title', itemTitle);
+					if (itemPrice) {
+						formData.append('addon_price', itemPrice);
+					}
+					if (itemImage) {
+						formData.append('addon_image', itemImage);
+					}
+					if (selectedOption) {
+						formData.append('addition_option', selectedOption);
+					}
+
+					fetch(ajaxUrl, {
+						method: 'POST',
+						body: formData
+					})
+					.then(res => res.text())
+					.then(text => {
+						this.classList.remove('is-loading');
+						this.disabled = false;
+
+						let data = null;
+						try {
+							data = JSON.parse(text);
+						} catch (err) {
+							const match = text.match(/\{[\s\S]*\}/);
+							if (match) {
+								try { data = JSON.parse(match[0]); } catch (e) {}
+							}
+						}
+
+						const cartUrl = (config && config.cartUrl) || '#';
+
+						if (data && data.success) {
+							const resData = (data && data.data) ? data.data : data;
+							const cartCount = (typeof resData.cart_count !== 'undefined') ? resData.cart_count : data.cart_count;
+							
+							// 1. Update cart count badges in header
+							if (typeof cartCount !== 'undefined') {
+								document.querySelectorAll('.wd-cart-number, .whb-cart-number, .woodmart-cart-number, .cart-count, .site-header__tools .cart-count').forEach(b => {
+									b.textContent = cartCount;
+								});
+							}
+
+							// 2. Update cart total in header if returned
+							if (resData.cart_total) {
+								document.querySelectorAll('.wd-cart-subtotal, .whb-cart-subtotal, .woodmart-cart-subtotal, .cart-subtotal').forEach(el => {
+									el.innerHTML = resData.cart_total;
+								});
+							}
+
+							// 3. Update sticky footer price (cumulatively add this item's amount)
+							const stickyPriceEl = root.querySelector('#lc-sticky-price');
+							if (stickyPriceEl) {
+								const numericPrice = parseFloat(String(itemPrice).replace(/[^0-9\.,]/g, '').replace(',', '.')) || 0;
+								if (numericPrice > 0) {
+									cumulativeAddonsPrice += (numericPrice * quantity);
+									const currentStickyText = stickyPriceEl.textContent || '';
+									const baseVal = parseFloat(currentStickyText.replace(/[^0-9\.,]/g, '').replace(',', '.')) || 469;
+									const updatedStickyTotal = (baseVal + (numericPrice * quantity)).toFixed(2);
+									stickyPriceEl.innerHTML = `€${updatedStickyTotal}`;
+								}
+							}
+
+							this.innerHTML = '<span>Added ✓</span>';
+							this.style.background = '#047857';
+							setTimeout(() => {
+								this.innerHTML = origContent;
+								this.style.background = '';
+							}, 2500);
+
+							showNotice(`✓ Added ${itemTitle} ${selectedOption ? '(' + selectedOption + ') ' : ''}to basket! <a href="${cartUrl}">View basket →</a>`, false);
+
+							// 4. Trigger WooCommerce fragments and open Woodmart mini-cart drawer
+							if (window.jQuery) {
+								try {
+									const fragments = resData.fragments || data.fragments || {};
+									const cartHash = resData.cart_hash || data.cart_hash || '';
+									if (fragments && typeof fragments === 'object') {
+										window.jQuery.each(fragments, function(k, v) {
+											window.jQuery(k).replaceWith(v);
+										});
+									}
+									window.jQuery(document.body).trigger('wc_fragment_refresh');
+									window.jQuery(document.body).trigger('added_to_cart', [fragments, cartHash, window.jQuery(addBtn)]);
+									setTimeout(function() {
+										if (window.jQuery('.cart-widget-opener').length) {
+											window.jQuery('.cart-widget-opener').trigger('click');
+										} else if (window.jQuery('.woodmart-cart-icon').length) {
+											window.jQuery('.woodmart-cart-icon').trigger('click');
+										} else {
+											window.jQuery('body').addClass('woodmart-cart-opened');
+											window.jQuery('.woodmart-close-side').addClass('woodmart-close-side-opened');
+										}
+									}, 100);
+								} catch (jqErr) {}
+							}
+						} else {
+							const errorMsg = (data && data.data && data.data.message) ? data.data.message : 'Could not add to basket.';
+							showNotice(errorMsg, true);
+							this.innerHTML = origContent;
+							this.style.background = '';
+						}
+					})
+					.catch(() => {
+						this.classList.remove('is-loading');
+						this.disabled = false;
+						this.innerHTML = origContent;
 						this.style.background = '';
-					}, 2000);
+						showNotice('Could not add to basket. Please try again.', true);
+					});
 				});
 			}
 		});
@@ -2838,16 +3141,127 @@
 			if (addBtn) {
 				addBtn.addEventListener('click', function (e) {
 					e.preventDefault();
-					const origText = this.innerHTML;
-					this.innerHTML = '<span>Added ✓</span>';
-					this.style.background = '#047857';
-					if (typeof showNotice === 'function') {
-						showNotice(`✓ Added ${title} to basket!`, false);
+					const card = this.closest('.addition-card');
+					const mainProductId = parseInt(root.querySelector('input[name="product_id"]')?.value || root.querySelector('input[name="add-to-cart"]')?.value || document.querySelector('input[name="product_id"]')?.value || document.querySelector('input[name="add-to-cart"]')?.value, 10) || 0;
+
+					let productId = parseInt(this.dataset.productId || (card ? card.dataset.productId : 0), 10) || 0;
+					if (!productId) {
+						productId = mainProductId;
 					}
-					setTimeout(() => {
-						this.innerHTML = origText;
+
+					if (!productId) {
+						showNotice('Could not find product to add.', true);
+						return;
+					}
+
+					const qtyInput = card ? card.querySelector('.addition-card__qty input') : null;
+					const quantity = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+					const itemTitle = (this.dataset.title || title || 'Product').trim();
+					const itemPrice = this.dataset.price || (card ? card.dataset.price : '') || '';
+					const itemImage = this.dataset.image || (card ? card.dataset.image : '') || '';
+
+					const origContent = this.innerHTML;
+					this.classList.add('is-loading');
+					this.disabled = true;
+					this.innerHTML = '<span>Adding...</span>';
+
+					const config = window.woodmartLandingData || {};
+					const ajaxUrl = config.ajaxUrl || '/wp-admin/admin-ajax.php';
+					const nonce = config.nonce || '';
+
+					const formData = new FormData();
+					formData.append('action', 'woodmart_child_add_to_cart');
+					formData.append('security', nonce);
+					formData.append('product_id', productId);
+					formData.append('quantity', quantity);
+					formData.append('is_bundle_addon', '1');
+					formData.append('addon_title', itemTitle);
+					if (itemPrice) formData.append('addon_price', itemPrice);
+					if (itemImage) formData.append('addon_image', itemImage);
+
+					fetch(ajaxUrl, {
+						method: 'POST',
+						body: formData
+					})
+					.then(res => res.text())
+					.then(text => {
+						this.classList.remove('is-loading');
+						this.disabled = false;
+
+						let data = null;
+						try {
+							data = JSON.parse(text);
+						} catch (err) {
+							const match = text.match(/\{[\s\S]*\}/);
+							if (match) {
+								try { data = JSON.parse(match[0]); } catch (e) {}
+							}
+						}
+
+						const cartUrl = (config && config.cartUrl) || '#';
+
+						if (data && data.success) {
+							const resData = (data && data.data) ? data.data : data;
+							const cartCount = (typeof resData.cart_count !== 'undefined') ? resData.cart_count : data.cart_count;
+							if (typeof cartCount !== 'undefined') {
+								document.querySelectorAll('.wd-cart-number, .whb-cart-number, .woodmart-cart-number, .cart-count, .site-header__tools .cart-count').forEach(b => {
+									b.textContent = cartCount;
+								});
+							}
+
+							if (resData.cart_total) {
+								document.querySelectorAll('.wd-cart-subtotal, .whb-cart-subtotal, .woodmart-cart-subtotal, .cart-subtotal').forEach(el => {
+									el.innerHTML = resData.cart_total;
+								});
+							}
+
+							this.innerHTML = '<span>Added ✓</span>';
+							this.style.background = '#047857';
+							setTimeout(() => {
+								this.innerHTML = origContent;
+								this.style.background = '';
+							}, 2500);
+
+							showNotice(`✓ Added ${itemTitle} to basket! <a href="${cartUrl}">View basket →</a>`, false);
+
+							// Trigger WooCommerce fragments and open Woodmart mini-cart side drawer
+							if (window.jQuery) {
+								try {
+									const fragments = resData.fragments || data.fragments || {};
+									const cartHash = resData.cart_hash || data.cart_hash || '';
+									if (fragments && typeof fragments === 'object') {
+										window.jQuery.each(fragments, function(k, v) {
+											window.jQuery(k).replaceWith(v);
+										});
+									}
+									window.jQuery(document.body).trigger('wc_fragment_refresh');
+									window.jQuery(document.body).trigger('added_to_cart', [fragments, cartHash, window.jQuery(addBtn)]);
+									setTimeout(function() {
+										if (window.jQuery('.cart-widget-opener').length) {
+											window.jQuery('.cart-widget-opener').trigger('click');
+										} else if (window.jQuery('.woodmart-cart-icon').length) {
+											window.jQuery('.woodmart-cart-icon').trigger('click');
+										} else {
+											window.jQuery('body').addClass('woodmart-cart-opened');
+											window.jQuery('.woodmart-close-side').addClass('woodmart-close-side-opened');
+										}
+									}, 100);
+								} catch (jqErr) {}
+							}
+						} else {
+							const errorMsg = (data && data.data && data.data.message) ? data.data.message : 'Could not add to basket.';
+							showNotice(errorMsg, true);
+							this.innerHTML = origContent;
+							this.style.background = '';
+						}
+					})
+					.catch(() => {
+						this.classList.remove('is-loading');
+						this.disabled = false;
+						this.innerHTML = origContent;
 						this.style.background = '';
-					}, 2000);
+						showNotice('Could not add to basket. Please try again.', true);
+					});
 				});
 			}
 		});

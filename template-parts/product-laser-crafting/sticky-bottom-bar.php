@@ -43,14 +43,8 @@ $first_pkg      = ! empty( $first_pkg_item['title'] ) ? $first_pkg_item['title']
 			<span class="lc-sticky-vat"><?php esc_html_e( 'incl. 24% VAT', 'woodmart-child' ); ?></span>
 		</div>
 
-		<!-- Right: Quantity Stepper & CTA -->
+		<!-- Right: CTA Button -->
 		<div class="lc-sticky-actions">
-			<div class="lc-sticky-quantity">
-				<button type="button" class="lc-sticky-qty-btn" data-dir="-1" aria-label="<?php esc_attr_e( 'Decrease quantity', 'woodmart-child' ); ?>">−</button>
-				<input type="number" value="1" min="1" max="99" class="lc-sticky-qty-input" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>" />
-				<button type="button" class="lc-sticky-qty-btn" data-dir="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
-			</div>
-
 			<button type="button" class="lc-sticky-btn-add" id="lc-sticky-btn-add">
 				<span><?php esc_html_e( 'Add to basket', 'woodmart-child' ); ?></span>
 				<span class="lc-sticky-cart-icon" aria-hidden="true">

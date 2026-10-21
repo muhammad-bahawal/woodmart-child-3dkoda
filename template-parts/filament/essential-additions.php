@@ -52,10 +52,11 @@ $cards          = ! empty( $additions_data['cards'] ) ? $additions_data['cards']
 			$c_desc      = $card['desc'] ?? '';
 			$c_badge      = $card['badge'] ?? '';
 			$c_icon       = $card['icon'] ?? 'spool';
+			$c_image      = $card['image'] ?? '';
 			$c_product_id = ! empty( $card['product_id'] ) ? absint( $card['product_id'] ) : 0;
 			$c_options    = ! empty( $card['options'] ) && is_array( $card['options'] ) ? $card['options'] : array();
 		?>
-			<div class="filament-addition-card" data-card-index="<?php echo esc_attr( $idx ); ?>" data-product-id="<?php echo esc_attr( $c_product_id ); ?>">
+			<div class="filament-addition-card addition-card" data-card-index="<?php echo esc_attr( $idx ); ?>" data-product-id="<?php echo esc_attr( $c_product_id ); ?>" data-title="<?php echo esc_attr( $c_title ); ?>" data-price="<?php echo esc_attr( $c_price ); ?>" data-image="<?php echo esc_url( $c_image ); ?>">
 				<div class="addition-card-header">
 					<!-- Icon Box -->
 					<div class="addition-card-icon" aria-hidden="true">
@@ -104,17 +105,32 @@ $cards          = ! empty( $additions_data['cards'] ) ? $additions_data['cards']
 
 				<div class="addition-card-footer">
 					<?php if ( ! empty( $c_options ) ) : ?>
-						<div class="addition-select-wrap">
-							<select class="addition-select" aria-label="<?php echo esc_attr( sprintf( __( 'Select %s option', 'woodmart-child' ), $c_title ) ); ?>">
+						<div class="addition-select-wrap custom-dropdown-wrap">
+							<select class="addition-select visually-hidden-select" aria-label="<?php echo esc_attr( sprintf( __( 'Select %s option', 'woodmart-child' ), $c_title ) ); ?>">
 								<?php foreach ( $c_options as $opt ) : ?>
 									<option value="<?php echo esc_attr( $opt ); ?>"><?php echo esc_html( $opt ); ?></option>
 								<?php endforeach; ?>
 							</select>
-							<span class="select-arrow" aria-hidden="true">
-								<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-									<polyline points="6 9 12 15 18 9"></polyline>
-								</svg>
-							</span>
+							<button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+								<span class="custom-dropdown-label"><?php echo esc_html( $c_options[0] ?? '' ); ?></span>
+								<span class="custom-dropdown-arrow" aria-hidden="true">
+									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+										<polyline points="6 9 12 15 18 9"></polyline>
+									</svg>
+								</span>
+							</button>
+							<div class="custom-dropdown-menu" role="listbox">
+								<?php foreach ( $c_options as $opt_idx => $opt_val ) : ?>
+									<div class="custom-dropdown-item <?php echo 0 === $opt_idx ? 'is-selected' : ''; ?>" role="option" data-value="<?php echo esc_attr( $opt_val ); ?>" aria-selected="<?php echo 0 === $opt_idx ? 'true' : 'false'; ?>">
+										<span class="item-text"><?php echo esc_html( $opt_val ); ?></span>
+										<span class="item-check" aria-hidden="true">
+											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+												<polyline points="20 6 9 17 4 12"></polyline>
+											</svg>
+										</span>
+									</div>
+								<?php endforeach; ?>
+							</div>
 						</div>
 					<?php endif; ?>
 
@@ -124,8 +140,8 @@ $cards          = ! empty( $additions_data['cards'] ) ? $additions_data['cards']
 							<input type="text" name="addition_qty" value="1" aria-label="<?php esc_attr_e( 'Quantity', 'woodmart-child' ); ?>">
 							<button type="button" data-step="1" aria-label="<?php esc_attr_e( 'Increase quantity', 'woodmart-child' ); ?>">+</button>
 						</div>
-						<button type="button" class="btn btn-addition-add" data-product-id="<?php echo esc_attr( $c_product_id ); ?>" data-title="<?php echo esc_attr( $c_title ); ?>">
-							<?php esc_html_e( 'Add', 'woodmart-child' ); ?>
+						<button type="button" class="btn btn-addition-add addition-card__btn-add" data-product-id="<?php echo esc_attr( $c_product_id ); ?>" data-title="<?php echo esc_attr( $c_title ); ?>" data-price="<?php echo esc_attr( $c_price ); ?>" data-image="<?php echo esc_url( $c_image ); ?>">
+							<span><?php esc_html_e( 'Add', 'woodmart-child' ); ?></span>
 						</button>
 					</div>
 				</div>
